@@ -1,9 +1,13 @@
-import Vue from 'vue'
-import App from './App'
+import Vue from "vue";
+import App from "./App";
 
-Vue.config.productionTip = false
+// 引入uView组件库
+import uView from "uview-ui";
+Vue.use(uView);
 
-App.mpType = 'app'
+Vue.config.productionTip = false;
+
+App.mpType = "app";
 
 function isPromise(obj) {
   return (
@@ -31,6 +35,6 @@ uni.addInterceptor({
 });
 
 const app = new Vue({
-  ...App
-})
-app.$mount()
+  ...App,
+});
+app.$mount();
