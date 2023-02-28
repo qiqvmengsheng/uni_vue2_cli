@@ -1,5 +1,6 @@
 import Vue from "vue";
 import App from "./App";
+import store from "./store";
 
 // 引入uView组件库
 import uView from "uview-ui";
@@ -35,6 +36,7 @@ uni.addInterceptor({
 });
 
 const app = new Vue({
+  store,
   ...App,
 });
 app.$mount();

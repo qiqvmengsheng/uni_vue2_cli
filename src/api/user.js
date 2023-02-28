@@ -2,7 +2,7 @@ import request from "@/utils/http";
 import qs from "qs";
 
 /**
- * 登录方法
+ * 登录获取token
  */
 export function login(data) {
   return request({
@@ -13,7 +13,7 @@ export function login(data) {
 }
 
 /**
- * 微信登录
+ * 微信登录获取code
  */
 export function wxlogin() {
   return new Promise(async (resolve, reject) => {

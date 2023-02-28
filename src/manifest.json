@@ -1,6 +1,6 @@
 {
 	"name": "",
-	"appid": "wx4cad2595807c5fd8",
+	"appid": "wx678fbec6260386c3",
 	"description": "",
 	"versionName": "1.0.0",
 	"versionCode": "100",
@@ -54,11 +54,13 @@
 
 	},
 	"mp-weixin": { /* 微信小程序特有相关 */
-		"appid": "wx4cad2595807c5fd8",
+		"appid": "wx678fbec6260386c3",
 		"setting": {
 			"urlCheck": false
 		},
-		"usingComponents": true
+		"usingComponents": true,
+		// 开启组件按需注入
+		"lazyCodeLoading": "requiredComponents"
 	},
 	"mp-alipay" : {
         "usingComponents" : true

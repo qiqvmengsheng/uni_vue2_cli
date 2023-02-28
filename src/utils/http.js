@@ -1,23 +1,22 @@
 import axios from "axios";
 import to from "await-to-js";
 import { UniAdapter } from "uniapp-axios-adapter";
+import store from "@/store";
 import { getToken } from "./uniStorsge";
 /**
  *
  */
 const request = axios.create({
   baseURL: "http://localhost/user",
+  // baseURL: "https://www.lele-tech.com:8080/",
   timeout: 10000,
   adapter: UniAdapter,
 });
 
 request.interceptors.request.use(async (config) => {
-  const [err, token] = await to(getToken());
-  if (err) {
-    console.log(err);
-  } else {
-    //带上token
-    config.headers["Authorization"] = token;
+  //带上token
+  if (store.getters.token) {
+    config.headers["Authorization"] = getToken();
   }
   return config;
 });
