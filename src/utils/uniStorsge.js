@@ -1,8 +1,8 @@
-import { storage } from "@uni/apis";
-const { setStorage, getStorageSync, removeStorage } = storage;
+import { storage } from '@uni/apis';
 
-const TokenKey = "sarad-china_token_key";
-const nameKey = "sarad-china_name_key";
+const { setStorage, getStorageSync, removeStorage } = storage;
+const TokenKey = 'sarad-china_token_key';
+const nameKey = 'sarad-china_name_key';
 
 export function getToken() {
   return getStorageSync({ key: TokenKey });

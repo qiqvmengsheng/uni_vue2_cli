@@ -1,0 +1,26 @@
+# http://editorconfig.org
+# 编辑器风格适配文件
+root = true    # 根目录的配置文件，编辑器会由当前目录向上查找，如果找到 `roor = true` 的文件，则不再查找
+
+[*]
+# 设置字符集
+charset = utf-8
+
+[*.{js,jsx,ts,tsx,vue}]
+# 缩进用空格，可选tab
+indent_style = space
+# 缩进的空格数
+indent_size = 2
+# 结尾换行符，可选"lf"、"cr"、"crlf"
+end_of_line = lf
+# 删除一行中的前后空格
+trim_trailing_whitespace = true
+# 在文件结尾插入新行
+insert_final_newline = true
+# 超过80换行
+max_line_length = 80
+
+
+[*.md]
+insert_final_newline = false
+trim_trailing_whitespace = false
