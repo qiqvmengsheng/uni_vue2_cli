@@ -1,3 +1,4 @@
+/* eslint no-shadow: [1, { "allow": ["state"] }] */
 import to from 'await-to-js';
 import { login, wxlogin, wxgetUserInfo, getdata } from '@/api/user';
 import {
@@ -17,8 +18,6 @@ const getDefaultState = () => ({
   systemrole: '',
 });
 
-const state = getDefaultState();
-
 const mutations = {
   RESET_STATE: (state) => {
     Object.assign(state, getDefaultState());
@@ -37,50 +36,57 @@ const mutations = {
   },
 };
 
-const actions = {
-  async wxlogin({ commit }, code) {
-    const [err, response] = await to(wxlogin({ code }));
-    if (err) {
-      return Promise.reject(err);
-    }
-    if (response.data.code !== 200) {
-      return Promise.reject(response);
-    }
-    // console.log(response.data);
-    const { data } = response.data;
-    commit('SET_TOKEN', data.token);
-    setToken(data.token);
-    commit('SET_NAME', data.name);
-    setName(data.name);
-    return Promise.resolve(response);
-  },
+const state = getDefaultState();
 
-  async login1({ commit }) {
+const actions = {
+  /**
+   * 获取微信code登录
+   */
+  async wxlogin({ commit }) {
     const [err, res] = await to(wxlogin());
     if (err) {
       console.log(err);
-      return;
+      return Promise.reject(err);
     }
     console.log('微信登录返回信息：', res);
     const { code } = res;
 
-    const [err2, res2] = await to(wxgetUserInfo());
-    if (err2) {
-      console.log(err2);
-      return;
-    }
-    console.log('用户信息：', res2);
-    const { userInfo } = res2;
-    const { nickName, avatarUrl, gender, province, city, country } = userInfo;
-
-    const [err1, res1] = await to(
-      login({ code, nickName, gender, address: province + city })
-    );
+    const [err1, res1] = await to(wxgetUserInfo());
     if (err1) {
       console.log(err1);
-      return;
+      return Promise.reject(err1);
     }
-    console.log('登录自己网站成功：', res1);
+    console.log('用户信息：', res1);
+    const { userInfo } = res1;
+    const { nickName, avatarUrl, gender, province, city, country } = userInfo;
+
+    const [err2, res2] = await to(
+      login({ code, nickName, gender, address: province + city })
+    );
+    if (err2) {
+      console.log(err2);
+      return Promise.reject(err2);
+    }
+    console.log('登录自己网站成功：', res2);
+    const { token, username } = res2.data.data;
+    commit('SET_TOKEN', token);
+    commit('SET_NAME', username);
+    try {
+      setToken(token);
+      setName(username);
+    } catch (e) {
+      console.log(e);
+    }
+    return Promise.resolve({
+      token,
+      username,
+      nickName,
+      avatarUrl,
+      gender,
+      province,
+      city,
+      country,
+    });
   },
 
   // user login

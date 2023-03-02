@@ -1,20 +1,20 @@
-import Vue from "vue";
-import App from "./App";
-import store from "./store";
-
+import Vue from 'vue';
 // 引入uView组件库
-import uView from "uview-ui";
+import uView from 'uview-ui';
+import App from './App';
+import store from './store';
+
 Vue.use(uView);
 
 Vue.config.productionTip = false;
 
-App.mpType = "app";
+App.mpType = 'app';
 
 function isPromise(obj) {
   return (
     !!obj &&
-    (typeof obj === "object" || typeof obj === "function") &&
-    typeof obj.then === "function"
+    (typeof obj === 'object' || typeof obj === 'function') &&
+    typeof obj.then === 'function'
   );
 }
 
@@ -24,11 +24,11 @@ uni.addInterceptor({
       return res;
     }
     return new Promise((resolve, reject) => {
-      res.then((res) => {
-        if (res[0]) {
-          reject(res[0]);
+      res.then((res1) => {
+        if (res1[0]) {
+          reject(res1[0]);
         } else {
-          resolve(res[1]);
+          resolve(res1[1]);
         }
       });
     });

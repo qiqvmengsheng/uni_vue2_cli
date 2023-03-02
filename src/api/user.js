@@ -13,7 +13,7 @@ export function login(data) {
 }
 
 /**
- * 微信登录获取code
+ * 微信自动登录获取code
  */
 export function wxlogin() {
   return new Promise((resolve, reject) => {
@@ -45,6 +45,37 @@ export function wxgetUserInfo() {
         reject(err);
       },
     });
+  });
+}
+
+/**
+ * 微信获取用户信息
+ */
+export function wxgetUserProfile() {
+  return new Promise((resolve, reject) => {
+    // 获取用户信息
+    uni.getUserProfile({
+      desc: '注册绑定手机',
+      success(infoRes) {
+        resolve(infoRes);
+        //   console.log('用户昵称为：' + infoRes.userInfo.nickName);
+      },
+      fail(err) {
+        reject(err);
+      },
+    });
+  });
+}
+
+/**
+ * 获取用户数据
+ * @returns
+ */
+export function getPnumber({ code }) {
+  return request({
+    url: '/wxlogin/get_pnumber',
+    method: 'post',
+    data: qs.stringify({ code }),
   });
 }
 

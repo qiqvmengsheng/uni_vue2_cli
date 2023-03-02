@@ -1,6 +1,18 @@
 <template>
   <view class="content">
-    <image class="logo" src="/static/logo.png"></image>
+    <button
+      type="default"
+      size="mini"
+      hover-class="none"
+      open-type="getPhoneNumber"
+      @getphonenumber="getPhoneNumber"
+    >
+      获取手机号
+    </button>
+    <!-- <uni-tooltip :content="name">
+      <button>被包裹的组件</button>
+    </uni-tooltip> -->
+    <!-- <image class="logo" src="/static/logo.png"></image> -->
     <view>
       <text class="title">{{ title }}</text>
     </view>
@@ -36,13 +48,17 @@
           <u-switch slot="right"></u-switch>
         </u-form-item>
       </u-form>
+      <u-toast ref="uToast"></u-toast>
     </template>
+    <u-tag text="雪月夜" type="success" />
+    <u-button type="primary" text="确定" @click="test"> 弹出提示</u-button>
   </view>
 </template>
 
 <script>
 import to from 'await-to-js';
-import { login, wxlogin, wxgetUserInfo } from '@/api/user';
+import { mapGetters, mapActions } from 'vuex';
+import { login, wxlogin, wxgetUserInfo, getPnumber } from '@/api/user';
 
 export default {
   data() {
@@ -70,10 +86,57 @@ export default {
     };
   },
   onLoad() {},
+  computed: { ...mapGetters(['name']) },
   created() {
-    this.getUserInfo();
+    // this.login();
+  },
+  mounted() {
+    this.login();
   },
   methods: {
+    ...mapActions('user', ['wxlogin']),
+    /**
+     * 获取电话号码
+     */
+    async getPhoneNumber(e) {
+      console.log(e);
+      if (e.detail.errMsg === 'getPhoneNumber:ok') {
+        console.log('用户点击了接受');
+        const [err, res] = await to(getPnumber({ code: e.detail.code }));
+        if (err) {
+          console.log('失败', err);
+          return;
+        }
+        console.log('获取电话返回', res);
+        // e.detail这里会有三个属性
+        // encryptedData
+        // errMsg
+        // iv
+      } else {
+        console.log('用户点击了拒绝');
+      }
+    },
+    test() {
+      this.$refs.uToast.show({
+        type: 'success',
+        message: `欢迎${this.name}登录`,
+        // duration: '2300',
+      });
+    },
+    /**
+     * 微信自动登录
+     */
+    async login() {
+      const [err, res] = await to(this.wxlogin());
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.log('微信登录返回信息：', res);
+    },
+    /**
+     * 登录获取信息
+     */
     async getUserInfo() {
       const [err, res] = await to(wxlogin());
       if (err) {
@@ -90,7 +153,7 @@ export default {
       }
       console.log('用户信息：', res2);
       const { userInfo } = res2;
-      const { nickName, avatarUrl, gender, province, city, country } = userInfo;
+      const { nickName, gender, province, city } = userInfo;
 
       const [err1, res1] = await to(
         login({ code, nickName, gender, address: province + city })
