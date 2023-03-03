@@ -75,6 +75,8 @@
     "core-js": "^3.8.3",
     "flyio": "^0.6.2",
     "qs": "^6.11.0",
+    "uni-read-pages": "^1.0.5",
+    "uni-simple-router": "^2.0.8-beta.4",
     "uniapp-axios-adapter": "^0.3.2",
     "uniapp-echarts": "^1.0.2",
     "uview-ui": "^2.0.35",
