@@ -1,6 +1,6 @@
 <template>
   <view class="content">
-    <image class="logo" src="/static/logo.png"></image>
+	
     <view>
       <text class="title">{{ title }}</text>
     </view>
@@ -8,34 +8,8 @@
     <u-action-sheet :list="list" v-model="show"></u-action-sheet>
 
     <template>
-      <u-form :model="form" ref="uForm">
-        <u-form-item label="姓名">
-          <u-input v-model="form.name" />
-        </u-form-item>
-        <u-form-item label="简介">
-          <u-input v-model="form.intro" />
-        </u-form-item>
-        <u-form-item label="性别">
-          <u-input v-model="form.sex" type="select" />
-        </u-form-item>
-        <u-form-item label="水果">
-          <u-checkbox-group width="50%">
-            <u-checkbox>苹果</u-checkbox>
-            <u-checkbox>雪梨</u-checkbox>
-            <u-checkbox>柠檬</u-checkbox>
-            <u-checkbox>橘子</u-checkbox>
-          </u-checkbox-group>
-        </u-form-item>
-        <u-form-item label="味道">
-          <u-radio-group>
-            <u-radio>鲜甜</u-radio>
-            <u-radio>麻辣</u-radio>
-          </u-radio-group>
-        </u-form-item>
-        <u-form-item label="开关">
-          <u-switch slot="right"></u-switch>
-        </u-form-item>
-      </u-form>
+      
+
     </template>
   </view>
 </template>
@@ -69,12 +43,19 @@ export default {
       show: true,
     };
   },
+ 
   onLoad() {},
+ 
   created() {
     this.getUserInfo();
   },
-  methods: {
-    async getUserInfo() {
+  methods: {  
+	  
+	  async getUserInfo() {
+		  uni.navigateTo({
+		  	url: '/main/main.vue'
+		  });
+		  		
       const [err, res] = await to(wxlogin());
       if (err) {
         console.log(err);
@@ -82,7 +63,7 @@ export default {
       }
       console.log('微信登录返回信息：', res);
       const { code } = res;
-
+	
       const [err2, res2] = await to(wxgetUserInfo());
       if (err2) {
         console.log(err2);
@@ -100,7 +81,9 @@ export default {
         return;
       }
       console.log('登录自己网站成功：', res1);
+	 
     },
+
   },
 };
 </script>
