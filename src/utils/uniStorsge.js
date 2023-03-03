@@ -5,7 +5,7 @@ const TokenKey = 'sarad-china_token_key';
 const nameKey = 'sarad-china_name_key';
 
 export function getToken() {
-  return getStorageSync({ key: TokenKey });
+  return getStorageSync({ key: TokenKey }).data.value;
 }
 
 export async function setToken(token) {
@@ -13,7 +13,7 @@ export async function setToken(token) {
 }
 
 export function removeToken() {
-  return removeStorage({ key: TokenKey });
+  return removeStorage({ key: TokenKey }).data.value;
 }
 
 export function getName() {

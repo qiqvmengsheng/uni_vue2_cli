@@ -94,7 +94,7 @@ export default {
     this.login();
   },
   methods: {
-    ...mapActions('user', ['wxlogin']),
+    ...mapActions('user', ['wxlogin', 'getInfo']),
     /**
      * 获取电话号码
      */
@@ -133,6 +133,7 @@ export default {
         return;
       }
       console.log('微信登录返回信息：', res);
+      this.getInfo();
     },
     /**
      * 登录获取信息

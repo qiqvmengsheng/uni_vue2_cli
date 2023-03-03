@@ -114,31 +114,35 @@ const actions = {
   },
 
   // get user info
-  getInfo({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      // console.log(state.token, "\n", getToken());
-      getdata(state.token)
-        .then((response) => {
-          const { data } = response.data;
-          // console.log("store/getInfo", data);
-          if (!data) {
-            return reject(
-              new Error('Verification failed, please Login again.')
-            );
-          }
+  async getInfo({ commit }) {
+    const [err, res] = await to(getdata());
+    if (err) {
+      console.log(err);
+      return Promise.reject(err);
+    }
+    console.log('获取用户信息：', res);
+    const { data } = res.data;
+    const { username, device, systemrole } = data;
+    commit('SET_NAME', username);
+    commit('SET_DEVICES', device);
+    commit('SET_SYSTEMROLR', systemrole);
+    return Promise.resolve(data);
+    // return new Promise((resolve, reject) => {
+    //   // console.log(state.token, "\n", getToken());
+    //   getdata(state.token)
+    //     .then((response) => {
+    //       // console.log("store/getInfo", data);
+    //       if (!data) {
+    //         return reject(
+    //           new Error('Verification failed, please Login again.')
+    //         );
+    //       }
 
-          const { username, device, systemrole } = data;
-
-          commit('SET_NAME', username);
-          commit('SET_DEVICES', device);
-          commit('SET_DEVICE', device[0]);
-          commit('SET_SYSTEMROLR', systemrole);
-          return resolve(data);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
+    //     })
+    //     .catch((error) => {
+    //       reject(error);
+    //     });
+    // });
   },
 
   // user logout
