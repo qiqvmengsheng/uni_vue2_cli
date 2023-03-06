@@ -17,41 +17,56 @@
       <text class="title">{{ title }}</text>
     </view>
 
-    <u-action-sheet :list="list" v-model="show"></u-action-sheet>
+    <u-action-sheet :list="list" abbreviation-model="show"></u-action-sheet>
 
     <template>
-      <u-form :model="form" ref="uForm">
-        <u-form-item label="姓名">
-          <u-input v-model="form.name" />
+      <u-form :model="dev" ref="uForm" labelWidth="100">
+        <u-form-item
+          label="设备型号"
+          prop="dev.devicename"
+          borderBottom
+          @click="showDevtype = true"
+          ref="item1"
+        >
+          <u-input
+            abbreviation-model="dev.devicename"
+            disabled
+            disabledColor="#ffffff"
+            placeholder="请选择设备类型"
+            border="none"
+          ></u-input>
+          <u-icon slot="right" name="arrow-right"></u-icon>
         </u-form-item>
-        <u-form-item label="简介">
-          <u-input v-model="form.intro" />
+        <u-form-item label="序列号">
+          <u-input v-model="dev.devicename">
+            <u-text text="SN" slot="prefix" margin="0 3px 0 0" type="tips">
+            </u-text>
+          </u-input>
         </u-form-item>
-        <u-form-item label="性别">
-          <u-input v-model="form.sex" type="select" />
+        <u-form-item label="设备码">
+          <u-input v-model="dev.accesscode" type="select" />
         </u-form-item>
-        <u-form-item label="水果">
-          <u-checkbox-group width="50%">
-            <u-checkbox>苹果</u-checkbox>
-            <u-checkbox>雪梨</u-checkbox>
-            <u-checkbox>柠檬</u-checkbox>
-            <u-checkbox>橘子</u-checkbox>
-          </u-checkbox-group>
-        </u-form-item>
-        <u-form-item label="味道">
-          <u-radio-group>
-            <u-radio>鲜甜</u-radio>
-            <u-radio>麻辣</u-radio>
-          </u-radio-group>
+        <u-form-item label="设备备注">
+          <u-input v-model="dev.abbreviation" type="select" />
         </u-form-item>
         <u-form-item label="开关">
-          <u-switch slot="right"></u-switch>
+          <u-switch slot="right" abbreviation-model="value"></u-switch>
         </u-form-item>
       </u-form>
+      <u-action-sheet
+        :show="showDevtype"
+        :actions="actions"
+        title="请选择设备类型"
+        description="目前类型只有一个"
+        @close="showDevtype = false"
+        @select="devtype"
+      >
+      </u-action-sheet>
       <u-toast ref="uToast"></u-toast>
     </template>
     <u-tag text="雪月夜" type="success" />
     <u-button type="primary" text="确定" @click="test"> 弹出提示</u-button>
+    <u-icon name="home"></u-icon>
   </view>
 </template>
 
@@ -59,15 +74,34 @@
 import to from 'await-to-js';
 import { mapGetters, mapActions } from 'vuex';
 import { login, wxlogin, wxgetUserInfo, getPnumber } from '@/api/user';
+import {
+  associate,
+  addpermission,
+  disassociate,
+  modifyabbreviation,
+} from '@/api/base';
 
 export default {
   data() {
     return {
+      showDevtype: false,
+      dev: {
+        deviceserial: '',
+        devicename: '',
+        accesscode: '',
+        abbreviation: '',
+      },
+      value: true,
       form: {
         name: '',
         intro: '',
         sex: '',
       },
+      actions: [
+        {
+          name: 'RTM1688',
+        },
+      ],
       title: 'Hello',
       list: [
         {
@@ -95,6 +129,33 @@ export default {
   },
   methods: {
     ...mapActions('user', ['wxlogin', 'getInfo']),
+    devtype(e) {
+      this.dev.devicename = e.name;
+      console.log(e);
+    },
+    /** 用户添加设备 */
+    doupdatedev() {
+      const { deviceserial, ...a } = this.dev;
+      this.$refs.setdevForm.validate((valid) => {
+        if (valid) {
+          associate({ deviceserial: `SN${deviceserial}`, ...a }).then(
+            (response) => {
+              console.log(response);
+              if (response.data.code === 200) {
+                this.$message.success(response.data.msg);
+                // location.reload();
+              } else {
+                this.$message.error(response.data.msg);
+              }
+            },
+            (error) => {
+              console.log(error);
+            }
+          );
+        }
+      });
+    },
+
     /**
      * 获取电话号码
      */
