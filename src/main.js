@@ -2,7 +2,7 @@ import Vue from 'vue';
 // 引入uView组件库
 import uView from 'uview-ui';
 import App from './App';
-import { router, RouterMount } from './router'; // 路径换成自己的
+import { router } from './router'; // 路径换成自己的
 import store from './store';
 
 Vue.use(router);

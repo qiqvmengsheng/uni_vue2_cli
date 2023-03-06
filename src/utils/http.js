@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { UniAdapter } from 'uniapp-axios-adapter';
+import uniadapter from 'axios-adapter-uniapp';
 import { getToken } from './uniStorsge';
 /**
  *
@@ -8,10 +8,22 @@ const request = axios.create({
   baseURL: 'http://localhost/user',
   // baseURL: 'https://lele-tech.com/user',
   timeout: 10000,
-  adapter: UniAdapter,
+  adapter: uniadapter,
 });
 
 const pendingMap = new Map();
+
+// 直接使用JSON.parse去转译，并把转译结果判断一下是不是object类型，如果是的话就返回true,否则就返回false,这样就排除了转化后非object的类型，比如"123456789"
+function isJSON(str) {
+  try {
+    if (typeof JSON.parse(str) === 'object') {
+      return true;
+    }
+  } catch (e) {
+    return false;
+  }
+  return false;
+}
 
 /**
  * 生成每个请求唯一的键
@@ -19,10 +31,10 @@ const pendingMap = new Map();
  * @returns string
  */
 function getPendingKey(config) {
-  const { url, method, params, data } = config;
-  let obj;
-  if (typeof data === 'string') obj = JSON.parse(data); // response里面返回的config.data是个字符串对象
-  return [url, method, JSON.stringify(params), JSON.stringify(obj)].join('&');
+  const { url, method, params } = config;
+  let { data } = config;
+  if (isJSON(data)) data = JSON.parse(data); // response里面返回的config.data是个字符串对象
+  return [url, method, JSON.stringify(params), JSON.stringify(data)].join('&');
 }
 
 /**
@@ -50,6 +62,9 @@ function removePending(config) {
 }
 
 request.interceptors.request.use(async (config) => {
+  // 取消重复请求
+  removePending(config);
+  addPending(config);
   // 带上token
   const token = getToken();
   if (token.length >= 1) {
