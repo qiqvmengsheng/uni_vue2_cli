@@ -1,0 +1,92 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 3928991 */
+  src: url('iconfont.woff2?t=1677814606720') format('woff2'),
+       url('iconfont.woff?t=1677814606720') format('woff'),
+       url('iconfont.ttf?t=1677814606720') format('truetype');
+}
+/* CDN 服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
+@font-face {
+  font-family: "阿里妈妈数黑体 Bold";font-weight: 700;src: url("//at.alicdn.com/wf/webfont/suJZZmycZaE3/6oSTbQJW8qmfC3xwIzEYK.woff2") format("woff2"),
+  url("//at.alicdn.com/wf/webfont/suJZZmycZaE3/8q-41N38M2uXvOoppKtf8.woff") format("woff");
+  font-display: swap;
+}
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-shidu:before {
+  content: "\e60f";
+}
+
+.icon-daqiyali:before {
+  content: "\e60a";
+}
+
+.icon-shebei:before {
+  content: "\e644";
+}
+
+.icon-shidu1:before {
+  content: "\e60d";
+}
+
+.icon-daqiyali1:before {
+  content: "\eb25";
+}
+
+.icon-wendu:before {
+  content: "\eb37";
+}
+
+.icon-kongqiwendu:before {
+  content: "\eb3a";
+}
+
+.icon-ziyuanxhdpi:before {
+  content: "\e64c";
+}
+
+.icon-shebei1:before {
+  content: "\e613";
+}
+
+.icon-qiti:before {
+  content: "\e607";
+}
+
+.icon-w_shidu:before {
+  content: "\e673";
+}
+
+.icon-qiti1:before {
+  content: "\e65f";
+}
+
+.icon-qitijiance:before {
+  content: "\e608";
+}
+
+.icon-shidu2:before {
+  content: "\e641";
+}
+
+.icon-ico_fushebuju:before {
+  content: "\e642";
+}
+
+.icon-shebei2:before {
+  content: "\e681";
+}
+
+.icon-daqiya:before {
+  content: "\ea32";
+}
+
+.icon-kongqiwendu1:before {
+  content: "\ea33";
+}
+
