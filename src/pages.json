@@ -15,15 +15,7 @@
 				"navigationBarTitleText": "uni-app"
 			}
 		}
-        ,{
-            "path" : "pages/index/main/tabbar",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        },
+        ,
 		{
 		    "path" : "pages/index/main/personal",
 		    "style" :                                                                                    
