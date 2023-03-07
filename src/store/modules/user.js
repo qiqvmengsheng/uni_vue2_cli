@@ -117,7 +117,7 @@ const actions = {
   async getInfo({ commit }) {
     const [err, res] = await to(getdata());
     if (err) {
-      console.log(err);
+      console.log('获取用户信息出错', err);
       return Promise.reject(err);
     }
     console.log('获取用户信息：', res);

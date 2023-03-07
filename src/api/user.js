@@ -68,7 +68,7 @@ export function wxgetUserProfile() {
 }
 
 /**
- * 获取用户数据
+ * 获取用户手机号
  * @returns
  */
 export function getPnumber({ code }) {

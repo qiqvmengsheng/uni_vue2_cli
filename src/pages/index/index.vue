@@ -162,8 +162,10 @@ export default {
     async getPhoneNumber(e) {
       console.log(e);
       if (e.detail.errMsg === 'getPhoneNumber:ok') {
-        console.log('用户点击了接受');
-        const [err, res] = await to(getPnumber({ code: e.detail.code }));
+        console.log('用户点击了接受', e);
+        const code =
+          (e.detail && e.detail.code !== undefined && e.detail.code) || '123';
+        const [err, res] = await to(getPnumber({ code }));
         if (err) {
           console.log('失败', err);
           return;
@@ -177,7 +179,8 @@ export default {
         console.log('用户点击了拒绝');
       }
     },
-    test() {
+    async test() {
+      const [err, res] = await to(this.getInfo());
       this.$refs.uToast.show({
         type: 'success',
         message: `欢迎${this.name}登录`,
