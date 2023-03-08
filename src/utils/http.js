@@ -152,7 +152,7 @@ request.interceptors.response.use(
     // 判断是否断网了
     if (response.data === undefined) {
       const [err, r] = await to(uni.getNetworkType());
-      console.log(r);
+      console.log(err, r);
       // uni.onNetworkStatusChange((res) => {
       //   console.log(res.isConnected);
       //   console.log(res.networkType);

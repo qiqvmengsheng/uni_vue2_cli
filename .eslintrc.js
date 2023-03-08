@@ -6,7 +6,6 @@ module.exports = {
   extends: [
     'plugin:vue/essential',
     '@vue/airbnb',
-    'prettier',
     'plugin:prettier/recommended',
   ],
   parserOptions: {
@@ -22,7 +21,7 @@ module.exports = {
     'import/resolver': {
       alias: {
         map: [['@', './src']],
-        extensions: ['.js', '.jsx', '.vue'], // ***2.解决引入问题
+        extensions: ['.js', '.jsx', '.vue'], // ***2.解决引入无后缀报错问题
       },
     },
   },

@@ -1,0 +1,7 @@
+dist
+node_modules
+public
+babel.config.js
+postcss.config.js
+shime-uni.d.ts
+shime-vue.d.ts
