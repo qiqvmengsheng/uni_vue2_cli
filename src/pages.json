@@ -21,11 +21,40 @@
 				"navigationBarTitleText": "getPhone"
 			}
 		}
-	],
+        ,
+		{
+		    "path" : "pages/index/main/personal",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "",
+		        "enablePullDownRefresh": false
+		    }
+		    
+		}
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "麟荔科技",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
-	}
+	},
+	// 原生的导航
+	"tabBar": {
+			"color": "#000000",
+			"selectedColor": "#15406d",
+			"backgroundColor": "#ffffff",
+			"list": [{
+				"iconPath":"static/home2.png",
+				"pagePath": "pages/index/index",
+				"selectedIconPath": "static/home.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/index/main/personal",
+				"iconPath": "static/me2.png",
+				"selectedIconPath": "static/me.png",
+				"text": "我的"
+			}]
+		}
+
 }

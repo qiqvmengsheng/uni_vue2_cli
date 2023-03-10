@@ -119,6 +119,7 @@ export default {
       show: true,
     };
   },
+
   onLoad() {},
   computed: { ...mapGetters(['name']) },
   created() {
@@ -202,7 +203,12 @@ export default {
     /**
      * 登录获取信息
      */
+
     async getUserInfo() {
+      uni.navigateTo({
+        url: '/main/main.vue',
+      });
+
       const [err, res] = await to(wxlogin());
       if (err) {
         console.log(err);
