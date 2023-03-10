@@ -1,5 +1,7 @@
 <template>
-  <view></view>
+  <view>
+    <u-button type="primary" text="确定" @click="test"> 跳转</u-button>
+  </view>
 </template>
 
 <script>
@@ -15,6 +17,13 @@ export default {
   computed: { ...mapGetters(['token']) },
   methods: {
     ...mapActions('user', ['wxlogin']),
+    async test() {
+      const index = this.$Router.options.routes.filter(
+        (r) => r.name === 'index'
+      )[0];
+      console.log(index);
+      this.$Router.pushTab(index.path);
+    },
     getPhoneNumber(e) {
       console.log('errMsg', e.detail.errMsg);
       const that = this;

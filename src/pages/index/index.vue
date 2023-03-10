@@ -13,12 +13,6 @@
       <button>被包裹的组件</button>
     </uni-tooltip> -->
     <!-- <image class="logo" src="/static/logo.png"></image> -->
-    <view>
-      <text class="title">{{ title }}</text>
-    </view>
-
-    <u-action-sheet :list="list" abbreviation-model="show"></u-action-sheet>
-
     <template>
       <u-form :model="dev" ref="uForm" labelWidth="100">
         <u-form-item
@@ -29,7 +23,7 @@
           ref="item1"
         >
           <u-input
-            abbreviation-model="dev.devicename"
+            v-model="dev.devicename"
             disabled
             disabledColor="#ffffff"
             placeholder="请选择设备类型"
@@ -37,8 +31,8 @@
           ></u-input>
           <u-icon slot="right" name="arrow-right"></u-icon>
         </u-form-item>
-        <u-form-item label="序列号">
-          <u-input v-model="dev.devicename">
+        <u-form-item label="序列号" labelWidth="100">
+          <u-input v-model="dev.deviceserial">
             <u-text text="SN" slot="prefix" margin="0 3px 0 0" type="tips">
             </u-text>
           </u-input>
@@ -50,7 +44,7 @@
           <u-input v-model="dev.abbreviation" type="select" />
         </u-form-item>
         <u-form-item label="开关">
-          <u-switch slot="right" abbreviation-model="value"></u-switch>
+          <u-switch slot="right" v-model="value"></u-switch>
         </u-form-item>
       </u-form>
       <u-action-sheet
@@ -64,9 +58,15 @@
       </u-action-sheet>
       <u-toast ref="uToast"></u-toast>
     </template>
-    <u-tag text="雪月夜" type="success" />
     <u-button type="primary" text="确定" @click="test"> 弹出提示</u-button>
-    <u-icon name="home"></u-icon>
+    <!-- <u-icon name="home"></u-icon> -->
+    <!-- <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
+    <u-tabbar :value="value1" @change="change1">
+      <u-tabbar-item text="首页" icon="home" @click="click1"></u-tabbar-item>
+      <u-tabbar-item text="我的" icon="account" @click="click1"></u-tabbar-item>
+    </u-tabbar> -->
   </view>
 </template>
 
@@ -102,34 +102,30 @@ export default {
           name: 'RTM1688',
         },
       ],
-      title: 'Hello',
-      list: [
-        {
-          text: '点赞',
-          color: 'blue',
-          fontSize: 28,
-        },
-        {
-          text: '分享',
-        },
-        {
-          text: '评论',
-        },
-      ],
-      show: true,
     };
   },
-
   onLoad() {},
   computed: { ...mapGetters(['name']) },
   created() {
     // this.login();
   },
   mounted() {
-    this.login();
+    // this.login();
   },
   methods: {
     ...mapActions('user', ['wxlogin', 'getInfo']),
+    change1(...e) {
+      // console.log(ROUTES);
+      // console.log(this.$Router.push(''));
+      console.log(this.$Router.options.routes);
+    },
+    click1(e) {
+      const index = this.$Router.options.routes.filter(
+        (r) => r.name === 'index'
+      )[0];
+      console.log(e, index);
+      this.$Router.push(index.children[e].path);
+    },
     devtype(e) {
       this.dev.devicename = e.name;
       console.log(e);
@@ -181,6 +177,11 @@ export default {
       }
     },
     async test() {
+      const index = this.$Router.options.routes.filter(
+        (r) => r.name === 'getPhone'
+      )[0];
+      console.log(index);
+      this.$Router.push(index.path);
       const [err, res] = await to(this.getInfo());
       this.$refs.uToast.show({
         type: 'success',
@@ -203,12 +204,7 @@ export default {
     /**
      * 登录获取信息
      */
-
     async getUserInfo() {
-      uni.navigateTo({
-        url: '/main/main.vue',
-      });
-
       const [err, res] = await to(wxlogin());
       if (err) {
         console.log(err);
@@ -256,10 +252,5 @@ export default {
 .text-area {
   display: flex;
   justify-content: center;
-}
-
-.title {
-  font-size: 36rpx;
-  color: #8f8f94;
 }
 </style>
