@@ -14,51 +14,32 @@
     </uni-tooltip> -->
     <!-- <image class="logo" src="/static/logo.png"></image> -->
     <template>
-      <u-form :model="dev" ref="uForm" labelWidth="100">
-        <u-form-item
-          label="设备型号"
-          prop="dev.devicename"
-          borderBottom
-          @click="showDevtype = true"
-          ref="item1"
-        >
-          <u-input
-            v-model="dev.devicename"
-            disabled
-            disabledColor="#ffffff"
-            placeholder="请选择设备类型"
-            border="none"
-          ></u-input>
-          <u-icon slot="right" name="arrow-right"></u-icon>
-        </u-form-item>
-        <u-form-item label="序列号" labelWidth="100">
-          <u-input v-model="dev.deviceserial">
-            <u-text text="SN" slot="prefix" margin="0 3px 0 0" type="tips">
-            </u-text>
-          </u-input>
-        </u-form-item>
-        <u-form-item label="设备码">
-          <u-input v-model="dev.accesscode" type="select" />
-        </u-form-item>
-        <u-form-item label="设备备注">
-          <u-input v-model="dev.abbreviation" type="select" />
-        </u-form-item>
-        <u-form-item label="开关">
-          <u-switch slot="right" v-model="value"></u-switch>
-        </u-form-item>
-      </u-form>
-      <u-action-sheet
-        :show="showDevtype"
-        :actions="actions"
-        title="请选择设备类型"
-        description="目前类型只有一个"
-        @close="showDevtype = false"
-        @select="devtype"
-      >
-      </u-action-sheet>
-      <u-toast ref="uToast"></u-toast>
+      <view>
+        <u-grid :border="false" @click="click" col="2">
+          <u-grid-item
+            v-for="(item, baseListIndex) in devices"
+            :key="baseListIndex"
+          >
+            <uni-card
+              :title="`设备${item.devicename}`"
+              :extra="item.deviceserial"
+            >
+              <text class="grid-text">{{ item.abbreviation || '无' }}</text>
+            </uni-card>
+            <!-- <u-icon
+              :customStyle="{ paddingTop: 20 + 'rpx' }"
+              :name="item.name"
+              :size="22"
+            ></u-icon> -->
+          </u-grid-item>
+        </u-grid>
+        <u-toast ref="uToast" />
+      </view>
     </template>
+    <u-toast ref="uToast"></u-toast>
     <u-button type="primary" text="确定" @click="test"> 弹出提示</u-button>
+    <view></view>
+    <u-button type="primary" text="确定" @click="addDevice"> 添加设备</u-button>
     <!-- <u-icon name="home"></u-icon> -->
     <!-- <keep-alive>
       <router-view></router-view>
@@ -105,12 +86,12 @@ export default {
     };
   },
   onLoad() {},
-  computed: { ...mapGetters(['name']) },
+  computed: { ...mapGetters(['name', 'devices']) },
   created() {
     // this.login();
   },
   mounted() {
-    // this.login();
+    this.login();
   },
   methods: {
     ...mapActions('user', ['wxlogin', 'getInfo']),
@@ -118,6 +99,9 @@ export default {
       // console.log(ROUTES);
       // console.log(this.$Router.push(''));
       console.log(this.$Router.options.routes);
+    },
+    click(e) {
+      console.log(e);
     },
     click1(e) {
       const index = this.$Router.options.routes.filter(
@@ -176,13 +160,30 @@ export default {
         console.log('用户点击了拒绝');
       }
     },
-    async test() {
+    /**
+     * 跳转到添加设备页面
+     */
+    async addDevice() {
       const index = this.$Router.options.routes.filter(
-        (r) => r.name === 'getPhone'
+        (r) => r.name === 'addDevice'
       )[0];
       console.log(index);
-      this.$Router.push(index.path);
-      const [err, res] = await to(this.getInfo());
+      this.$Router.push({ name: 'addDevice' });
+      // const [err, res] = await to(this.getInfo());
+      // this.$refs.uToast.show({
+      //   type: 'success',
+      //   message: `欢迎${this.name}登录`,
+      //   // duration: '2300',
+      // });
+    },
+    async test() {
+      // const index = this.$Router.options.routes.filter(
+      //   (r) => r.name === 'addDevice'
+      // )[0];
+      // console.log(index);
+      // this.$Router.push(index.path);
+      // const [err, res] = await to(this.getInfo());
+      console.log(this.devices);
       this.$refs.uToast.show({
         type: 'success',
         message: `欢迎${this.name}登录`,

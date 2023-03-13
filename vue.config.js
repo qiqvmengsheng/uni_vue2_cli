@@ -3,7 +3,7 @@ const TransformPages = require('uni-read-pages');
 const { webpack } = new TransformPages();
 
 module.exports = {
-  transpileDependencies: ['uview-ui'],
+  transpileDependencies: ['uview-ui', '@dcloudio/uni-ui'],
   configureWebpack: {
     plugins: [
       new webpack.DefinePlugin({
