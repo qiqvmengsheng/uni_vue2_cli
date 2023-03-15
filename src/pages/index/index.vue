@@ -1,6 +1,6 @@
 <template>
   <view class="content">
-    <button
+    <!-- <button
       type="default"
       size="mini"
       hover-class="none"
@@ -8,7 +8,7 @@
       @getphonenumber="getPhoneNumber"
     >
       获取手机号
-    </button>
+    </button> -->
     <!-- <uni-tooltip :content="name">
       <button>被包裹的组件</button>
     </uni-tooltip> -->
@@ -24,6 +24,19 @@
               :title="`设备${item.devicename}`"
               :extra="item.deviceserial"
             >
+              <!-- <input
+                v-model="item.abbreviation"
+                placeholder-class="input-placeholder"
+                @blur="setabbreviation(item)"
+              /> -->
+              <u--input
+                size="mini"
+                type="text"
+                placeholder="请输入备注"
+                border="surround"
+                v-model="item.abbreviation"
+                @blur="setabbreviation(item)"
+              ></u--input>
               <text class="grid-text">{{ item.abbreviation || '无' }}</text>
             </uni-card>
             <!-- <u-icon
@@ -37,10 +50,49 @@
       </view>
     </template>
     <u-toast ref="uToast"></u-toast>
-    <u-button type="primary" text="确定" @click="test"> 弹出提示</u-button>
-    <view></view>
-    <u-button type="primary" text="确定" @click="addDevice"> 添加设备</u-button>
-    <!-- <u-icon name="home"></u-icon> -->
+    <view class="button_view">
+      <GetPhoneNumberVue></GetPhoneNumberVue>
+      <!-- <view class="ubutton">
+        <u-button type="primary" :plain="true" text="确定" @click="test">
+          弹出提示
+        </u-button>
+      </view> -->
+      <view class="ubutton">
+        <u-button type="primary" :plain="true" text="确定" @click="addDevice">
+          添加设备
+        </u-button>
+      </view>
+    </view>
+    <u-modal
+      title="绑定手机"
+      :show="show8"
+      closeOnClickOverlay
+      @confirm="() => (show8 = false)"
+      @close="() => (show8 = false)"
+      content="新用户请绑定手机号，如已有网页平台账号请绑定对应账号的手机号，用于获取账号数据。"
+    >
+      <!-- <button
+      showCancelButton
+      showConfirmButton
+        slots="confirmButton"
+        type="default"
+        size="mini"
+        hover-class="none"
+        open-type="getPhoneNumber"
+        @getphonenumber="getPhoneNumber"
+      >
+        获取手机号
+      </button> -->
+      <u-button
+        slot="confirmButton"
+        text="确定"
+        type="success"
+        shape="circle"
+        open-type="getPhoneNumber"
+        @getphonenumber="getPhoneNumber"
+        @click="show8 = false"
+      ></u-button>
+    </u-modal>
     <!-- <keep-alive>
       <router-view></router-view>
     </keep-alive>
@@ -54,17 +106,17 @@
 <script>
 import to from 'await-to-js';
 import { mapGetters, mapActions } from 'vuex';
+import { toast } from '@uni/apis';
+import GetPhoneNumberVue from '@/components/GetPhoneNumber';
 import { login, wxlogin, wxgetUserInfo, getPnumber } from '@/api/user';
-import {
-  associate,
-  addpermission,
-  disassociate,
-  modifyabbreviation,
-} from '@/api/base';
+import { associate, modifyabbreviation } from '@/api/base';
 
 export default {
+  components: { GetPhoneNumberVue },
   data() {
     return {
+      show8: true,
+      show: true,
       showDevtype: false,
       dev: {
         deviceserial: '',
@@ -95,6 +147,9 @@ export default {
   },
   methods: {
     ...mapActions('user', ['wxlogin', 'getInfo']),
+    change(e) {
+      console.log(`'当前模式：' + ${e.type} + ',状态：' + ${e.show}`);
+    },
     change1(...e) {
       // console.log(ROUTES);
       // console.log(this.$Router.push(''));
@@ -114,6 +169,29 @@ export default {
       this.dev.devicename = e.name;
       console.log(e);
     },
+    /**  */
+    setabbreviation(row) {
+      console.log(row);
+      modifyabbreviation({
+        abbreviation: row.abbreviation,
+        deviceId: row.deviceid,
+      }).then(
+        (response) => {
+          if (response.data.code === 200) {
+            toast.showToast({
+              content: `${row.deviceserial}修改设备备注成功！`,
+              type: 'success',
+            });
+          } else {
+            toast.showToast(response.data.msg);
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    },
+
     /** 用户添加设备 */
     doupdatedev() {
       const { deviceserial, ...a } = this.dev;
@@ -177,6 +255,8 @@ export default {
       // });
     },
     async test() {
+      // this.$refs.popup.open('bottom');
+      this.show8 = true;
       // const index = this.$Router.options.routes.filter(
       //   (r) => r.name === 'addDevice'
       // )[0];
@@ -237,6 +317,18 @@ export default {
 </script>
 
 <style>
+.button_view {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.ubutton {
+  margin: 0 15px 15px 0;
+}
+.popup {
+  height: 200rpx;
+}
 .content {
   display: flex;
   flex-direction: column;

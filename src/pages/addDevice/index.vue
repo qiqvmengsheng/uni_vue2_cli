@@ -33,6 +33,20 @@
         <u-form-item label="开关">
           <u-switch slot="right" v-model="value"></u-switch>
         </u-form-item>
+        <u-form-item>
+          <view class="btn-view">
+            <view class="btn">
+              <u-button type="primary" plain text="确定" @click="doupdatedev">
+                添加设备
+              </u-button>
+            </view>
+            <view class="btn">
+              <u-button type="primary" plain text="确定" @click="test">
+                测试
+              </u-button>
+            </view>
+          </view>
+        </u-form-item>
       </u-form>
       <u-action-sheet
         :show="showAddDev"
@@ -43,9 +57,6 @@
         @select="devtype"
       >
       </u-action-sheet>
-      <u-button type="primary" text="确定" @click="doupdatedev">
-        添加设备
-      </u-button>
     </template>
   </view>
 </template>
@@ -119,6 +130,9 @@ export default {
   },
   computed: {},
   methods: {
+    test() {
+      // tabBar.showTabBar();
+    },
     /** 用户添加设备 */
     async doupdatedev() {
       const { deviceserial, ...params } = this.dev;
@@ -190,4 +204,15 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.addDevice {
+  margin: 10rpx;
+}
+.btn-view {
+  display: flex;
+  justify-content: space-around;
+}
+.btn {
+  margin: 0 15rpx 15rpx 0;
+}
+</style>

@@ -149,17 +149,19 @@ request.interceptors.request.use(async (config) => {
 
 request.interceptors.response.use(
   async (response) => {
-    console.log('成功的返回拦截', response);
     // 判断是否断网了
     if (response.data === undefined) {
+      console.log('成功的返回拦截', response);
       const [err, r] = await to(uni.getNetworkType());
-      console.log(err, r);
+      // console.log(err, r);
       // uni.onNetworkStatusChange((res) => {
       //   console.log(res.isConnected);
       //   console.log(res.networkType);
       // });
       if (r.networkType === 'none') {
         toast.showToast('网络异常');
+      } else {
+        toast.showToast('服务器错误');
       }
       return Promise.reject(response);
     }
