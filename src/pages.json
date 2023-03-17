@@ -18,13 +18,6 @@
 			"name": "index"
 		},
 		{
-			"path": "pages/getPhone/index",
-			"style": {
-				"navigationBarTitleText": "getPhone"
-			},
-			"name": "getPhone"
-		},
-		{
 			"path": "pages/addDevice/index",
 			"style": {
 				"navigationBarTitleText": "添加设备"
@@ -34,9 +27,10 @@
 		{
 			"path": "pages/index/user/index",
 			"style": {
-				"navigationBarTitleText": "用户",
+				"navigationBarTitleText": "我的",
 				"enablePullDownRefresh": false
-			}
+			},
+			"name": "user"
 		}
 	],
 	"globalStyle": {

@@ -13,61 +13,6 @@ export function login(data) {
 }
 
 /**
- * 微信自动登录获取code
- */
-export function wxlogin() {
-  return new Promise((resolve, reject) => {
-    uni.login({
-      provider: 'weixin',
-      success: (res) => {
-        resolve(res);
-      },
-      fail(err) {
-        reject(err);
-      },
-    });
-  });
-}
-
-/**
- * 微信获取用户信息
- */
-export function wxgetUserInfo() {
-  return new Promise((resolve, reject) => {
-    // 获取用户信息
-    uni.getUserInfo({
-      provider: 'weixin',
-      success(infoRes) {
-        resolve(infoRes);
-        //   console.log('用户昵称为：' + infoRes.userInfo.nickName);
-      },
-      fail(err) {
-        reject(err);
-      },
-    });
-  });
-}
-
-/**
- * 微信获取用户信息
- */
-export function wxgetUserProfile() {
-  return new Promise((resolve, reject) => {
-    // 获取用户信息
-    uni.getUserProfile({
-      desc: '注册绑定手机',
-      success(infoRes) {
-        resolve(infoRes);
-        //   console.log('用户昵称为：' + infoRes.userInfo.nickName);
-      },
-      fail(err) {
-        reject(err);
-      },
-    });
-  });
-}
-
-/**
  * 获取用户手机号
  * @returns
  */

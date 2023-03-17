@@ -1,17 +1,12 @@
 <template>
   <view>
-    <view class="ubutton">
-      <u-button type="primary" :plain="true" text="确定" @click="show = true">
-        弹出提示
-      </u-button>
-    </view>
     <u-modal
       title="绑定手机"
       :show="show"
       closeOnClickOverlay
       @confirm="() => (show = false)"
       @close="() => (show = false)"
-      content="新用户请绑定手机号，如已有网页平台账号请绑定对应账号的手机号，用于获取账号数据。"
+      content="新用户请绑定手机号，如已有网页平台账号请绑定对应账号的手机号，用于关联账号数据。"
     >
       <!-- <button
       showCancelButton
@@ -52,6 +47,9 @@ export default {
     /**
      * 显示
      */
+    showModal() {
+      this.show = true;
+    },
     /**
      * 获取电话号码
      */
@@ -79,4 +77,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.ubutton {
+  margin: 0 15rpx 15rpx 0;
+}
+</style>

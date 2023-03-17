@@ -1,6 +1,6 @@
 /* eslint no-shadow: [1, { "allow": ["state"] }] */
 import to from 'await-to-js';
-import { login, wxlogin, wxgetUserInfo, getdata } from '@/api/user';
+import { login, getdata } from '@/api/user';
 import {
   getToken,
   setToken,
@@ -43,31 +43,30 @@ const actions = {
    * 获取微信code登录
    */
   async wxlogin({ commit }) {
-    const [err, res] = await to(wxlogin());
+    // const [err1, res1] = await to(
+    //   uni.getProvider({
+    //     service: 'oauth',
+    //   })
+    // );
+    // console.log(err1, res1);
+    const [err, res] = await to(
+      uni.login({
+        provider: 'weixin',
+      })
+    );
     if (err) {
       console.log(err);
       return Promise.reject(err);
     }
-    console.log('微信登录返回信息：', res);
+    // console.log('微信登录返回信息：', res);
     const { code } = res;
-
-    const [err1, res1] = await to(wxgetUserInfo());
-    if (err1) {
-      console.log(err1);
-      return Promise.reject(err1);
-    }
-    console.log('用户信息：', res1);
-    const { userInfo } = res1;
-    const { nickName, avatarUrl, gender, province, city, country } = userInfo;
-
     const [err2, res2] = await to(
-      login({ code, nickName, gender, address: province + city })
+      login({ code, nickName: '', gender: 1, address: '' })
     );
     if (err2) {
       console.log(err2);
       return Promise.reject(err2);
     }
-    console.log('登录自己网站成功：', res2);
     const { token, username } = res2.data.data;
     commit('SET_TOKEN', token);
     commit('SET_NAME', username);
@@ -77,16 +76,7 @@ const actions = {
     } catch (e) {
       console.log(e);
     }
-    return Promise.resolve({
-      token,
-      username,
-      nickName,
-      avatarUrl,
-      gender,
-      province,
-      city,
-      country,
-    });
+    return Promise.resolve({ token, username });
   },
 
   // user login
@@ -120,7 +110,7 @@ const actions = {
       console.log('获取用户信息出错', err);
       return Promise.reject(err);
     }
-    console.log('获取用户信息：', res);
+    // console.log('获取用户信息：', res);
     const { data } = res.data;
     const { username, device, systemrole } = data;
     commit('SET_NAME', username);

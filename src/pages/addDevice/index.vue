@@ -6,7 +6,7 @@
           label="设备型号"
           prop="devicename"
           borderBottom
-          @click="showAddDev = true"
+          @click="showDevtype = true"
           ref="item1"
         >
           <u-input
@@ -49,11 +49,11 @@
         </u-form-item>
       </u-form>
       <u-action-sheet
-        :show="showAddDev"
+        :show="showDevtype"
         :actions="actions"
         title="请选择设备类型"
         description="目前类型只有一个"
-        @close="showAddDev = false"
+        @close="showDevtype = false"
         @select="devtype"
       >
       </u-action-sheet>
@@ -70,7 +70,7 @@ export default {
   components: {},
   data() {
     return {
-      showAddDev: false,
+      showDevtype: false,
       dev: {
         deviceserial: '',
         devicename: '',
@@ -155,24 +155,6 @@ export default {
           duration: 1000,
         })
         .then(() => {});
-      // this.$refs.uForm.validate((valid) => {
-      //   if (valid) {
-      //     associate({ deviceserial: `SN${deviceserial}`, ...params }).then(
-      //       (response) => {
-      //         console.log(response);
-      //         if (response.data.code === 200) {
-      //           this.$message.success(response.data.msg);
-      //           // location.reload();
-      //         } else {
-      //           this.$message.error(response.data.msg);
-      //         }
-      //       },
-      //       (error) => {
-      //         console.log(error);
-      //       }
-      //     );
-      //   }
-      // });
     },
     devtype(e) {
       this.dev.devicename = e.name;
@@ -206,7 +188,7 @@ export default {
 
 <style scoped>
 .addDevice {
-  margin: 10rpx;
+  margin: 30rpx;
 }
 .btn-view {
   display: flex;
