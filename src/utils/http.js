@@ -8,9 +8,9 @@ import { getToken } from './uniStorsge';
  *
  */
 const request = axios.create({
-  // baseURL: 'http://192.168.3.44:8080',
+  baseURL: 'http://192.168.3.44:8080',
   // baseURL: 'http://localhost/user',
-  baseURL: 'https://lele-tech.com/user',
+  // baseURL: 'https://www.lele-tech.com/user',
   timeout: 10000,
   adapter: UniAdapter,
 });

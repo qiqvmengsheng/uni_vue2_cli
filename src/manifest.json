@@ -56,7 +56,8 @@
 	"mp-weixin": { /* 微信小程序特有相关 */
 		"appid": "wx678fbec6260386c3",
 		"setting": {
-			"urlCheck": false
+			"urlCheck": false,
+			"minified": true
 		},
 		"usingComponents": true,
 		// 开启组件按需注入
