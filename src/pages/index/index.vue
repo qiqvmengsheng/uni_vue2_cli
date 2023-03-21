@@ -64,7 +64,7 @@
                 <!-- <u-tooltip text="普通用户设置权限:" overlay> </u-tooltip> -->
                 <view @click="handleEdit(index, item)">
                   <u-switch
-                    size="20"
+                    size="16"
                     :value="item.devuserpermission"
                     :loading="loading"
                   ></u-switch>
@@ -83,22 +83,25 @@
             <template v-slot:actions>
               <view class="card-actions">
                 <view class="card-actions-item" @click="actionsClick('分享')">
-                  <uni-icons
-                    type="pengyouquan"
-                    size="18"
-                    color="#999"
-                  ></uni-icons>
-                  <text class="card-actions-item-text">分享</text>
+                  <text class="iconfont icon-tubiao-zhexiantu"></text>
+                  <!-- <uni-icons type="bars" size="18" color="#999"></uni-icons> -->
+                  <text class="card-actions-item-text">图表</text>
                 </view>
                 <view class="card-actions-item" @click="actionsClick('点赞')">
                   <uni-icons
-                    type="settings-filled"
+                    type="settings"
                     size="18"
                     color="#999"
+                    class="uniicons"
                   ></uni-icons>
-                  <text class="card-actions-item-text">设置</text>
+                  <text>
+                    <text class="card-actions-item-text">设置</text>
+                  </text>
                 </view>
-                <view class="card-actions-item" @click="actionsClick('评论')">
+                <view
+                  class="card-actions-item"
+                  @click="handleDelete(index, item)"
+                >
                   <uni-icons
                     type="trash-filled"
                     size="18"
@@ -171,7 +174,7 @@ import to from 'await-to-js';
 import { mapGetters, mapActions } from 'vuex';
 import { toast, confirm } from '@uni/apis';
 import GetPhoneNumberVue from '@/components/GetPhoneNumber';
-import { modifyabbreviation, addpermission } from '@/api/base';
+import { modifyabbreviation, addpermission, disassociate } from '@/api/base';
 
 export default {
   components: { GetPhoneNumberVue },
@@ -208,6 +211,34 @@ export default {
       this.$Router.push(index.children[e].path);
     },
     actionsClick(e) {},
+
+    /**
+     * 删除名下设备
+     */
+    async handleDelete(index, row) {
+      console.log(row);
+      const res = await confirm({
+        title: '提示',
+        content: `是否删除用户名下${row.deviceserial}设备`,
+      });
+      if (res.cancel) {
+        return;
+      }
+      disassociate({
+        deviceId: row.deviceid,
+      }).then(
+        (response) => {
+          console.log(response);
+          if (response.data.code === 200) {
+            console.log('删除成功');
+            this.getInfo();
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    },
 
     /**
      * 修改备注
@@ -291,7 +322,25 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import '@/static/icon/iconfont.css';
+.iconfont {
+  color: #999;
+}
+.card-actions-item {
+  // flex: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+  font-size: 14px;
+}
+.card-actions-item-text {
+  margin-left: 5px;
+  line-height: 30px;
+  color: #666;
+  text-align: center;
+}
 .right-icon {
   float: right;
 }
@@ -324,7 +373,7 @@ export default {
 }
 .card-actions {
   border-top: 1rpx solid #ebeef5;
-  height: 100rpx;
+  height: 45px;
   display: flex;
   /* flex轴横向，溢出换行。
   flex-direction: row;
@@ -332,7 +381,7 @@ export default {
   简写 flex-flow
    */
   flex-flow: row wrap;
-  /* 副轴对齐方式align-items */
+  /* 副轴对齐方式align-items  上下居中*/
   align-items: center;
   /* 主轴对齐方式justify-content */
   justify-content: space-evenly;
