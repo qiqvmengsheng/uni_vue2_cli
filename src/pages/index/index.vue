@@ -87,7 +87,10 @@
                   <!-- <uni-icons type="bars" size="18" color="#999"></uni-icons> -->
                   <text class="card-actions-item-text">图表</text>
                 </view>
-                <view class="card-actions-item" @click="actionsClick('点赞')">
+                <view
+                  class="card-actions-item"
+                  @click="tocommandView(index, item)"
+                >
                   <uni-icons
                     type="settings"
                     size="18"
@@ -212,6 +215,14 @@ export default {
     },
     actionsClick(e) {},
 
+    tocommandView(index, row) {
+      console.log(row);
+      this.$Router.push({
+        name: 'commandView',
+        params: { deviceid: row.deviceid },
+      });
+    },
+
     /**
      * 删除名下设备
      */
@@ -229,10 +240,21 @@ export default {
       }).then(
         (response) => {
           console.log(response);
+          let type = '';
+
+          let content = '';
           if (response.data.code === 200) {
-            console.log('删除成功');
+            type = 'success';
+            content = `${row.deviceserial}设备删除成功！`;
             this.getInfo();
+          } else {
+            type = 'fail';
+            content = '删除失败';
           }
+          toast.showToast({
+            content,
+            type,
+          });
         },
         (error) => {
           console.log(error);
@@ -345,6 +367,7 @@ export default {
   float: right;
 }
 .grid {
+  width: 730rpx;
   margin: 5px;
 }
 .list-card {

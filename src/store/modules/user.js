@@ -58,11 +58,9 @@ const actions = {
       console.log(err);
       return Promise.reject(err);
     }
-    // console.log('微信登录返回信息：', res);
+    // console.log('微信登录返回信息：', res);, nickName: '', gender: 1, address: ''
     const { code } = res;
-    const [err2, res2] = await to(
-      login({ code, nickName: '', gender: 1, address: '' })
-    );
+    const [err2, res2] = await to(login({ code }));
     if (err2) {
       console.log(err2);
       return Promise.reject(err2);
