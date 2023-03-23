@@ -213,7 +213,7 @@ export default {
       console.log(e, index);
       this.$Router.push(index.children[e].path);
     },
-    actionsClick(e) {},
+    actionsClick() {},
 
     tocommandView(index, row) {
       console.log(row);

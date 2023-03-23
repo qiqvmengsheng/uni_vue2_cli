@@ -4,13 +4,25 @@ import to from 'await-to-js';
 import { toast } from '@uni/apis';
 import { getToken } from './uniStorsge';
 
+let baseURL;
+
+// 环境的切换
+if (process.env.NODE_ENV === 'development') {
+  // baseURL = process.env.VUE_APP_URL_TWO;
+  baseURL = process.env.VUE_APP_BASE_URL;
+} else if (process.env.NODE_ENV === 'production') {
+  baseURL = process.env.VUE_APP_BASE_URL;
+} else {
+  baseURL = process.env.VUE_APP_URL_THREE;
+}
+
 /**
- *
+ * 创建axios实例
  */
 const request = axios.create({
   // baseURL: 'http://192.168.3.44:8080',
   // baseURL: 'http://localhost/user',
-  baseURL: 'https://www.lele-tech.com/user',
+  baseURL,
   timeout: 30000,
   adapter: UniAdapter,
 });
@@ -138,6 +150,11 @@ request.interceptors.request.use(async (config) => {
   // 取消重复请求
   removePending(config);
   addPending(config);
+  // 修改baseURL
+  if (config.requestBase === 'VUE_APP_URL_THREE') {
+    config.baseURL = process.env.VUE_APP_URL_THREE;
+    return config;
+  }
   // 带上token
   const token = getToken();
   if (typeof token === 'string' && token.length >= 1) {
@@ -161,7 +178,7 @@ request.interceptors.response.use(
       if (r.networkType === 'none') {
         toast.showToast('网络异常');
       } else {
-        toast.showToast('服务器错误');
+        toast.showToast('服务器错误', err);
       }
       return Promise.reject(response);
     }

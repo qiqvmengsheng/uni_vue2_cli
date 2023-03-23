@@ -4,23 +4,40 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { datapoints } from '@/api/onenet';
+import to from 'await-to-js';
 
 export default {
   components: {},
   data() {
     return {
-      device: null,
+      dev: null,
     };
   },
   computed: { ...mapGetters(['name', 'devices']) },
   created() {
     this.$AppReady.then(() => {
       const id = this.$Route.query.deviceid;
-      [this.device] = this.devices.filter((dev) => dev.deviceid === id);
+      [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
+      this.getwrodtobyts();
     });
   },
   mounted() {},
-  methods: {},
+  methods: {
+    async getwrodtobyts() {
+      const [err, res] = await to(
+        datapoints({ deviceId: this.dev.deviceid, apikey: this.dev.apikey })
+      );
+      if (err) {
+        return;
+      }
+      console.log(err, res);
+      const wrodtobyts = res.data.data.datastreams.filter(
+        (item) => item.id === 'WordTo2Bytes[0]'
+      );
+      console.log(wrodtobyts);
+    },
+  },
   watch: {},
 
   // 页面周期函数--监听页面加载
