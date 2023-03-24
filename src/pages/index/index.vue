@@ -216,7 +216,7 @@ export default {
     actionsClick() {},
 
     tocommandView(index, row) {
-      console.log(row);
+      // console.log(row);
       this.$Router.push({
         name: 'commandView',
         params: { deviceid: row.deviceid },
@@ -406,13 +406,14 @@ export default {
   flex-flow: row wrap;
   /* 副轴对齐方式align-items  上下居中*/
   align-items: center;
-  /* 主轴对齐方式justify-content */
+  /* 主轴空位分配方式justify-content */
   justify-content: space-evenly;
 }
 .button_view {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  // flex轴横向，溢出换行。 flex-direction: row;  flex-wrap: wrap; 简写 flex-flow
+  flex-flow: row wrap;
+  // 副轴对齐方式align-items  上下居中
   align-items: center;
 }
 .ubutton {

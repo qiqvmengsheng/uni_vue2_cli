@@ -1,5 +1,4 @@
 import request from '@/utils/http';
-import qs from 'qs';
 
 /**
  * 查询设备历史数据
@@ -19,12 +18,12 @@ export function datapoints({ deviceId, apikey, params }) {
  * 批量查询设备最新数据
  * @param {Object} data
  */
-export function devsdatapoints({ devIds, apikey }) {
+export function devsdatapoints({ devIds, auth }) {
   return request({
     url: '/devices/datapoints',
     method: 'get',
     params: { devIds },
-    headers: { 'api-key': apikey },
+    headers: { Authorization: auth },
     requestBase: 'VUE_APP_URL_THREE',
   });
 }
