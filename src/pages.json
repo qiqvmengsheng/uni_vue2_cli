@@ -20,7 +20,8 @@
 		{
 			"path": "pages/addDevice/index",
 			"style": {
-				"navigationBarTitleText": "添加设备"
+				"navigationBarTitleText": "添加设备",
+				"backgroundColor": "#F8F8F8"
 			},
 			"name": "addDevice"
 		},
@@ -35,7 +36,8 @@
 		{
 			"path": "pages/commandView/index",
 			"style": {
-				"navigationBarTitleText": "设置"
+				"navigationBarTitleText": "设置",
+				"backgroundColor": "#F8F8F8"
 			},
 			"name": "commandView"
 		}

@@ -52,12 +52,12 @@
                 v-model="item.abbreviation"
                 @blur="setabbreviation(item)"
               >
-                <u--text
+                <u-text
                   text="备注"
                   slot="prefix"
                   margin="0 3px 0 0"
                   type="tips"
-                ></u--text>
+                ></u-text>
               </u-input>
               <view class="viewflex">
                 <text>普通用户设置权限:</text>
@@ -145,12 +145,12 @@
                   v-model="item.abbreviation"
                   @blur="setabbreviation(item)"
                 >
-                  <u--text
+                  <u-text
                     text="备注"
                     slot="prefix"
                     margin="0 3px 0 0"
                     type="tips"
-                  ></u--text>
+                  ></u-text>
                 </u-input>
               </view>
               <text class="grid-text">{{ item.abbreviation || '无' }}</text>

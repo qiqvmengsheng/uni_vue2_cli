@@ -1,5 +1,8 @@
 <template>
   <div class="commandView">
+    <text>
+      注释：请务必用以下顺序来进行设置的修改，首先停止测量，随后修改设置，最后重新开始测量。最新数据会在开始测量一周期后出现，请耐心等待。
+    </text>
     <view class="btnView">
       <view class="ubutton">
         <u-button text="镂空按钮" size="normal" type="warning" plain></u-button>
@@ -20,57 +23,56 @@
         ></u-button>
       </view>
     </view>
+    <view class="cell">
+      <u-cell-group>
+        <u-cell
+          title="泵运行模式"
+          :value="PumpMode === '0' ? '连续' : PumpMode === '1' ? '间隔' : ''"
+          isLink
+          @click="PumpModeshow = true"
+          :disabled="disabled"
+        ></u-cell>
+        <u-cell
+          title="氡计算模式"
+          :value="
+            RadonMode === '0' ? '慢速氡' : RadonMode === '1' ? '快速氡' : ''
+          "
+          isLink
+          @click="RadonModeshow = true"
+          :disabled="disabled"
+        ></u-cell>
+        <u-cell
+          title="显示单位"
+          :value="Units === '0' ? 'SI公制' : Units === '1' ? 'US英制' : ''"
+          isLink
+          @click="Unitsshow = true"
+          :disabled="disabled"
+        ></u-cell>
+        <u-cell
+          title="蜂鸣器"
+          :value="Buzzertext"
+          isLink
+          @click="Buzzershow = true"
+          :disabled="disabled"
+        ></u-cell>
+      </u-cell-group>
+    </view>
 
-    <u-cell-group>
-      <u-cell
-        title="泵运行模式"
-        :value="PumpMode === '0' ? '连续' : PumpMode === '1' ? '间隔' : ''"
-        isLink
-        @click="PumpModeshow = true"
-        :disabled="disabled"
-      ></u-cell>
-      <u-cell
-        title="氡计算模式"
-        :value="
-          RadonMode === '0' ? '慢速氡' : RadonMode === '1' ? '快速氡' : ''
-        "
-        isLink
-        @click="RadonModeshow = true"
-        :disabled="disabled"
-      ></u-cell>
-      <u-cell
-        title="显示单位"
-        :value="Units === '0' ? 'SI公制' : Units === '1' ? 'US英制' : ''"
-        isLink
-        @click="Unitsshow = true"
-        :disabled="disabled"
-      ></u-cell>
-      <u-cell
-        title="蜂鸣器"
-        :value="Buzzertext"
-        isLink
-        @click="Buzzershow = true"
-        :disabled="disabled"
-      ></u-cell>
-      <u-cell
-        title="设备周期"
-        :value="SampleInterval"
-        isLink
-        @click="Intervalshow = true"
-        :disabled="disabled"
-      ></u-cell>
-    </u-cell-group>
+    <view class="cell">
+      <u-cell-group>
+        <u-cell
+          title="设备周期"
+          :value="form.SampleInterval"
+          isLink
+          @click="Intervalshow = true"
+          :disabled="disabled"
+        ></u-cell>
+      </u-cell-group>
+    </view>
 
-    <u-popup :show="Intervalshow" mode="bottom" @close="Intervalshow = false">
-      <view>
-        <u--input
-          placeholder="请输入周期"
-          border="surround"
-          v-model="SampleInterval"
-          type="number"
-        ></u--input>
-      </view>
-    </u-popup>
+    <!-- <u-popup :show="Intervalshow" mode="bottom" @close="Intervalshow = false">
+
+    </u-popup> -->
 
     <u-action-sheet
       :actions="PumpModelist"
@@ -100,6 +102,31 @@
       @close="Buzzershow = false"
       :show="Buzzershow"
     ></u-action-sheet>
+
+    <u-modal
+      :show="Intervalshow"
+      title="周期"
+      @cancel="Intervalshow = false"
+      @confirm="setSampleInterval"
+    >
+      <view>
+        <u-form :model="form" ref="uForm" labelWidth="100">
+          <u-form-item
+            label="设备周期"
+            prop="SampleInterval"
+            @click="showDevtype = true"
+            ref="item1"
+          >
+            <u-input
+              placeholder="请输入周期"
+              type="number"
+              border="surround"
+              v-model.number="form.SampleInterval"
+            ></u-input>
+          </u-form-item>
+        </u-form>
+      </view>
+    </u-modal>
   </div>
 </template>
 
@@ -114,7 +141,9 @@ export default {
     return {
       dev: null,
       wrodtobyts: '',
-      SampleInterval: 0,
+      form: {
+        SampleInterval: 0,
+      },
       Intervalshow: false,
       disabled: true,
       PumpMode: '',
@@ -144,6 +173,31 @@ export default {
         { name: 'Po218探测阈值', value: '11', type: 'Buzzer' },
       ],
       list: [],
+      rules: {
+        SampleInterval: [
+          {
+            type: 'number',
+            required: true,
+            min: 1,
+            max: 255,
+            message: '必须是1到255之间的数字',
+            trigger: 'blur',
+          },
+          {
+            type: 'number',
+            asyncValidator(rule, value, callback) {
+              console.log(rule, value);
+              if (value >= 1 && value <= 255) {
+                callback();
+              } else {
+                callback(rule.message);
+              }
+            },
+            message: '必须是在1到255之间',
+            trigger: 'blur',
+          },
+        ],
+      },
     };
   },
   computed: {
@@ -184,15 +238,23 @@ export default {
       const [SampleInterval] = res.data.data.filter(
         (item) => item.id === 'Sample_Interval'
       );
-      this.SampleInterval = SampleInterval.current_value;
+      this.form.SampleInterval = SampleInterval.current_value;
       this.wrodtobyts =
         wrodtobyts1.current_value.toString(16).padStart(2, '0') +
         wrodtobyts0.current_value.toString(16).padStart(2, '0');
-      console.log(this.wrodtobyts, this.SampleInterval);
+      console.log(this.wrodtobyts, this.form.SampleInterval);
     },
     selectClick(index) {
       this[index.type] = index.value;
       console.log(index);
+    },
+    async setSampleInterval() {
+      const [err, res] = await to(this.$refs.uForm.validate());
+      if (err) {
+        console.log(err, res);
+        return;
+      }
+      this.Intervalshow = false;
     },
     async test() {
       const [e, r] = await to(
@@ -236,7 +298,9 @@ export default {
   // 页面周期函数--监听页面加载
   onLoad() {},
   // 页面周期函数--监听页面初次渲染完成
-  onReady() {},
+  onReady() {
+    this.$refs.uForm.setRules(this.rules);
+  },
   // 页面周期函数--监听页面显示(not-nvue)
   onShow() {},
   // 页面周期函数--监听页面隐藏
@@ -255,6 +319,15 @@ export default {
 </script>
 
 <style scoped lang="scss">
+// .commandView {
+//   background: $uni-bg-color-grey;
+// }
+.cell {
+  background-color: $uni-bg-color;
+}
+.cell {
+  margin-bottom: 40rpx;
+}
 .btnView {
   display: flex;
   // flex轴横向，溢出换行。 flex-direction: row;  flex-wrap: wrap; 简写 flex-flow
@@ -264,5 +337,11 @@ export default {
 }
 .ubutton {
   margin: 0 15rpx 15rpx 0;
+}
+</style>
+
+<style lang="scss">
+page {
+  background: $uni-bg-color-grey;
 }
 </style>
