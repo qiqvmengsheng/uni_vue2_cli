@@ -1,4 +1,5 @@
 import request from '@/utils/http';
+import qs from 'qs';
 
 /**
  * 查询设备历史数据
@@ -37,6 +38,21 @@ export function DataStreams({ deviceId, apikey, params }) {
     url: `/devices/${deviceId}/datastreams`,
     method: 'get',
     params,
+    headers: { 'api-key': apikey },
+    requestBase: 'VUE_APP_URL_THREE',
+  });
+}
+
+/**
+ * 下发命令
+ * @param {Object} data
+ */
+export function onenetcmds({ deviceid, apikey, sms }) {
+  return request({
+    url: '/cmds',
+    method: 'POST',
+    params: { device_id: deviceid, qos: 1 },
+    data: qs.stringify({ sms }),
     headers: { 'api-key': apikey },
     requestBase: 'VUE_APP_URL_THREE',
   });

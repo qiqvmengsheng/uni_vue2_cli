@@ -5,19 +5,38 @@
     </text>
     <view class="btnView">
       <view class="ubutton">
-        <u-button text="镂空按钮" size="normal" type="warning" plain></u-button>
+        <u-button
+          @click="sendBytes()"
+          text="修改设置"
+          size="normal"
+          type="warning"
+          plain
+        ></u-button>
       </view>
       <view class="ubutton">
-        <u-button text="停止测量" size="normal" type="warning" plain></u-button>
+        <u-button
+          @click="SendCommand('CMD:STOP')"
+          text="停止测量"
+          size="normal"
+          type="warning"
+          plain
+        ></u-button>
       </view>
       <view class="ubutton">
-        <u-button text="清除数据" size="normal" type="error" plain></u-button>
+        <u-button
+          @click="SendCommand('CMD:CLEAR')"
+          text="清除数据"
+          size="normal"
+          type="error"
+          plain
+        ></u-button>
       </view>
       <view class="ubutton">
         <u-button
           text="开始测量"
           size="normal"
           type="primary"
+          @click="SendCommand('CMD:START')"
           plain
           hairline
         ></u-button>
@@ -132,8 +151,14 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { datapoints, devsdatapoints, DataStreams } from '@/api/onenet';
+import {
+  datapoints,
+  devsdatapoints,
+  DataStreams,
+  onenetcmds,
+} from '@/api/onenet';
 import to from 'await-to-js';
+import { toast, confirm } from '@uni/apis';
 
 export default {
   components: {},
@@ -141,6 +166,7 @@ export default {
     return {
       dev: null,
       wrodtobyts: '',
+      bits: '',
       form: {
         SampleInterval: 0,
       },
@@ -176,18 +202,18 @@ export default {
       rules: {
         SampleInterval: [
           {
-            type: 'number',
+            // type: 'number',
             required: true,
+            pattern: /^[\d]+$/,
             min: 1,
             max: 255,
-            message: '必须是1到255之间的数字',
+            message: '必须是1到255之间的整数',
             trigger: 'blur',
           },
           {
             type: 'number',
             asyncValidator(rule, value, callback) {
-              console.log(rule, value);
-              if (value >= 1 && value <= 255) {
+              if (value >= 1 && value <= 256) {
                 callback();
               } else {
                 callback(rule.message);
@@ -255,6 +281,60 @@ export default {
         return;
       }
       this.Intervalshow = false;
+    },
+    async sendBytes() {
+      if (
+        this.PumpMode !== '' &&
+        this.RadonMode !== '' &&
+        this.Units !== '' &&
+        this.Buzzer !== ''
+      ) {
+        const b =
+          (this.bits.slice(0, 11) || '00000000011') +
+          this.Units +
+          this.PumpMode +
+          this.RadonMode +
+          this.Buzzer;
+        let c = '';
+        let d = '';
+        let cs = '';
+        c += parseInt(b, 2).toString(16).padStart(4, '0').slice(2, 4);
+        c += parseInt(b, 2).toString(16).padStart(4, '0').slice(0, 2);
+        d += String.fromCharCode(parseInt(c.slice(0, 2), 16));
+        d += String.fromCharCode(parseInt(c.slice(2, 4), 16));
+        cs = `CMD:WordTo2Bytes${d}`;
+        console.log(b, c, d, cs);
+
+        const res = await confirm({
+          title: '提示',
+          content: `确认修改设置! \r\n
+          命令二进制数：${b} \r\n
+          命令两个16进制bytes：${c} \r\n
+          命令bytes转Unicode符： ${d} \r\n
+          最终下发的命令：${cs}`,
+        });
+        if (res.cancel) {
+          return;
+        }
+        this.wrodtobyts = c;
+        this.SendCommand(cs);
+      } else {
+        toast('请选好设置');
+      }
+    },
+    async SendCommand(sms) {
+      const [err, res] = await to(
+        onenetcmds({
+          deviceid: this.dev.deviceid,
+          apikey: this.dev.apikey,
+          sms,
+        })
+      );
+      if (err) {
+        console.log(err, res);
+        return;
+      }
+      console.log(res);
     },
     async test() {
       const [e, r] = await to(
