@@ -1,47 +1,15 @@
 <template>
   <div class="commandView">
-    <text>
-      注释：请务必用以下顺序来进行设置的修改，首先停止测量，随后修改设置，最后重新开始测量。最新数据会在开始测量一周期后出现，请耐心等待。
-    </text>
-    <view class="btnView">
-      <view class="ubutton">
-        <u-button
-          @click="sendBytes()"
-          text="修改设置"
-          size="normal"
-          type="warning"
-          plain
-        ></u-button>
-      </view>
-      <view class="ubutton">
-        <u-button
-          @click="SendCommand('CMD:STOP')"
-          text="停止测量"
-          size="normal"
-          type="warning"
-          plain
-        ></u-button>
-      </view>
-      <view class="ubutton">
-        <u-button
-          @click="SendCommand('CMD:CLEAR')"
-          text="清除数据"
-          size="normal"
-          type="error"
-          plain
-        ></u-button>
-      </view>
-      <view class="ubutton">
-        <u-button
-          text="开始测量"
-          size="normal"
-          type="primary"
-          @click="SendCommand('CMD:START')"
-          plain
-          hairline
-        ></u-button>
-      </view>
+    <view>
+      <text> 最新测量数据产生时间：{{ lastDataTime }} </text>
+      <!-- <view></view>
+      <text>最后修改设置时间: {{ lastSettingTime }} </text> -->
+      <view></view>
+      <text>
+        注释：请务必用以下顺序来进行设置和周期的修改，首先停止测量，随后修改，最后重新开始测量。最新数据会在开始测量一周期后出现，请耐心等待。
+      </text>
     </view>
+    <view></view>
     <view class="cell">
       <u-cell-group>
         <u-cell
@@ -84,9 +52,66 @@
           :value="form.SampleInterval"
           isLink
           @click="Intervalshow = true"
-          :disabled="disabled"
         ></u-cell>
       </u-cell-group>
+    </view>
+
+    <view class="btnView">
+      <view class="ubutton" v-if="disabled">
+        <u-button
+          @click="disabled = false"
+          text="修改设置"
+          size="normal"
+          type="info"
+          plain
+        ></u-button>
+      </view>
+      <view class="ubutton" v-if="!disabled">
+        <u-button
+          @click="getwrodtobyts()"
+          text="取消"
+          size="normal"
+          type="info"
+          plain
+        ></u-button>
+      </view>
+      <view class="ubutton" v-if="!disabled">
+        <u-button
+          @click="sendBytes()"
+          text="确认修改"
+          size="normal"
+          type="primary"
+          plain
+        ></u-button>
+      </view>
+      <view class="ubutton">
+        <u-button
+          @click="SendCommand('CMD:STOP', '停止测量?')"
+          text="停止测量"
+          size="normal"
+          type="warning"
+          plain
+        ></u-button>
+      </view>
+      <view class="ubutton">
+        <u-button
+          @click="SendCommand('CMD:CLEAR', '清除设备数据?')"
+          text="清除数据"
+          size="normal"
+          type="error"
+          plain
+        ></u-button>
+      </view>
+      <view class="ubutton">
+        <u-button
+          @click="SendCommand('CMD:START', '开始测量?')"
+          text="开始测量"
+          size="normal"
+          type="primary"
+          plain
+          hairline
+        ></u-button>
+      </view>
     </view>
 
     <!-- <u-popup :show="Intervalshow" mode="bottom" @close="Intervalshow = false">
@@ -125,6 +150,8 @@
     <u-modal
       :show="Intervalshow"
       title="周期"
+      showCancelButton
+      closeOnClickOverlay
       @cancel="Intervalshow = false"
       @confirm="setSampleInterval"
     >
@@ -141,7 +168,11 @@
               type="number"
               border="surround"
               v-model.number="form.SampleInterval"
-            ></u-input>
+            >
+              <template slot="suffix">
+                <u-text text="分钟" margin="0 3px 0 0" type="tips"></u-text>
+              </template>
+            </u-input>
           </u-form-item>
         </u-form>
       </view>
@@ -165,13 +196,15 @@ export default {
   data() {
     return {
       dev: null,
+      lastDataTime: '',
+      lastSettingTime: '',
       wrodtobyts: '',
       bits: '',
       form: {
         SampleInterval: 0,
       },
       Intervalshow: false,
-      disabled: true,
+      disabled: false,
       PumpMode: '',
       PumpModeshow: false,
       PumpModelist: [
@@ -207,13 +240,13 @@ export default {
             pattern: /^[\d]+$/,
             min: 1,
             max: 255,
-            message: '必须是1到255之间的整数',
+            message: '必须是1到255的整数',
             trigger: 'blur',
           },
           {
             type: 'number',
             asyncValidator(rule, value, callback) {
-              if (value >= 1 && value <= 256) {
+              if (value >= 1 && value <= 255) {
                 callback();
               } else {
                 callback(rule.message);
@@ -241,12 +274,15 @@ export default {
     this.$AppReady.then(() => {
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
-      console.log(this.dev);
+      // console.log(this.dev);
       this.getwrodtobyts();
     });
   },
   mounted() {},
   methods: {
+    /**
+     * 获取设置
+     */
     async getwrodtobyts() {
       const [err, res] = await to(
         DataStreams({ deviceId: this.dev.deviceid, apikey: this.dev.apikey })
@@ -264,24 +300,36 @@ export default {
       const [SampleInterval] = res.data.data.filter(
         (item) => item.id === 'Sample_Interval'
       );
+      const [Radon] = res.data.data.filter((item) => item.id === 'Radon');
+      this.lastDataTime = Radon.update_at;
+      this.lastSettingTime = wrodtobyts0.update_at;
       this.form.SampleInterval = SampleInterval.current_value;
       this.wrodtobyts =
         wrodtobyts1.current_value.toString(16).padStart(2, '0') +
         wrodtobyts0.current_value.toString(16).padStart(2, '0');
-      console.log(this.wrodtobyts, this.form.SampleInterval);
+      this.codeSetting(this.wrodtobyts);
+      console.log(Radon, this.wrodtobyts, this.form.SampleInterval);
     },
     selectClick(index) {
       this[index.type] = index.value;
-      console.log(index);
+      // console.log(index);
     },
+    /**
+     * 修改周期方法
+     */
     async setSampleInterval() {
       const [err, res] = await to(this.$refs.uForm.validate());
       if (err) {
         console.log(err, res);
         return;
       }
+      this.SendCommand(
+        `CMD:TIME+${this.form.SampleInterval}`,
+        `修改设备周期为${this.form.SampleInterval} 分钟？`
+      );
       this.Intervalshow = false;
     },
+
     async sendBytes() {
       if (
         this.PumpMode !== '' &&
@@ -317,12 +365,22 @@ export default {
           return;
         }
         this.wrodtobyts = c;
-        this.SendCommand(cs);
+        this.SendCommand(cs, '修改设置？');
       } else {
         toast('请选好设置');
       }
     },
-    async SendCommand(sms) {
+    /**
+     * 提示下发修改命令
+     */
+    async SendCommand(sms, text) {
+      const r = await confirm({
+        title: '提示',
+        content: `确认${text}`,
+      });
+      if (r.cancel) {
+        return;
+      }
       const [err, res] = await to(
         onenetcmds({
           deviceid: this.dev.deviceid,
@@ -353,6 +411,18 @@ export default {
       );
       console.log(wrodtobyts);
     },
+    codeSetting(newValue) {
+      const b = parseInt(newValue.slice(2, 4) + newValue.slice(0, 2), 16)
+        .toString(2)
+        .padStart(16, '0');
+      this.bits = b;
+      // console.log(b);
+      this.PumpMode = b.slice(12, 13);
+      this.RadonMode = b.slice(13, 14);
+      this.Units = b.slice(11, 12);
+      this.Buzzer = b.slice(14, 16);
+      this.disabled = true;
+    },
   },
   watch: {
     wrodtobyts: {
@@ -361,16 +431,7 @@ export default {
        * @param {String} newValue
        */
       handler(newValue) {
-        const b = parseInt(newValue.slice(2, 4) + newValue.slice(0, 2), 16)
-          .toString(2)
-          .padStart(16, '0');
-        this.bits = b;
-        // console.log(b);
-        this.PumpMode = b.slice(12, 13);
-        this.RadonMode = b.slice(13, 14);
-        this.Units = b.slice(11, 12);
-        this.Buzzer = b.slice(14, 16);
-        this.disabled = false;
+        this.codeSetting(newValue);
       },
     },
   },
@@ -414,8 +475,11 @@ export default {
   flex-flow: row wrap;
   // 副轴对齐方式align-items  上下居中
   align-items: center;
+  /* 主轴对齐方式justify-content */
+  justify-content: space-around;
 }
 .ubutton {
+  width: 90%;
   margin: 0 15rpx 15rpx 0;
 }
 </style>
