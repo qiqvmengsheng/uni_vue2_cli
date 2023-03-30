@@ -40,6 +40,13 @@
 				"backgroundColor": "#F8F8F8"
 			},
 			"name": "commandView"
+		},
+		{
+			"path": "pages/chartView/index",
+			"style": {
+				"navigationBarTitleText": "图表"
+			},
+			"name": "chartView"
 		}
 	],
 	"globalStyle": {
