@@ -1,7 +1,7 @@
 import axios from 'axios';
 import UniAdapter from 'axios-adapter-uniapp';
 import to from 'await-to-js';
-import { toast } from '@uni/apis';
+import { toast, loading } from '@uni/apis';
 import { getToken } from './uniStorsge';
 
 let baseURL;
@@ -143,13 +143,14 @@ async function httpErrorStatusHandle(error) {
   if (error.message.includes('Network'))
     message = res.networkType === 'none' ? '服务端异常！' : '您断网了！';
 
-  return toast.showToast(message);
+  return toast.showToast({ content: message, type: 'fail', mask: true });
 }
 
 request.interceptors.request.use(async (config) => {
   // 取消重复请求
   removePending(config);
   addPending(config);
+  loading.showLoading({ mask: true });
   // 修改baseURL
   if (config.requestBase === 'VUE_APP_URL_THREE') {
     config.baseURL = process.env.VUE_APP_URL_THREE;
@@ -166,23 +167,23 @@ request.interceptors.request.use(async (config) => {
 
 request.interceptors.response.use(
   async (response) => {
+    loading.hideLoading();
     // 判断是否断网了
     if (response.data === undefined) {
       console.log('成功的返回拦截', response);
       const [err, r] = await to(uni.getNetworkType());
-      // console.log(err, r);
+      console.log(err, r);
       // uni.onNetworkStatusChange((res) => {
       //   console.log(res.isConnected);
       //   console.log(res.networkType);
       // });
       if (r.networkType === 'none') {
-        toast.showToast('网络异常');
+        toast.showToast({ content: '网络异常', type: 'fail', mask: true });
       } else {
-        toast.showToast('服务器错误', err);
+        toast.showToast({ content: '服务器错误', type: 'fail', mask: true });
       }
       return Promise.reject(response);
     }
-    // loadingInstance.close();
     const { data } = response;
     if (data.code && data.code !== 200) {
       console.log(data);
@@ -190,6 +191,7 @@ request.interceptors.response.use(
     return response;
   },
   (error) => {
+    loading.hideLoading();
     console.log('失败的返回拦截');
     console.log('http162', error);
     httpErrorStatusHandle(error);
