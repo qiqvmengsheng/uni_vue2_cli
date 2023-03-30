@@ -44,6 +44,18 @@
         ></u-cell>
       </u-cell-group>
     </view>
+    <view class="btnView">
+      <view class="ubutton">
+        <u-button
+          :disabled="disabled"
+          @click="sendBytes()"
+          text="确认修改设置"
+          size="normal"
+          type="primary"
+          plain
+        ></u-button>
+      </view>
+    </view>
 
     <view class="cell">
       <u-cell-group>
@@ -52,41 +64,45 @@
           :value="form.SampleInterval"
           isLink
           @click="Intervalshow = true"
+          :disabled="disabled"
         ></u-cell>
       </u-cell-group>
+    </view>
+    <view class="btnView">
+      <view class="ubutton">
+        <u-button
+          :disabled="disabled"
+          @click="setSampleInterval()"
+          text="确认修改周期"
+          size="normal"
+          type="primary"
+          plain
+        ></u-button>
+      </view>
     </view>
 
     <view class="btnView">
       <view class="ubutton" v-if="disabled">
         <u-button
           @click="disabled = false"
-          text="修改设置"
+          text="打开修改"
           size="normal"
-          type="info"
+          type="primary"
           plain
         ></u-button>
       </view>
       <view class="ubutton" v-if="!disabled">
         <u-button
           @click="getwrodtobyts()"
-          text="取消"
+          text="关闭修改"
           size="normal"
           type="info"
           plain
         ></u-button>
       </view>
-      <view class="ubutton" v-if="!disabled">
-        <u-button
-          @click="sendBytes()"
-          text="确认修改"
-          size="normal"
-          type="primary"
-          plain
-        ></u-button>
-      </view>
       <view class="ubutton">
         <u-button
-          @click="SendCommand('CMD:STOP', '停止测量?')"
+          @click="SendCommand('CMD:STOP', '停止测量')"
           text="停止测量"
           size="normal"
           type="warning"
@@ -95,7 +111,7 @@
       </view>
       <view class="ubutton">
         <u-button
-          @click="SendCommand('CMD:CLEAR', '清除设备数据?')"
+          @click="SendCommand('CMD:CLEAR', '清除设备数据')"
           text="清除数据"
           size="normal"
           type="error"
@@ -104,7 +120,7 @@
       </view>
       <view class="ubutton">
         <u-button
-          @click="SendCommand('CMD:START', '开始测量?')"
+          @click="SendCommand('CMD:START', '开始测量')"
           text="开始测量"
           size="normal"
           type="primary"
@@ -150,10 +166,8 @@
     <u-modal
       :show="Intervalshow"
       title="周期"
-      showCancelButton
-      closeOnClickOverlay
       @cancel="Intervalshow = false"
-      @confirm="setSampleInterval"
+      @confirm="cheekInterval()"
     >
       <view>
         <u-form :model="form" ref="uForm" labelWidth="100">
@@ -314,6 +328,19 @@ export default {
       this[index.type] = index.value;
       // console.log(index);
     },
+
+    /**
+     * 校验周期
+     */
+    async cheekInterval() {
+      const [err, res] = await to(this.$refs.uForm.validate());
+      if (err) {
+        console.log(err, res);
+        return;
+      }
+      this.Intervalshow = false;
+    },
+
     /**
      * 修改周期方法
      */
@@ -325,11 +352,14 @@ export default {
       }
       this.SendCommand(
         `CMD:TIME+${this.form.SampleInterval}`,
-        `修改设备周期为${this.form.SampleInterval} 分钟？`
+        `修改设备周期为${this.form.SampleInterval} 分钟`
       );
       this.Intervalshow = false;
     },
 
+    /**
+     * 发送修改wrodtobyts命令
+     */
     async sendBytes() {
       if (
         this.PumpMode !== '' &&
@@ -365,18 +395,19 @@ export default {
           return;
         }
         this.wrodtobyts = c;
-        this.SendCommand(cs, '修改设置？');
+        this.SendCommand(cs, '修改设置');
       } else {
         toast('请选好设置');
       }
     },
+
     /**
      * 提示下发修改命令
      */
     async SendCommand(sms, text) {
       const r = await confirm({
         title: '提示',
-        content: `确认${text}`,
+        content: `确认${text}？`,
       });
       if (r.cancel) {
         return;
@@ -393,7 +424,17 @@ export default {
         return;
       }
       console.log(res);
+      if (res.data.errno !== 0) {
+        toast.showToast({ type: 'fail', content: '失败', mask: true });
+        return;
+      }
+      toast.showToast({
+        type: 'success',
+        content: '成功',
+        mask: true,
+      });
     },
+
     async test() {
       const [e, r] = await to(
         devsdatapoints({
@@ -411,6 +452,10 @@ export default {
       );
       console.log(wrodtobyts);
     },
+
+    /**
+     * 根据wrodtobyts显示设置
+     */
     codeSetting(newValue) {
       const b = parseInt(newValue.slice(2, 4) + newValue.slice(0, 2), 16)
         .toString(2)
@@ -467,9 +512,11 @@ export default {
   background-color: $uni-bg-color;
 }
 .cell {
-  margin-bottom: 40rpx;
+  margin-bottom: 20rpx;
 }
 .btnView {
+  margin-bottom: 40rpx;
+  background: $uni-bg-color-grey;
   display: flex;
   // flex轴横向，溢出换行。 flex-direction: row;  flex-wrap: wrap; 简写 flex-flow
   flex-flow: row wrap;
