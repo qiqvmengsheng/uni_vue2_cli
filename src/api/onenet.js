@@ -52,7 +52,7 @@ export function onenetcmds({ deviceid, apikey, sms }) {
     url: '/cmds',
     method: 'POST',
     params: { device_id: deviceid, qos: 1 },
-    data: qs.stringify({ sms }),
+    data: sms,
     headers: { 'api-key': apikey },
     requestBase: 'VUE_APP_URL_THREE',
   });

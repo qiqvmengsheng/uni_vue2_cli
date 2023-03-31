@@ -166,7 +166,8 @@
     <u-modal
       :show="Intervalshow"
       title="周期"
-      @cancel="Intervalshow = false"
+      closeOnClickOverlay
+      @close="cheekInterval()"
       @confirm="cheekInterval()"
     >
       <view>
@@ -380,7 +381,7 @@ export default {
         c += parseInt(b, 2).toString(16).padStart(4, '0').slice(0, 2);
         d += String.fromCharCode(parseInt(c.slice(0, 2), 16));
         d += String.fromCharCode(parseInt(c.slice(2, 4), 16));
-        cs = `CMD:WordTo2Bytes${d}`;
+        cs = `CMD:WordTo2Bytes+${d}`;
         console.log(b, c, d, cs);
 
         const res = await confirm({
