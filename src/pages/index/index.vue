@@ -82,7 +82,10 @@
             </view>
             <template v-slot:actions>
               <view class="card-actions">
-                <view class="card-actions-item" @click="actionsClick('分享')">
+                <view
+                  class="card-actions-item"
+                  @click="tochartView(index, item)"
+                >
                   <text class="iconfont icon-tubiao-zhexiantu"></text>
                   <!-- <uni-icons type="bars" size="18" color="#999"></uni-icons> -->
                   <text class="card-actions-item-text">图表</text>
@@ -215,6 +218,19 @@ export default {
     },
     actionsClick() {},
 
+    /**
+     * 跳转图表页面
+     */
+    tochartView(index, row) {
+      this.$Router.push({
+        name: 'chartView',
+        params: { deviceid: row.deviceid },
+      });
+    },
+
+    /**
+     * 跳转设置页面
+     */
     tocommandView(index, row) {
       // console.log(row);
       this.$Router.push({
@@ -279,8 +295,8 @@ export default {
       }
       if (res.data.code === 200) {
         toast.showToast({
-          content: `${row.deviceserial}修改设备备注成功！`,
-          type: 'success',
+          content: `${row.deviceserial}修改备注成功！`,
+          // type: 'success',
         });
       } else {
         toast.showToast(res.data.msg);
