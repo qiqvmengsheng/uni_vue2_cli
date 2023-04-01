@@ -5,3 +5,5 @@ babel.config.js
 postcss.config.js
 shime-uni.d.ts
 shime-vue.d.ts
+# 添加echart组件
+src/components/l-echart
