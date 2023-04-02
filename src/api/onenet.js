@@ -30,7 +30,7 @@ export function devsdatapoints({ devIds, auth }) {
 }
 
 /**
- * 批量查询数据流信息
+ * 批量查询数据流信息和最新数据点
  * @param {Object} data
  */
 export function DataStreams({ deviceId, apikey, params }) {

@@ -11,6 +11,15 @@
     <view class="chart">
       <l-echart ref="chart" @finished="init"></l-echart>
     </view>
+    <view class="chart">
+      <RadonChart
+        class="echart"
+        ref="radonchar"
+        :getzoom="getzoom"
+        :barUpdate="barUpdate"
+        :setTooltip="setTooltip"
+      ></RadonChart>
+    </view>
   </div>
 </template>
 
@@ -18,8 +27,8 @@
 import { mapGetters } from 'vuex';
 import to from 'await-to-js';
 import { toast, confirm } from '@uni/apis';
-import LEchart from '@/components/l-echart/l-echart';
 import { measuredGetdata, getlastDatas } from '@/api/devdata';
+import LEchart from '@/components/l-echart/l-echart';
 
 // import * as echarts from 'echarts';
 // 按需引入 开始
@@ -37,6 +46,8 @@ import {
 import { LabelLayout, UniversalTransition } from 'echarts/features';
 // 引入 Canvas 渲染器，注意引入 CanvasRenderer 是必须的一步
 import { CanvasRenderer } from 'echarts/renderers';
+import RadonChart from './RadonChart';
+
 // 注册必须的组件
 echarts.use([
   LegendComponent,
@@ -54,9 +65,10 @@ echarts.use([
 // -------------按需引入结束------------------------
 
 export default {
-  components: { LEchart },
+  components: { LEchart, RadonChart },
   data() {
     return {
+      data: null,
       option: {
         tooltip: {
           trigger: 'axis',
@@ -166,14 +178,34 @@ export default {
       const [err, res] = await to(
         getlastDatas({
           deviceId: this.dev.deviceid,
-          numbers: 20,
+          numbers: 99,
         })
       );
       if (err) {
-        console.log(err, res);
-        return;
+        console.log('获取服务器数据错误：\n', err);
+        return Promise.reject(err);
       }
-      console.log(res);
+      // console.log('获取服务器数据：\n', res);
+      const { datastreams } = res.data.data;
+      const data = { RadonAt: [] };
+      const keys = Object.keys(datastreams);
+      for (let i = 0, len = keys.length; i < len; i += 1) {
+        data[keys[i]] = [];
+        datastreams[keys[i]].forEach((item) => {
+          data[keys[i]].push(+item.value);
+        });
+        data[keys[i]].reverse();
+      }
+      datastreams.Radon.forEach((item) => {
+        data.RadonAt.push(item.at);
+      });
+      data.RadonAt.reverse();
+
+      if (this.data && this.data.Map) data.Map = this.data.Map;
+      this.data = { ...this.data, ...data };
+      console.log(this.data);
+      this.update(this.data);
+      return Promise.resolve(data);
     },
     async getdevdata() {
       const [err, res] = await to(
@@ -192,6 +224,71 @@ export default {
       this.$refs.chart.init(echarts, (chart) => {
         chart.setOption(this.option);
       });
+    },
+
+    update(data) {
+      // this.$refs.qhradonchar.update(data);
+      // this.$refs.qhThoronchar.update(data);
+      // this.$refs.qhAmbientChart.update(data);
+      this.$refs.radonchar.update(data);
+      // this.$refs.Thoronchar.update(data);
+      // this.$refs.AmbientChart.update(data);
+    },
+
+    barUpdate({ zoomStart, zoomEnd }) {
+      if (this.qh) {
+        this.$refs.qhbarchar.update({
+          datas: this.data,
+          startValue: zoomStart,
+          endValue: zoomEnd,
+        });
+      } else {
+        this.$refs.barchar.update({
+          datas: this.data,
+          startValue: zoomStart,
+          endValue: zoomEnd,
+        });
+      }
+    },
+    getzoom({ zoomStart, zoomEnd, source }) {
+      this.zoomStart = zoomStart;
+      this.zoomEnd = zoomEnd;
+      this.setzoom({ zoomStart, zoomEnd, source });
+    },
+    setzoom({ zoomStart, zoomEnd, source }) {
+      this.barUpdate({ zoomStart, zoomEnd });
+      const { radonchar, Thoronchar, AmbientChart } = this.getchartRef();
+      if (source !== 'radonchar') radonchar.setzoom({ zoomStart, zoomEnd });
+      if (source !== 'Thoronchar') Thoronchar.setzoom({ zoomStart, zoomEnd });
+      if (source !== 'AmbientChart')
+        AmbientChart.setzoom({ zoomStart, zoomEnd });
+
+      // radonchar.setzoom({ zoomStart, zoomEnd });
+      // Thoronchar.setzoom({ zoomStart, zoomEnd });
+      // AmbientChart.setzoom({ zoomStart, zoomEnd });
+    },
+
+    setTooltip({ type, dataIndex, source }) {
+      const { radonchar, Thoronchar, AmbientChart } = this.getchartRef();
+
+      if (source !== 'radonchar')
+        radonchar.chart.dispatchAction({
+          type,
+          seriesIndex: 0,
+          dataIndex,
+        });
+      if (source !== 'Thoronchar')
+        Thoronchar.chart.dispatchAction({
+          type,
+          seriesIndex: 0,
+          dataIndex,
+        });
+      if (source !== 'AmbientChart')
+        AmbientChart.chart.dispatchAction({
+          type,
+          seriesIndex: 0,
+          dataIndex,
+        });
     },
   },
   watch: {},
