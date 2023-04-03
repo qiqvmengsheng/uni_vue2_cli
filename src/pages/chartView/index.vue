@@ -1,16 +1,5 @@
 <template>
   <div class="chartView">
-    <!-- <view class="chart">
-      <mpvue-echarts
-        :echarts="echarts"
-        :onInit="onInit"
-        ref="chart"
-        canvasId="chart-canvas"
-      />
-    </view> -->
-    <view class="chart">
-      <l-echart ref="chart" @finished="init"></l-echart>
-    </view>
     <view class="chart">
       <RadonChart
         class="echart"
@@ -28,138 +17,13 @@ import { mapGetters } from 'vuex';
 import to from 'await-to-js';
 import { toast, confirm } from '@uni/apis';
 import { measuredGetdata, getlastDatas } from '@/api/devdata';
-import LEchart from '@/components/l-echart/l-echart';
-
-// import * as echarts from 'echarts';
-// 按需引入 开始
-import * as echarts from 'echarts/core';
-import { LineChart, BarChart } from 'echarts/charts';
-import {
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-  DatasetComponent,
-  TransformComponent,
-  LegendComponent,
-} from 'echarts/components';
-// 标签自动布局，全局过渡动画等特性
-import { LabelLayout, UniversalTransition } from 'echarts/features';
-// 引入 Canvas 渲染器，注意引入 CanvasRenderer 是必须的一步
-import { CanvasRenderer } from 'echarts/renderers';
 import RadonChart from './RadonChart';
 
-// 注册必须的组件
-echarts.use([
-  LegendComponent,
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-  DatasetComponent,
-  TransformComponent,
-  LineChart,
-  BarChart,
-  LabelLayout,
-  UniversalTransition,
-  CanvasRenderer,
-]);
-// -------------按需引入结束------------------------
-
 export default {
-  components: { LEchart, RadonChart },
+  components: { RadonChart },
   data() {
     return {
       data: null,
-      option: {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow',
-          },
-          confine: true,
-        },
-        legend: {
-          data: ['热度', '正面', '负面'],
-        },
-        grid: {
-          left: 20,
-          right: 20,
-          bottom: 15,
-          top: 40,
-          containLabel: true,
-        },
-        xAxis: [
-          {
-            type: 'value',
-            axisLine: {
-              lineStyle: {
-                color: '#999999',
-              },
-            },
-            axisLabel: {
-              color: '#666666',
-            },
-          },
-        ],
-        yAxis: [
-          {
-            type: 'category',
-            axisTick: { show: false },
-            data: [
-              '汽车之家',
-              '今日头条',
-              '百度贴吧',
-              '一点资讯',
-              '微信',
-              '微博',
-              '知乎',
-            ],
-            axisLine: {
-              lineStyle: {
-                color: '#999999',
-              },
-            },
-            axisLabel: {
-              color: '#666666',
-            },
-          },
-        ],
-        series: [
-          {
-            name: '热度',
-            type: 'bar',
-            label: {
-              normal: {
-                show: true,
-                position: 'inside',
-              },
-            },
-            data: [300, 270, 340, 344, 300, 320, 310],
-          },
-          {
-            name: '正面',
-            type: 'bar',
-            stack: '总量',
-            label: {
-              normal: {
-                show: true,
-              },
-            },
-            data: [120, 102, 141, 174, 190, 250, 220],
-          },
-          {
-            name: '负面',
-            type: 'bar',
-            stack: '总量',
-            label: {
-              normal: {
-                show: true,
-                position: 'left',
-              },
-            },
-            data: [-20, -32, -21, -34, -90, -130, -110],
-          },
-        ],
-      },
     };
   },
   computed: {
@@ -177,8 +41,8 @@ export default {
     async getdata() {
       const [err, res] = await to(
         getlastDatas({
-          deviceId: this.dev.deviceid,
-          numbers: 99,
+          deviceid: this.dev.deviceid,
+          numbers: 100,
         })
       );
       if (err) {
@@ -220,13 +84,9 @@ export default {
       }
       console.log(res);
     },
-    init() {
-      this.$refs.chart.init(echarts, (chart) => {
-        chart.setOption(this.option);
-      });
-    },
 
     update(data) {
+      console.log(this.$refs);
       // this.$refs.qhradonchar.update(data);
       // this.$refs.qhThoronchar.update(data);
       // this.$refs.qhAmbientChart.update(data);
@@ -236,24 +96,24 @@ export default {
     },
 
     barUpdate({ zoomStart, zoomEnd }) {
-      if (this.qh) {
-        this.$refs.qhbarchar.update({
-          datas: this.data,
-          startValue: zoomStart,
-          endValue: zoomEnd,
-        });
-      } else {
-        this.$refs.barchar.update({
-          datas: this.data,
-          startValue: zoomStart,
-          endValue: zoomEnd,
-        });
-      }
+      // if (this.qh) {
+      //   this.$refs.qhbarchar.update({
+      //     datas: this.data,
+      //     startValue: zoomStart,
+      //     endValue: zoomEnd,
+      //   });
+      // } else {
+      //   this.$refs.barchar.update({
+      //     datas: this.data,
+      //     startValue: zoomStart,
+      //     endValue: zoomEnd,
+      //   });
+      // }
     },
     getzoom({ zoomStart, zoomEnd, source }) {
-      this.zoomStart = zoomStart;
-      this.zoomEnd = zoomEnd;
-      this.setzoom({ zoomStart, zoomEnd, source });
+      // this.zoomStart = zoomStart;
+      // this.zoomEnd = zoomEnd;
+      // this.setzoom({ zoomStart, zoomEnd, source });
     },
     setzoom({ zoomStart, zoomEnd, source }) {
       this.barUpdate({ zoomStart, zoomEnd });
@@ -269,26 +129,25 @@ export default {
     },
 
     setTooltip({ type, dataIndex, source }) {
-      const { radonchar, Thoronchar, AmbientChart } = this.getchartRef();
-
-      if (source !== 'radonchar')
-        radonchar.chart.dispatchAction({
-          type,
-          seriesIndex: 0,
-          dataIndex,
-        });
-      if (source !== 'Thoronchar')
-        Thoronchar.chart.dispatchAction({
-          type,
-          seriesIndex: 0,
-          dataIndex,
-        });
-      if (source !== 'AmbientChart')
-        AmbientChart.chart.dispatchAction({
-          type,
-          seriesIndex: 0,
-          dataIndex,
-        });
+      // const { radonchar, Thoronchar, AmbientChart } = this.getchartRef();
+      // if (source !== 'radonchar')
+      //   radonchar.chart.dispatchAction({
+      //     type,
+      //     seriesIndex: 0,
+      //     dataIndex,
+      //   });
+      // if (source !== 'Thoronchar')
+      //   Thoronchar.chart.dispatchAction({
+      //     type,
+      //     seriesIndex: 0,
+      //     dataIndex,
+      //   });
+      // if (source !== 'AmbientChart')
+      //   AmbientChart.chart.dispatchAction({
+      //     type,
+      //     seriesIndex: 0,
+      //     dataIndex,
+      //   });
     },
   },
   watch: {},
