@@ -20,6 +20,9 @@ import {
   DatasetComponent,
   TransformComponent,
   LegendComponent,
+  ToolboxComponent,
+  DataZoomComponent,
+  MarkLineComponent,
 } from 'echarts/components';
 // 标签自动布局，全局过渡动画等特性
 import { LabelLayout, UniversalTransition } from 'echarts/features';
@@ -38,6 +41,9 @@ echarts.use([
   LabelLayout,
   UniversalTransition,
   CanvasRenderer,
+  ToolboxComponent,
+  DataZoomComponent,
+  MarkLineComponent,
 ]);
 // -------------按需引入结束------------------------
 
@@ -48,6 +54,8 @@ export default {
     return {
       chart: null,
       data: null,
+      RadonAt: null,
+      isfinished: false,
       option: {
         color: ['#5470C6', '#91CC75', '#EE6666', '#f5c85c', '#7fc0dd'],
         title: {
@@ -80,7 +88,7 @@ export default {
         yAxis: [
           {
             max(value) {
-              const len = 10 ** ((+value.max).toString().length - 1);
+              const len = 10 ** (parseInt(value.max, 10).toString().length - 1);
               // 取最大值向上取整为最大刻度
               return Math.ceil((value.max * 1.3) / len) * len;
             },
@@ -141,15 +149,23 @@ export default {
      * 更新数据
      */
     update(data) {
+      // console.log('更新数据');
       this.data = data.Radon;
+      this.RadonAt = data.RadonAt;
+      if (this.isfinished) {
+        this.setdata();
+      }
+    },
+
+    setdata() {
       this.$refs.chart.setOption({
         xAxis: {
-          data: data.RadonAt,
+          data: this.RadonAt,
         },
-        series: [{ name: '氡浓度(Bq/m³)', data: data.Radon }],
+        series: [{ name: '氡浓度(Bq/m³)', data: this.data }],
       });
-      this.barUpdate({ zoomStart: 0, zoomEnd: 100 });
-      this.zoomdata(0, 100, data.Radon);
+      // this.barUpdate({ zoomStart: 0, zoomEnd: 100 });
+      this.zoomdata(0, 100, this.data);
     },
 
     /**
@@ -160,13 +176,13 @@ export default {
     },
 
     init() {
+      // console.log('开始初始化图表');
       // 2.初始化
       this.$refs.chart.init(echarts, (chart) => {
         // 3.配置数据
         chart.setOption(this.option);
         // 4.传入数据
         chart.on('datazoom', () => {
-          // // console.log(chart.getOption().dataZoom);
           const { endValue } = chart.getOption().dataZoom[1];
           const { startValue } = chart.getOption().dataZoom[1];
           this.getzoom({
@@ -182,9 +198,9 @@ export default {
             dataIndex = params.dataIndex;
 
             this.barUpdate({ zoomStart: dataIndex, zoomEnd: dataIndex });
-            // this.$bus.$emit("chartzoom", this.data, dataIndex, dataIndex + 1);
           }
         });
+
         chart.getZr().on('mousemove', (params) => {
           const pointInPixel = [params.offsetX, params.offsetY];
           // 判断当前鼠标移动的位置是否在图表中
@@ -203,24 +219,6 @@ export default {
               dataIndex: xIndex,
               source: 'radonchar',
             });
-
-            // // 使用getOption() 获取图表的option
-            // const op = chart.getOption();
-            // // 获取当前点击位置要的数据
-            // const xDate = op.xAxis[0].data[xIndex];
-            // console.log(pointInPixel, "x索引" + xIndex, "x值" + xDate);
-            // // 这里不直接用params.dataIndex是因为可能两个图表X轴的月份数据点不一致
-            // // const dataIndex = chart.charts.data.xAxis.findIndex(
-            // //   (x) => x === xDate
-            // // );
-            // // console.log(chart);
-            // chart.dispatchAction({
-            //   type: "showTip",
-            //   seriesIndex: 0,
-            //   // 我用的echarts版本是4.8.0，用name而不用dataIndex时，不知道为什么tooltip不显示，所以这里用dataIndex
-            //   // name: params.name
-            //   dataIndex: xIndex,
-            // });
           } else {
             // 隐藏tooltip
             this.setTooltip({
@@ -230,6 +228,11 @@ export default {
             });
           }
         });
+        // console.log('结束初始化图表', this.data);
+        this.isfinished = true;
+        if (this.data) {
+          this.setdata();
+        }
       });
     },
 
@@ -238,7 +241,8 @@ export default {
      * @param {Number} startValue 图表区域起始下标
      * @param {Number} endValue 图表区域结束下标
      */
-    zoomdata(startValue, endValue, datas1) {
+    zoomdata(startValue, endValue) {
+      console.log('添加标线');
       this.$refs.chart.setOption({
         dataZoom: [
           {
@@ -258,7 +262,9 @@ export default {
                 { type: 'average', name: 'X\u0305' },
                 {
                   name: 'X\u0305+1xσ',
-                  yAxis: hezhi(datas1, startValue, endValue, 1, 1).toFixed(2),
+                  yAxis: hezhi(this.data, startValue, endValue, 1, 1).toFixed(
+                    2
+                  ),
                   label: {
                     show: true,
                     formatter: '{b} : {c}\n\n',
@@ -266,11 +272,13 @@ export default {
                 },
                 {
                   name: '\n\nX\u0305-1xσ',
-                  yAxis: hezhi(datas1, startValue, endValue, 0, 1),
+                  yAxis: hezhi(this.data, startValue, endValue, 0, 1),
                 },
                 {
                   name: 'X\u0305+2xσ',
-                  yAxis: hezhi(datas1, startValue, endValue, 1, 2).toFixed(2),
+                  yAxis: hezhi(this.data, startValue, endValue, 1, 2).toFixed(
+                    2
+                  ),
                   label: {
                     show: true,
                     formatter: '{b} : {c}\n\n\n\n',
@@ -278,7 +286,7 @@ export default {
                 },
                 {
                   name: '\n\n\n\nX\u0305-2xσ',
-                  yAxis: hezhi(datas1, startValue, endValue, 0, 2),
+                  yAxis: hezhi(this.data, startValue, endValue, 0, 2),
                 },
               ],
             },
@@ -286,7 +294,7 @@ export default {
         ],
       });
       // if (Plot_Chart !== undefined && Plot_Chart !== null) {
-      //   Plot_Chart.setOption(Plotupoption(datas1, startValue, endValue));
+      //   Plot_Chart.setOption(Plotupoption(this.data, startValue, endValue));
       // }
     },
   },
