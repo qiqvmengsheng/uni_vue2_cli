@@ -9,6 +9,24 @@
         :setTooltip="setTooltip"
       ></RadonChart>
     </view>
+    <view class="chart">
+      <ThoronChart
+        class="echart"
+        ref="Thoronchar"
+        :getzoom="getzoom"
+        :barUpdate="barUpdate"
+        :setTooltip="setTooltip"
+      ></ThoronChart>
+    </view>
+    <view class="chart">
+      <Tempera
+        class="echart"
+        ref="AmbientChart"
+        :getzoom="getzoom"
+        :barUpdate="barUpdate"
+        :setTooltip="setTooltip"
+      ></Tempera>
+    </view>
   </div>
 </template>
 
@@ -18,9 +36,11 @@ import to from 'await-to-js';
 import { toast, confirm } from '@uni/apis';
 import { measuredGetdata, getlastDatas } from '@/api/devdata';
 import RadonChart from './RadonChart';
+import ThoronChart from './ThoronChart';
+import Tempera from './temperature';
 
 export default {
-  components: { RadonChart },
+  components: { RadonChart, ThoronChart, Tempera },
   data() {
     return {
       data: null,
@@ -91,8 +111,8 @@ export default {
       // this.$refs.qhThoronchar.update(data);
       // this.$refs.qhAmbientChart.update(data);
       this.$refs.radonchar.update(data);
-      // this.$refs.Thoronchar.update(data);
-      // this.$refs.AmbientChart.update(data);
+      this.$refs.Thoronchar.update(data);
+      this.$refs.AmbientChart.update(data);
     },
 
     barUpdate({ zoomStart, zoomEnd }) {
