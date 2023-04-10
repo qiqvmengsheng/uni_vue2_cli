@@ -1,6 +1,6 @@
 /* eslint no-shadow: [1, { "allow": ["state"] }] */
 import to from 'await-to-js';
-import { login, getdata } from '@/api/user';
+import { login, getdata, finduderinfo } from '@/api/user';
 import {
   getToken,
   setToken,
@@ -16,17 +16,22 @@ const getDefaultState = () => ({
   devices: [],
   avatar: '',
   systemrole: '',
+  userInfo: {},
 });
 
 const mutations = {
   RESET_STATE: (state) => {
     Object.assign(state, getDefaultState());
+    // state = { ...state, ...getDefaultState() };
   },
   SET_TOKEN: (state, token) => {
     state.token = token;
   },
   SET_NAME: (state, name) => {
     state.name = name;
+  },
+  SET_INFO: (state, userInfo) => {
+    state.userInfo = userInfo;
   },
   SET_DEVICES: (state, devices) => {
     state.devices = devices;
@@ -103,34 +108,27 @@ const actions = {
 
   // get user info
   async getInfo({ commit }) {
+    finduderinfo().then(
+      (r) => {
+        // console.log('用户信息', r.data);
+        commit('SET_INFO', r.data);
+      },
+      (e) => {
+        console.log(e);
+      }
+    );
     const [err, res] = await to(getdata());
     if (err) {
       console.log('获取用户信息出错', err);
       return Promise.reject(err);
     }
-    // console.log('获取用户信息：', res);
+    // console.log('获取用户设备：', res);
     const { data } = res.data;
     const { username, device, systemrole } = data;
     commit('SET_NAME', username);
     commit('SET_DEVICES', device);
     commit('SET_SYSTEMROLR', systemrole);
     return Promise.resolve(data);
-    // return new Promise((resolve, reject) => {
-    //   // console.log(state.token, "\n", getToken());
-    //   getdata(state.token)
-    //     .then((response) => {
-    //       // console.log("store/getInfo", data);
-    //       if (!data) {
-    //         return reject(
-    //           new Error('Verification failed, please Login again.')
-    //         );
-    //       }
-
-    //     })
-    //     .catch((error) => {
-    //       reject(error);
-    //     });
-    // });
   },
 
   // user logout

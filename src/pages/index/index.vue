@@ -158,11 +158,11 @@
               </view>
               <text class="grid-text">{{ item.abbreviation || '无' }}</text>
             </uni-card>
-            <!-- <u-icon
-              :customStyle="{ paddingTop: 20 + 'rpx' }"
-              :name="item.name"
-              :size="22"
-            ></u-icon> -->
+          </u-grid-item>
+          <u-grid-item>
+            <uni-card class="item-card">
+              <u-icon name="plus" color="#2979ff" size="45"></u-icon>
+            </uni-card>
           </u-grid-item>
         </u-grid>
       </view>
@@ -189,12 +189,24 @@ export default {
       show: true,
     };
   },
-  computed: { ...mapGetters(['name', 'devices']) },
+  computed: { ...mapGetters(['name', 'devices', 'userInfo']) },
+  watch: {
+    userInfo(newValue) {
+      // console.log('参数', newValue.userphone);
+      if (newValue.userphone.length !== 11) {
+        this.$refs.getpnumber.showModal();
+      }
+    },
+  },
   // 页面周期函数--监听页面加载
   created() {},
   onLoad() {},
-  mounted() {
-    this.$refs.getpnumber.showModal();
+  async mounted() {
+    // const [err, res] = await to(this.getInfo());
+    // if (err) {
+    //   console.log(err, res);
+    //   return;
+    // }
   },
   methods: {
     ...mapActions('user', ['getInfo']),

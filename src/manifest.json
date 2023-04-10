@@ -57,7 +57,8 @@
 		"appid": "wx678fbec6260386c3",
 		"setting": {
 			"urlCheck": false,
-			"minified": true
+			"minified": true,
+			"enhance": false // 编译成ES5，开启SourceMap源代码映射
 		},
 		"usingComponents": true,
 		// 开启组件按需注入
