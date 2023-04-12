@@ -29,6 +29,7 @@ export default {
     // 从前台进入后台
     // console.log('App Hide');
   },
+  watch: {},
   methods: {
     ...mapActions('user', ['wxlogin', 'getInfo']),
     /**

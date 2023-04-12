@@ -1,7 +1,8 @@
 <template>
   <view class="content">
+    <view></view>
     <GetPhoneNumberVue ref="getpnumber"></GetPhoneNumberVue>
-    <view class="button_view">
+    <view class="button_view" v-if="false">
       <view class="ubutton">
         <u-button
           type="primary"
@@ -29,7 +30,7 @@
     </uni-tooltip> -->
     <!-- <image class="logo" src="/static/logo.png"></image> -->
 
-    <view>
+    <view v-if="false">
       <u-list class="u-page" height="600rpx">
         <u-list-item
           v-for="(item, index) in devices"
@@ -121,6 +122,12 @@
         </u-list-item>
       </u-list>
     </view>
+
+    <view class="bg"></view>
+    <view class="head1">
+      <text>选择您的设备</text>
+    </view>
+
     <template>
       <view class="grid">
         <u-grid :border="false" col="2">
@@ -167,11 +174,22 @@
         </u-grid>
       </view>
     </template>
-    <u-toast ref="uToast"></u-toast>
     <!--<u-tabbar :value="value1" @change="change1">
       <u-tabbar-item text="首页" icon="home" @click="click1"></u-tabbar-item>
       <u-tabbar-item text="我的" icon="account" @click="click1"></u-tabbar-item>
     </u-tabbar> -->
+    <view class="login-prompt" v-if="loginbtnshow">
+      <text>登录后查看设备</text>
+      <view class="loginbtn">
+        <u-button
+          text="去登录"
+          size="small"
+          shape="circle"
+          type="primary"
+          @click="$Router.push({ name: 'login' })"
+        ></u-button>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -186,6 +204,7 @@ export default {
   components: { GetPhoneNumberVue },
   data() {
     return {
+      loginbtnshow: false,
       show: true,
     };
   },
@@ -194,7 +213,8 @@ export default {
     userInfo(newValue) {
       // console.log('参数', newValue.userphone);
       if (newValue.userphone.length !== 11) {
-        this.$refs.getpnumber.showModal();
+        this.loginbtnshow = true;
+        // this.$refs.getpnumber.showModal();
       }
     },
   },
@@ -332,10 +352,8 @@ export default {
       // console.log(index);
       // this.$Router.push(index.path);
       console.log(this.devices);
-      this.$refs.uToast.show({
-        type: 'success',
-        message: `欢迎${this.name}登录`,
-        // duration: '2300',
+      toast.showToast({
+        content: `欢迎${this.name}登录`,
       });
     },
     /**
@@ -394,9 +412,22 @@ export default {
 .right-icon {
   float: right;
 }
+.bg {
+  position: fixed;
+  top: 0;
+  z-index: -10;
+  width: 100vw;
+  height: 50vh;
+  background-color: #184677;
+  border-radius: 0px 0px 25vw 100vw / 0px 0px 5vh 25vh;
+}
+.head1 {
+  color: #fff;
+  margin: 10vh auto 20rpx;
+}
 .grid {
-  width: 730rpx;
-  margin: 5px;
+  width: 98vw;
+  margin: 1vw;
 }
 .list-card {
   width: 710rpx;
@@ -466,5 +497,33 @@ export default {
 .text-area {
   display: flex;
   justify-content: center;
+}
+
+.login-prompt {
+  z-index: 50;
+  height: 80rpx;
+  width: 90%;
+  margin: 0 auto;
+  border-radius: 40rpx;
+  position: fixed;
+  bottom: 30rpx;
+  background-color: rgba($color: #000000, $alpha: 0.7);
+  color: #fff;
+  display: flex;
+  // 副轴对齐方式align-items  上下居中
+  align-items: center;
+  /* 主轴空位分配方式justify-content */
+  justify-content: space-between;
+  & text {
+    // position: relative;
+    // left: 40rpx;
+    margin-left: 40rpx;
+    // border: blue solid 1px;
+    line-height: 80rpx;
+  }
+  & .loginbtn {
+    font-size: 13px;
+    margin-right: 10rpx;
+  }
 }
 </style>

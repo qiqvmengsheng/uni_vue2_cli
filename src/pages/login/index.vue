@@ -1,41 +1,23 @@
 <template>
-  <view @touchmove.stop.prevent="">
-    <u-modal
-      title="登录"
-      :show="show"
-      closeOnClickOverlay
-      @confirm="() => (show = false)"
-      @close="() => (show = false)"
-      content="微信用户一键登录"
-    >
-      <!-- <button
-      showCancelButton
-      showConfirmButton
-        slots="confirmButton"
-        type="default"
-        size="mini"
-        hover-class="none"
-        open-type="getPhoneNumber"
-        @getphonenumber="getPhoneNumber"
-      >新用户请绑定手机号，如已有网页平台账号请绑定对应账号的手机号，用于关联账号数据。
-        获取手机号
-      </button> -->
+  <div class="login">
+    <view class="btn">
       <u-button
         slot="confirmButton"
-        text="登录"
-        type="success"
+        text="微信用户一键登录"
+        type="primary"
         shape="circle"
         open-type="getPhoneNumber"
         @getphonenumber="getPhoneNumber"
         @click="show = false"
       ></u-button>
-    </u-modal>
-  </view>
+    </view>
+  </div>
 </template>
 
 <script>
 import to from 'await-to-js';
 import { getPnumber } from '@/api/user';
+import { alert } from '@uni/apis';
 
 export default {
   data() {
@@ -70,6 +52,11 @@ export default {
         // errMsg
         // iv
       } else {
+        alert({
+          title: '提示',
+          content: '您以拒绝授权，请重新点击并授权！',
+          buttonText: '确认',
+        });
         console.log('用户点击了拒绝');
       }
     },
@@ -78,7 +65,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.ubutton {
-  margin: 0 15rpx 15rpx 0;
+.login {
+  height: 100vh;
+  position: relative;
+}
+.btn {
+  position: relative;
+  top: 70%;
+  width: 95%;
+  margin: 0 auto;
 }
 </style>

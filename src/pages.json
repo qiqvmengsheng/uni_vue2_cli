@@ -47,6 +47,13 @@
 				"navigationBarTitleText": "图表"
 			},
 			"name": "chartView"
+		},
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "login"
+			},
+			"name": "login"
 		}
 	],
 	"globalStyle": {
