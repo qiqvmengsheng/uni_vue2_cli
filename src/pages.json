@@ -54,6 +54,12 @@
 				"navigationBarTitleText": "login"
 			},
 			"name": "login"
+		},
+		{
+			"path": "pages/index/device/index",
+			"style": {
+				"navigationBarTitleText": "device"
+			}
 		}
 	],
 	"globalStyle": {

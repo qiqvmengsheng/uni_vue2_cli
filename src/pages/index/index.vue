@@ -127,8 +127,30 @@
     <view class="head1">
       <text>选择您的设备</text>
     </view>
+    <view class="grid">
+      <u-grid :border="false" col="2">
+        <u-grid-item
+          v-for="(item, baseListIndex) in devices"
+          :key="baseListIndex"
+        >
+          <view class="dev-view" @click="tocommandView(index, item)">
+            <view>
+              <text>设备昵称: {{ item.abbreviation || '无' }}</text>
+            </view>
+            <view>
+              <text>序列号： {{ item.deviceserial }}</text>
+            </view>
+          </view>
+        </u-grid-item>
+        <u-grid-item>
+          <view class="dev-view">
+            <u-icon name="plus" color="#2979ff" size="45"> </u-icon>
+          </view>
+        </u-grid-item>
+      </u-grid>
+    </view>
 
-    <template>
+    <template v-if="false">
       <view class="grid">
         <u-grid :border="false" col="2">
           <u-grid-item
@@ -178,7 +200,7 @@
       <u-tabbar-item text="首页" icon="home" @click="click1"></u-tabbar-item>
       <u-tabbar-item text="我的" icon="account" @click="click1"></u-tabbar-item>
     </u-tabbar> -->
-    <view class="login-prompt" v-if="loginbtnshow">
+    <view class="login-prompt" v-if="loginbtnshow" @touchmove.stop.prevent="">
       <text>登录后查看设备</text>
       <view class="loginbtn">
         <u-button
@@ -222,6 +244,7 @@ export default {
   created() {},
   onLoad() {},
   async mounted() {
+    // this.$Router.push({ name: 'commandView' });
     // const [err, res] = await to(this.getInfo());
     // if (err) {
     //   console.log(err, res);
@@ -395,6 +418,40 @@ export default {
 .iconfont {
   color: #999;
 }
+.bg {
+  position: fixed;
+  top: 0;
+  z-index: -10;
+  width: 100vw;
+  height: 50vh;
+  background-color: #184677;
+  border-radius: 0px 0px 25vw 100vw / 0px 0px 5vh 25vh;
+}
+.head1 {
+  color: #fff;
+  margin: 10vh auto 20rpx;
+}
+.grid {
+  width: 90vw;
+  margin: 1vw 5vw;
+}
+.dev-view {
+  background-color: #fff;
+  width: 40vw;
+  height: 400rpx;
+  margin: 2.5vw;
+  border-radius: 20rpx;
+  box-shadow: 4rpx 4rpx 10rpx 6rpx rgba(0, 0, 0, 0.1);
+  display: flex;
+  // flex轴横向，溢出换行。 flex-direction: row;  flex-wrap: wrap; 简写 flex-flow
+  flex-flow: row wrap;
+  // 副轴对齐方式align-items  上下居中
+  align-items: center;
+  /* 主轴对齐方式justify-content */
+  justify-content: center;
+  & view {
+  }
+}
 .card-actions-item {
   // flex: auto;
   display: flex;
@@ -411,23 +468,6 @@ export default {
 }
 .right-icon {
   float: right;
-}
-.bg {
-  position: fixed;
-  top: 0;
-  z-index: -10;
-  width: 100vw;
-  height: 50vh;
-  background-color: #184677;
-  border-radius: 0px 0px 25vw 100vw / 0px 0px 5vh 25vh;
-}
-.head1 {
-  color: #fff;
-  margin: 10vh auto 20rpx;
-}
-.grid {
-  width: 98vw;
-  margin: 1vw;
 }
 .list-card {
   width: 710rpx;
@@ -525,5 +565,11 @@ export default {
     font-size: 13px;
     margin-right: 10rpx;
   }
+}
+</style>
+
+<style lang="scss">
+page {
+  background: $uni-bg-color-grey;
 }
 </style>
