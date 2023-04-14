@@ -59,7 +59,8 @@
 			"path": "pages/index/device/index",
 			"style": {
 				"navigationBarTitleText": "device"
-			}
+			},
+			"name": "device"
 		}
 	],
 	"globalStyle": {

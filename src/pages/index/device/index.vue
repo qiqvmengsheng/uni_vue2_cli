@@ -1,23 +1,46 @@
 <template>
   <div class="device">
     <template>
-      <u-sticky bgColor="#fff">
-        <u-tabs :list="list1"></u-tabs>
-      </u-sticky>
+      <view class="tabs">
+        <u-sticky bgColor="#fff">
+          <u-tabs :list="list1" @change="change1" scrollable="false"></u-tabs>
+        </u-sticky>
+      </view>
     </template>
+    <view v-show="show"></view>
+    <view v-show="!show"><commandView></commandView></view>
   </div>
 </template>
 
 <script>
+import commandView from '../../commandView/index';
+
 export default {
-  components: {},
+  components: { commandView },
   data() {
     return {
-      list1: [{ name: '数据展示' }, { name: '命令下发' }],
+      show: true,
+      list1: [
+        { name: '数据展示', show: true },
+        { name: '命令下发', show: false },
+      ],
     };
   },
   computed: {},
-  methods: {},
+  created() {
+    this.$AppReady.then(() => {
+      const id = this.$Route.query.deviceid;
+      [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
+      // console.log(this.dev);
+      this.getwrodtobyts();
+    });
+  },
+  methods: {
+    change1(item) {
+      this.show = item.show;
+      console.log(item);
+    },
+  },
   watch: {},
 
   // 页面周期函数--监听页面加载
@@ -41,7 +64,14 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.tabs {
+  display: flex;
+  /* 主轴空位分配方式justify-content */
+  justify-content: center;
+  margin: 0 auto 20rpx;
+}
+</style>
 
 <style lang="scss">
 page {

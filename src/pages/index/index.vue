@@ -143,7 +143,7 @@
           </view>
         </u-grid-item>
         <u-grid-item>
-          <view class="dev-view">
+          <view class="dev-view" @click="addDevice">
             <u-icon name="plus" color="#2979ff" size="45"> </u-icon>
           </view>
         </u-grid-item>
@@ -289,7 +289,7 @@ export default {
     tocommandView(index, row) {
       // console.log(row);
       this.$Router.push({
-        name: 'commandView',
+        name: 'device',
         params: { deviceid: row.deviceid },
       });
     },
@@ -362,10 +362,10 @@ export default {
      * 跳转到添加设备页面
      */
     async addDevice() {
-      const index = this.$Router.options.routes.filter(
-        (r) => r.name === 'addDevice'
-      )[0];
-      console.log(index);
+      // const index = this.$Router.options.routes.filter(
+      //   (r) => r.name === 'addDevice'
+      // )[0];
+      // console.log(index);
       this.$Router.push({ name: 'addDevice' });
     },
     async test() {
