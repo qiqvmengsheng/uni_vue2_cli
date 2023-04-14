@@ -103,7 +103,8 @@ async function httpErrorStatusHandle(error) {
         message = '您没有权限操作！';
         break;
       case 404:
-        message = `请求地址出错: ${error.response.config.url}`;
+        message = '请求地址404';
+        // message = `请求地址出错: ${error.response.config.url}`;
         break; // 在正确域名下
       case 408:
         message = '请求超时！';

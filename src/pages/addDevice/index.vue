@@ -30,22 +30,21 @@
         <u-form-item label="设备备注" prop="abbreviation">
           <u-input v-model="dev.abbreviation" type="select" />
         </u-form-item>
-        <u-form-item label="开关">
+        <!-- <u-form-item label="开关">
           <u-switch slot="right" v-model="value"></u-switch>
-        </u-form-item>
+        </u-form-item> -->
         <u-form-item>
           <view class="btn-view">
-            <view class="btn">
-              <u-button type="primary" plain text="确定" @click="doupdatedev">
-                添加设备
-              </u-button>
-            </view>
-            <view class="btn">
+            <view class="btn"> </view>
+            <!-- <view class="btn">
               <u-button type="primary" plain text="确定" @click="test">
                 测试
               </u-button>
-            </view>
+            </view> -->
           </view>
+          <u-button type="primary" text="确定" @click="doupdatedev">
+            添加设备
+          </u-button>
         </u-form-item>
       </u-form>
       <u-action-sheet
