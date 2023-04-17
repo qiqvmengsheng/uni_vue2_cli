@@ -415,17 +415,19 @@ export default {
 
 <style scoped lang="scss">
 @import '@/static/icon/iconfont.css';
+@import '@/style/mixin.scss';
 .iconfont {
   color: #999;
 }
 .bg {
-  position: fixed;
-  top: 0;
-  z-index: -10;
-  width: 100vw;
-  height: 50vh;
-  background-color: #184677;
-  border-radius: 0px 0px 25vw 100vw / 0px 0px 5vh 25vh;
+  @include ArcBackground();
+  // position: fixed;
+  // top: 0;
+  // z-index: -10;
+  // width: 100vw;
+  // height: 50vh;
+  // background-color: #184677;
+  // border-radius: 0px 0px 25vw 100vw / 0px 0px 5vh 25vh;
 }
 .head1 {
   color: #fff;

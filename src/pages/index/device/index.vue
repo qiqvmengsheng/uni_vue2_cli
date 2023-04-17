@@ -1,24 +1,34 @@
 <template>
   <div class="device">
+    <view class="bg"></view>
     <template>
-      <view class="tabs">
-        <u-sticky bgColor="#fff">
-          <u-tabs :list="list1" @change="change1" scrollable="false"></u-tabs>
-        </u-sticky>
-      </view>
+      <u-sticky bgColor="rgba(0,0,0,0)">
+        <view class="tabs">
+          <view>
+            <u-tabs :list="list1" @change="change1" scrollable="false"></u-tabs>
+          </view>
+        </view>
+      </u-sticky>
     </template>
-    <view v-show="show"></view>
+    <view v-show="show"> <dataList :data="data"></dataList> </view>
     <view v-show="!show"><commandView></commandView></view>
   </div>
 </template>
 
 <script>
+import to from 'await-to-js';
+import { mapGetters } from 'vuex';
+import { DataStreams } from '@/api/onenet';
 import commandView from '../../commandView/index';
+import dataList from '../components/datalist';
 
 export default {
-  components: { commandView },
+  components: { commandView, dataList },
   data() {
     return {
+      dev: null,
+      // dlist: null,
+      data: null,
       show: true,
       list1: [
         { name: '数据展示', show: true },
@@ -26,12 +36,17 @@ export default {
       ],
     };
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['devices']),
+    // datalist() {
+    //   return [...this.data];
+    // },
+  },
   created() {
     this.$AppReady.then(() => {
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
-      // console.log(this.dev);
+      console.log('设备页面', this.dev);
       this.getwrodtobyts();
     });
   },
@@ -39,6 +54,33 @@ export default {
     change1(item) {
       this.show = item.show;
       console.log(item);
+    },
+
+    /**
+     * 获取设置
+     */
+    async getwrodtobyts() {
+      // const a = ['Radon', 'Thoron', 'temperature', 'Pressure', 'humidity'];
+      const [err, res] = await to(
+        DataStreams({ deviceId: this.dev.deviceid, apikey: this.dev.apikey })
+      );
+      if (err) {
+        console.log(err, res);
+        return;
+      }
+      console.log(res.data);
+      const data = {};
+      // const arr = [];
+      res.data.data.forEach((l) => {
+        data[l.id] = l.current_value;
+        // if (a.includes(l.id)) arr.push(l);
+      });
+      data.update_at = res.data.data.filter(
+        (item) => item.id === 'Radon'
+      )[0].update_at;
+      this.data = data;
+      // this.dlist = arr;
+      console.log(data);
     },
   },
   watch: {},
@@ -65,11 +107,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/style/mixin.scss';
+.bg {
+  @include ArcBackground();
+}
 .tabs {
   display: flex;
   /* 主轴空位分配方式justify-content */
   justify-content: center;
   margin: 0 auto 20rpx;
+  & view {
+    background-color: #fff;
+  }
 }
 </style>
 

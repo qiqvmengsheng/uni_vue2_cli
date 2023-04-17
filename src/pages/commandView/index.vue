@@ -290,7 +290,7 @@ export default {
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
       // console.log(this.dev);
-      this.getwrodtobyts();
+      // this.getwrodtobyts();
     });
   },
   mounted() {},
@@ -511,8 +511,6 @@ export default {
 // }
 .cell {
   background-color: $uni-bg-color;
-}
-.cell {
   margin-bottom: 20rpx;
 }
 .btnView {
