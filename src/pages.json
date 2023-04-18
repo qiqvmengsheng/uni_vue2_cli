@@ -51,14 +51,14 @@
 		{
 			"path": "pages/login/index",
 			"style": {
-				"navigationBarTitleText": "login"
+				"navigationBarTitleText": "登录"
 			},
 			"name": "login"
 		},
 		{
 			"path": "pages/index/device/index",
 			"style": {
-				"navigationBarTitleText": "device"
+				"navigationBarTitleText": "设备"
 			},
 			"name": "device"
 		}

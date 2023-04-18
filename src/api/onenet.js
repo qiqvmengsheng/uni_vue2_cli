@@ -1,5 +1,5 @@
 import request from '@/utils/http';
-import qs from 'qs';
+// import qs from 'qs';
 
 /**
  * 查询设备历史数据
@@ -16,7 +16,7 @@ export function datapoints({ deviceId, apikey, params }) {
 }
 
 /**
- * 批量查询设备最新数据
+ * 批量查询多个设备最新数据
  * @param {Object} data
  */
 export function devsdatapoints({ devIds, auth }) {
@@ -30,7 +30,7 @@ export function devsdatapoints({ devIds, auth }) {
 }
 
 /**
- * 批量查询数据流信息和最新数据点
+ * 单个设备批量查询数据流信息和最新数据点
  * @param {Object} data
  */
 export function DataStreams({ deviceId, apikey, params }) {

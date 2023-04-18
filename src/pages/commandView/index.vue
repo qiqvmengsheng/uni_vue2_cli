@@ -219,7 +219,7 @@ export default {
         SampleInterval: 0,
       },
       Intervalshow: false,
-      disabled: false,
+      disabled: true,
       PumpMode: '',
       PumpModeshow: false,
       PumpModelist: [

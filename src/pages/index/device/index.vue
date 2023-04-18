@@ -1,17 +1,38 @@
 <template>
   <div class="device">
-    <view class="bg"></view>
     <template>
       <u-sticky bgColor="rgba(0,0,0,0)">
         <view class="tabs">
           <view>
-            <u-tabs :list="list1" @change="change1" scrollable="false"></u-tabs>
+            <u-tabs
+              :list="list1"
+              @change="change1"
+              scrollable="false"
+              :activeStyle="{ color: '#fff', 'background-color': '#2f5a84' }"
+              :inactiveStyle="{ color: '#fff', 'background-color': '#17364f' }"
+            ></u-tabs>
           </view>
         </view>
       </u-sticky>
     </template>
-    <view v-show="show"> <dataList :data="data"></dataList> </view>
-    <view v-show="!show"><commandView></commandView></view>
+    <view class="head">
+      <view class="bg"></view>
+      <view class="">
+        <text class="timetext">
+          最新数据更新时间
+          {{ data.update_at }}
+        </text>
+      </view>
+    </view>
+
+    <view class="dataview">
+      <view v-show="show">
+        <dataList :data="data" :dev="dev"> </dataList>
+      </view>
+      <view v-show="!show">
+        <commandView :data="data" :getdata="getdata"> </commandView>
+      </view>
+    </view>
   </div>
 </template>
 
@@ -46,8 +67,8 @@ export default {
     this.$AppReady.then(() => {
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
-      console.log('设备页面', this.dev);
-      this.getwrodtobyts();
+      // console.log('设备页面', this.dev);
+      this.getdata();
     });
   },
   methods: {
@@ -57,9 +78,9 @@ export default {
     },
 
     /**
-     * 获取设置
+     * 获取数据
      */
-    async getwrodtobyts() {
+    async getdata() {
       // const a = ['Radon', 'Thoron', 'temperature', 'Pressure', 'humidity'];
       const [err, res] = await to(
         DataStreams({ deviceId: this.dev.deviceid, apikey: this.dev.apikey })
@@ -108,6 +129,10 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/style/mixin.scss';
+.head {
+  position: fixed;
+  top: 0;
+}
 .bg {
   @include ArcBackground();
 }
@@ -116,9 +141,16 @@ export default {
   /* 主轴空位分配方式justify-content */
   justify-content: center;
   margin: 0 auto 20rpx;
-  & view {
-    background-color: #fff;
-  }
+  // & view {
+  //   background-color: #fff;
+  // }
+}
+.timetext {
+  color: $uni-text-color-inverse;
+}
+.dataview {
+  position: relative;
+  top: 30vw;
 }
 </style>
 
