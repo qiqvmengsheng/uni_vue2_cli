@@ -8,8 +8,23 @@
               :list="list1"
               @change="change1"
               scrollable="false"
-              :activeStyle="{ color: '#fff', 'background-color': '#2f5a84' }"
-              :inactiveStyle="{ color: '#fff', 'background-color': '#17364f' }"
+              :itemStyle="{ 'background-color': '#fff', padding: '0' }"
+              :activeStyle="{
+                color: '#fff',
+                'background-color': '#2f5a84',
+                padding: '0 15px',
+                width: '60px',
+                height: '30px',
+                'line-height': '30px',
+              }"
+              :inactiveStyle="{
+                color: '#c0c0c0',
+                'background-color': '#17364f',
+                padding: '0 15px',
+                width: '60px',
+                height: '30px',
+                'line-height': '30px',
+              }"
             ></u-tabs>
           </view>
         </view>
@@ -27,10 +42,11 @@
 
     <view class="dataview">
       <view v-show="show">
-        <dataList :data="data" :dev="dev"> </dataList>
+        <DataList ref="datalist" :dev="dev"> </DataList>
       </view>
       <view v-show="!show">
-        <commandView :data="data" :getdata="getdata"> </commandView>
+        <CommandView :data="data" ref="command" :getdata="getdata">
+        </CommandView>
       </view>
     </view>
   </div>
@@ -40,11 +56,11 @@
 import to from 'await-to-js';
 import { mapGetters } from 'vuex';
 import { DataStreams } from '@/api/onenet';
-import commandView from '../../commandView/index';
-import dataList from '../components/datalist';
+import CommandView from '../components/Command';
+import DataList from '../components/DataList';
 
 export default {
-  components: { commandView, dataList },
+  components: { CommandView, DataList },
   data() {
     return {
       dev: null,
@@ -52,8 +68,8 @@ export default {
       data: null,
       show: true,
       list1: [
-        { name: '数据展示', show: true },
-        { name: '命令下发', show: false },
+        { name: '\t\t数据展示\t\t', show: true },
+        { name: '\t\t命令下发\t\t', show: false },
       ],
     };
   },
@@ -101,7 +117,8 @@ export default {
       )[0].update_at;
       this.data = data;
       // this.dlist = arr;
-      console.log(data);
+      console.log('组件', this.$refs);
+      console.log(data, this.$refs.datalist.update(data));
     },
   },
   watch: {},
@@ -139,18 +156,23 @@ export default {
 .tabs {
   display: flex;
   /* 主轴空位分配方式justify-content */
+  position: relative;
+  top: 10px;
   justify-content: center;
   margin: 0 auto 20rpx;
-  // & view {
-  //   background-color: #fff;
-  // }
+  & view {
+    background-color: #17364f;
+  }
 }
 .timetext {
+  position: relative;
+  top: 20vw;
+  left: 10px;
   color: $uni-text-color-inverse;
 }
 .dataview {
   position: relative;
-  top: 30vw;
+  top: 40vw;
 }
 </style>
 

@@ -88,7 +88,10 @@
       </view>
       <view class="ubutton" v-if="!disabled">
         <u-button
-          @click="getwrodtobyts()"
+          @click="
+            getdata();
+            disabled = true;
+          "
           text="取消修改"
           size="normal"
           type="info"
@@ -203,6 +206,10 @@ import { toast, confirm } from '@uni/apis';
 
 export default {
   components: {},
+  props: {
+    data: { required: true },
+    getdata: { required: true },
+  },
   data() {
     return {
       dev: null,
@@ -291,6 +298,12 @@ export default {
   mounted() {},
   methods: {
     /**
+     * 获取数据
+     */
+    InheritedData() {
+      console.log(this.data);
+    },
+    /**
      * 获取设置
      */
     async getwrodtobyts() {
@@ -317,7 +330,7 @@ export default {
       this.wrodtobyts =
         wrodtobyts1.current_value.toString(16).padStart(2, '0') +
         wrodtobyts0.current_value.toString(16).padStart(2, '0');
-      this.codeSetting(this.wrodtobyts);
+      // this.codeSetting(this.wrodtobyts);
       console.log(Radon, this.wrodtobyts, this.form.SampleInterval);
     },
     selectClick(index) {
@@ -473,6 +486,15 @@ export default {
        */
       handler(newValue) {
         this.codeSetting(newValue);
+      },
+    },
+    data: {
+      handler(newValue) {
+        console.log('命令下发页面收到', { ...newValue });
+        this.form.SampleInterval = newValue.Sample_Interval;
+        this.wrodtobyts =
+          newValue['WordTo2Bytes[1]'].toString(16).padStart(2, '0') +
+          newValue['WordTo2Bytes[0]'].toString(16).padStart(2, '0');
       },
     },
   },

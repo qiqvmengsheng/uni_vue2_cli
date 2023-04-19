@@ -69,9 +69,10 @@ import { actionSheet } from '@uni/apis';
 // const a = ['Radon', 'Thoron', 'temperature', 'Pressure', 'humidity'];
 export default {
   components: {},
-  props: { data: { required: true }, dev: { required: true } },
+  props: { dev: { required: true } },
   data() {
     return {
+      data: null,
       disabled: false,
       show: false,
       value: '',
@@ -82,6 +83,10 @@ export default {
     };
   },
   methods: {
+    update(data) {
+      this.data = data;
+      console.log('更新数据', data);
+    },
     action() {
       const route = ['chartView', 'user'];
       actionSheet({
