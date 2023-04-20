@@ -35,7 +35,7 @@
       <view class="">
         <text class="timetext">
           最新数据更新时间
-          {{ data.update_at }}
+          {{ data.update_at || '无' }}
         </text>
       </view>
     </view>
@@ -45,8 +45,7 @@
         <DataList ref="datalist" :dev="dev"> </DataList>
       </view>
       <view v-show="!show">
-        <CommandView :data="data" ref="command" :getdata="getdata">
-        </CommandView>
+        <CommandView ref="command" :getdata="up" :dev="dev"> </CommandView>
       </view>
     </view>
   </div>
@@ -59,6 +58,7 @@ import { DataStreams } from '@/api/onenet';
 import CommandView from '../components/Command';
 import DataList from '../components/DataList';
 
+let that = null;
 export default {
   components: { CommandView, DataList },
   data() {
@@ -80,6 +80,7 @@ export default {
     // },
   },
   created() {
+    that = this;
     this.$AppReady.then(() => {
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
@@ -91,6 +92,11 @@ export default {
     change1(item) {
       this.show = item.show;
       console.log(item);
+    },
+
+    up() {
+      // that.getdata();
+      return that;
     },
 
     /**
@@ -105,7 +111,7 @@ export default {
         console.log(err, res);
         return;
       }
-      console.log(res.data);
+      // console.log(res.data);
       const data = {};
       // const arr = [];
       res.data.data.forEach((l) => {
@@ -117,8 +123,10 @@ export default {
       )[0].update_at;
       this.data = data;
       // this.dlist = arr;
-      console.log('组件', this.$refs);
-      console.log(data, this.$refs.datalist.update(data));
+      // console.log('组件', this.$refs);
+      // console.log(data);
+      this.$refs.datalist.update(data);
+      this.$refs.command.update(data);
     },
   },
   watch: {},

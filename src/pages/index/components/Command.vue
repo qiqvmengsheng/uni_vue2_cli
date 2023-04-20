@@ -70,7 +70,7 @@
       </view>
     </view>
 
-    <view>
+    <view class="tips">
       <text>
         注释：请务必用以下顺序来修改设置和周期，首先停止测量，随后修改，最后重新开始测量。最新数据会在开始测量一周期后出现，请耐心等待。
       </text>
@@ -83,15 +83,11 @@
           text="修改设置"
           size="normal"
           type="primary"
-          plain
         ></u-button>
       </view>
       <view class="ubutton" v-if="!disabled">
         <u-button
-          @click="
-            getdata();
-            disabled = true;
-          "
+          @click="qx"
           text="取消修改"
           size="normal"
           type="info"
@@ -194,7 +190,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 import {
   datapoints,
   devsdatapoints,
@@ -205,14 +200,13 @@ import to from 'await-to-js';
 import { toast, confirm } from '@uni/apis';
 
 export default {
-  components: {},
   props: {
-    data: { required: true },
+    dev: { required: true },
     getdata: { required: true },
   },
   data() {
     return {
-      dev: null,
+      data: null,
       lastDataTime: '',
       lastSettingTime: '',
       wrodtobyts: '',
@@ -277,7 +271,6 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['name', 'devices']),
     Buzzertext() {
       let text = '';
       if (this.Buzzer === '00') text = '关闭';
@@ -287,21 +280,20 @@ export default {
       return text;
     },
   },
-  created() {
-    this.$AppReady.then(() => {
-      const id = this.$Route.query.deviceid;
-      [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
-      // console.log(this.dev);
-      // this.getwrodtobyts();
-    });
-  },
+  created() {},
   mounted() {},
   methods: {
+    qx() {
+      const that = this.getdata();
+      that.getdata();
+      this.disabled = true;
+      console.log('方法传', that);
+    },
     /**
      * 获取数据
      */
-    InheritedData() {
-      console.log(this.data);
+    update(data) {
+      this.data = data;
     },
     /**
      * 获取设置
@@ -476,6 +468,7 @@ export default {
       this.Units = b.slice(11, 12);
       this.Buzzer = b.slice(14, 16);
       this.disabled = true;
+      console.log('更改选项');
     },
   },
   watch: {
@@ -495,30 +488,10 @@ export default {
         this.wrodtobyts =
           newValue['WordTo2Bytes[1]'].toString(16).padStart(2, '0') +
           newValue['WordTo2Bytes[0]'].toString(16).padStart(2, '0');
+        this.codeSetting(this.wrodtobyts);
       },
     },
   },
-
-  // 页面周期函数--监听页面加载
-  onLoad() {},
-  // 页面周期函数--监听页面初次渲染完成
-  onReady() {
-    this.$refs.uForm.setRules(this.rules);
-  },
-  // 页面周期函数--监听页面显示(not-nvue)
-  onShow() {},
-  // 页面周期函数--监听页面隐藏
-  onHide() {},
-  // 页面周期函数--监听页面卸载
-  onUnload() {},
-  // 页面处理函数--监听用户下拉动作
-  // onPullDownRefresh() { uni.stopPullDownRefresh(); },
-  // 页面处理函数--监听用户上拉触底
-  // onReachBottom() {},
-  // 页面处理函数--监听页面滚动(not-nvue)
-  // onPageScroll(event) {},
-  // 页面处理函数--用户点击右上角分享
-  // onShareAppMessage(options) {},
 };
 </script>
 
@@ -544,6 +517,11 @@ export default {
 .ubutton {
   width: 90%;
   margin: 0 15rpx 15rpx 0;
+}
+.tips {
+  padding: 0 10px;
+  margin-bottom: 10px;
+  background-color: $uni-bg-color-grey;
 }
 </style>
 
