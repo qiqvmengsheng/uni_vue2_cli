@@ -88,7 +88,7 @@
       <view class="ubutton" v-if="!disabled">
         <u-button
           @click="qx"
-          text="取消修改"
+          text="关闭修改"
           size="normal"
           type="info"
           plain
@@ -165,7 +165,7 @@
       @confirm="cheekInterval()"
     >
       <view>
-        <u-form :model="form" ref="uForm" labelWidth="100">
+        <u-form :model="form" ref="uForm" :rules="rules" labelWidth="100">
           <u-form-item
             label="设备周期"
             prop="SampleInterval"
@@ -491,6 +491,11 @@ export default {
         this.codeSetting(this.wrodtobyts);
       },
     },
+  },
+
+  // 页面周期函数--监听页面初次渲染完成
+  onReady() {
+    this.$refs.uForm.setRules(this.rules);
   },
 };
 </script>

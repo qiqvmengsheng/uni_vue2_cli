@@ -54,6 +54,18 @@
         ></u-cell>
       </u-cell-group>
     </view>
+    <view class="cell">
+      <u-cell-group>
+        <u-cell
+          title="设备昵称"
+          :value="form.abbreviation"
+          isLink
+          @click="ncshow = true"
+          :disabled="disabled"
+        ></u-cell>
+      </u-cell-group>
+    </view>
+
     <u-action-sheet
       :actions="actionsList"
       cancelText="取消"
@@ -61,32 +73,95 @@
       @close="show = false"
       :show="show"
     ></u-action-sheet>
+
+    <u-modal
+      :show="ncshow"
+      title="设备昵称"
+      closeOnClickOverlay
+      @close="modalclose"
+      @confirm="
+        setabbreviation();
+        ncshow = false;
+      "
+    >
+      <view>
+        <u-form :model="form" ref="uForm" labelWidth="100">
+          <u-form-item label="设备昵称" prop="abbreviation" ref="item1">
+            <u-input
+              placeholder="请输入昵称"
+              type="text"
+              border="surround"
+              v-model="form.abbreviation"
+            >
+            </u-input>
+          </u-form-item>
+        </u-form>
+      </view>
+    </u-modal>
   </view>
 </template>
 
 <script>
-import { actionSheet } from '@uni/apis';
+import to from 'await-to-js';
+import { mapGetters, mapActions } from 'vuex';
+import { actionSheet, toast } from '@uni/apis';
+import { modifyabbreviation } from '@/api/base';
 // const a = ['Radon', 'Thoron', 'temperature', 'Pressure', 'humidity'];
 export default {
   components: {},
   props: { dev: { required: true } },
+  computed: { ...mapGetters(['devices']) },
   data() {
     return {
       data: null,
       disabled: false,
       show: false,
+      ncshow: false,
+      form: { abbreviation: '' },
       value: '',
       actionsList: [
         { name: '历史数据', route: 'chartView' },
         { name: '添加触发告警值', route: 'user' },
       ],
+      rules: {
+        abbreviation: [
+          {
+            // type: 'number',
+            required: true,
+            pattern: /^[\d]+$/,
+            min: 1,
+            max: 255,
+            message: '必须是1到255的整数',
+            trigger: 'blur',
+          },
+          {
+            type: 'number',
+            asyncValidator(rule, value, callback) {
+              if (value >= 1 && value <= 255) {
+                callback();
+              } else {
+                callback(rule.message);
+              }
+            },
+            message: '必须是在1到255之间',
+            trigger: 'blur',
+          },
+        ],
+      },
     };
   },
   methods: {
+    ...mapActions('user', ['getInfo']),
+    /**
+     * 更新数据
+     */
     update(data) {
       this.data = data;
       console.log('更新数据', data);
     },
+    /**
+     * 弹出选项，点击跳转对应页面
+     */
     action() {
       const route = ['chartView', 'user'];
       actionSheet({
@@ -100,6 +175,9 @@ export default {
           });
       });
     },
+    /**
+     * 跳转页面
+     */
     selectClick(item) {
       console.log(item, this.value, this.dev);
       this.$Router.push({
@@ -107,6 +185,56 @@ export default {
         params: { deviceid: this.dev.deviceid, datastreams: this.value },
       });
     },
+
+    /**
+     * 修改备注
+     */
+    async setabbreviation() {
+      const [err, res] = await to(
+        modifyabbreviation({
+          abbreviation: this.form.abbreviation,
+          deviceId: this.dev.deviceid,
+        })
+      );
+      if (err) {
+        console.log(err, res);
+        return;
+      }
+      if (res.data.code === 200) {
+        await this.getInfo();
+        toast.showToast({
+          content: `${this.dev.deviceserial}修改备注成功！`,
+          // type: 'success',
+        });
+        console.log(this.devices, this.dev);
+      } else {
+        toast.showToast(res.data.msg);
+      }
+    },
+
+    modalclose() {
+      const id = this.dev.deviceid;
+      this.form.abbreviation = this.devices.filter(
+        (dev) => dev.deviceid === id
+      )[0].abbreviation;
+      this.ncshow = false;
+    },
+  },
+
+  watch: {
+    dev: {
+      handler(newValue) {
+        console.log('dev被改变', newValue);
+        this.modalclose();
+        // this.form.abbreviation = newValue.abbreviation;
+      },
+      deep: true,
+    },
+  },
+
+  // 页面周期函数--监听页面初次渲染完成
+  onReady() {
+    // this.$refs.uForm.setRules(this.rules);
   },
 };
 </script>
