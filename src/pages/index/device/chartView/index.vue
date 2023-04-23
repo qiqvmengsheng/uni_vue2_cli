@@ -53,7 +53,7 @@ export default {
     this.$AppReady.then(() => {
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
-      console.log(this.dev);
+      console.log('获得dev', this.dev);
       this.getdata();
     });
   },

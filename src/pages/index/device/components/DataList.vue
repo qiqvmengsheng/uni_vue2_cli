@@ -7,7 +7,7 @@
           :value="`${data.Radon || '0'} Bq/m³`"
           isLink
           @click="
-            show = true;
+            action();
             value = 'Radon';
           "
           :disabled="disabled"
@@ -17,7 +17,7 @@
           :value="`${data.Thoron || '0'} Bq/m³`"
           isLink
           @click="
-            show = true;
+            action();
             value = 'Thoron';
           "
           :disabled="disabled"
@@ -27,7 +27,7 @@
           :value="`${data.temperature || '0'} ℃`"
           isLink
           @click="
-            show = true;
+            action();
             value = 'temperature';
           "
           :disabled="disabled"
@@ -37,7 +37,7 @@
           :value="`${data.Pressure || '0'} mbar`"
           isLink
           @click="
-            show = true;
+            action();
             value = 'Pressure';
           "
           :disabled="disabled"
@@ -121,7 +121,7 @@ export default {
       value: '',
       actionsList: [
         { name: '历史数据', route: 'chartView' },
-        { name: '添加触发告警值', route: 'user' },
+        { name: '添加触发告警值', route: 'TriggerView' },
       ],
       rules: {
         abbreviation: [
@@ -163,9 +163,9 @@ export default {
      * 弹出选项，点击跳转对应页面
      */
     action() {
-      const route = ['chartView', 'user'];
+      const route = ['chartView', 'TriggerView'];
       actionSheet({
-        itemList: ['历史数据', '添加触发告警值'],
+        itemList: ['历史数据', '添加触发警告值'],
       }).then((res) => {
         console.log(res, route[res.tapIndex]);
         if (res.tapIndex !== -1)
@@ -224,6 +224,7 @@ export default {
   watch: {
     dev: {
       handler(newValue) {
+        // store里devices被整个替换了，导致filter出的dev不能同步与devices变化。
         console.log('dev被改变', newValue);
         this.modalclose();
         // this.form.abbreviation = newValue.abbreviation;

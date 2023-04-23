@@ -451,8 +451,6 @@ export default {
   align-items: center;
   /* 主轴对齐方式justify-content */
   justify-content: center;
-  & view {
-  }
 }
 .card-actions-item {
   // flex: auto;

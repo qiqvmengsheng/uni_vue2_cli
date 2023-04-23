@@ -124,10 +124,6 @@
       </view>
     </view>
 
-    <!-- <u-popup :show="Intervalshow" mode="bottom" @close="Intervalshow = false">
-
-    </u-popup> -->
-
     <u-action-sheet
       :actions="PumpModelist"
       title="泵运行模式"
@@ -191,9 +187,9 @@
 
 <script>
 import {
-  datapoints,
-  devsdatapoints,
-  DataStreams,
+  // datapoints,
+  // devsdatapoints,
+  // DataStreams,
   onenetcmds,
 } from '@/api/onenet';
 import to from 'await-to-js';
@@ -287,7 +283,6 @@ export default {
       const that = this.getdata();
       that.getdata();
       this.disabled = true;
-      console.log('方法传', that);
     },
     /**
      * 获取数据
@@ -298,33 +293,37 @@ export default {
     /**
      * 获取设置
      */
-    async getwrodtobyts() {
-      const [err, res] = await to(
-        DataStreams({ deviceId: this.dev.deviceid, apikey: this.dev.apikey })
-      );
-      if (err) {
-        console.log(err, res);
-        return;
-      }
-      const [wrodtobyts0] = res.data.data.filter(
-        (item) => item.id === 'WordTo2Bytes[0]'
-      );
-      const [wrodtobyts1] = res.data.data.filter(
-        (item) => item.id === 'WordTo2Bytes[1]'
-      );
-      const [SampleInterval] = res.data.data.filter(
-        (item) => item.id === 'Sample_Interval'
-      );
-      const [Radon] = res.data.data.filter((item) => item.id === 'Radon');
-      this.lastDataTime = Radon.update_at;
-      this.lastSettingTime = wrodtobyts0.update_at;
-      this.form.SampleInterval = SampleInterval.current_value;
-      this.wrodtobyts =
-        wrodtobyts1.current_value.toString(16).padStart(2, '0') +
-        wrodtobyts0.current_value.toString(16).padStart(2, '0');
-      // this.codeSetting(this.wrodtobyts);
-      console.log(Radon, this.wrodtobyts, this.form.SampleInterval);
-    },
+    // async getwrodtobyts() {
+    //   const [err, res] = await to(
+    //     DataStreams({ deviceId: this.dev.deviceid, apikey: this.dev.apikey })
+    //   );
+    //   if (err) {
+    //     console.log(err, res);
+    //     return;
+    //   }
+    //   const [wrodtobyts0] = res.data.data.filter(
+    //     (item) => item.id === 'WordTo2Bytes[0]'
+    //   );
+    //   const [wrodtobyts1] = res.data.data.filter(
+    //     (item) => item.id === 'WordTo2Bytes[1]'
+    //   );
+    //   const [SampleInterval] = res.data.data.filter(
+    //     (item) => item.id === 'Sample_Interval'
+    //   );
+    //   const [Radon] = res.data.data.filter((item) => item.id === 'Radon');
+    //   this.lastDataTime = Radon.update_at;
+    //   this.lastSettingTime = wrodtobyts0.update_at;
+    //   this.form.SampleInterval = SampleInterval.current_value;
+    //   this.wrodtobyts =
+    //     wrodtobyts1.current_value.toString(16).padStart(2, '0') +
+    //     wrodtobyts0.current_value.toString(16).padStart(2, '0');
+    //   // this.codeSetting(this.wrodtobyts);
+    //   console.log(Radon, this.wrodtobyts, this.form.SampleInterval);
+    // },
+
+    /**
+     * 选择设置
+     */
     selectClick(index) {
       this[index.type] = index.value;
       // console.log(index);
@@ -382,16 +381,19 @@ export default {
         d += String.fromCharCode(parseInt(c.slice(0, 2), 16));
         d += String.fromCharCode(parseInt(c.slice(2, 4), 16));
         cs = `CMD:WordTo2Bytes+${d}`;
-        console.log(b, c, d, cs);
+        // console.log(b, c, d, cs);
 
         const res = await confirm({
           title: '提示',
-          content: `确认修改设置! \r\n
+          content: '确认修改设置!',
+        });
+        /**
+         * `确认修改设置! \r\n
           命令二进制数：${b} \r\n
           命令两个16进制bytes：${c} \r\n
           命令bytes转Unicode符： ${d} \r\n
-          最终下发的命令：${cs}`,
-        });
+          最终下发的命令：${cs}`
+         */
         if (res.cancel) {
           return;
         }
@@ -424,7 +426,7 @@ export default {
         console.log(err, res);
         return;
       }
-      console.log(res);
+      // console.log(res);
       if (res.data.errno !== 0) {
         toast.showToast({ type: 'fail', content: '失败', mask: true });
         return;
@@ -436,23 +438,23 @@ export default {
       });
     },
 
-    async test() {
-      const [e, r] = await to(
-        devsdatapoints({
-          devIds: this.dev.deviceid,
-          auth: this.dev.authorization,
-        })
-      );
-      console.log('devsdatapoints', e, r);
-      const [e1, r1] = await to(
-        datapoints({ deviceId: this.dev.deviceid, apikey: this.dev.apikey })
-      );
-      console.log('DataStreams', e1, r1);
-      const wrodtobyts = r1.data.data.filter(
-        (item) => item.id === 'WordTo2Bytes[0]'
-      );
-      console.log(wrodtobyts);
-    },
+    // async test() {
+    //   const [e, r] = await to(
+    //     devsdatapoints({
+    //       devIds: this.dev.deviceid,
+    //       auth: this.dev.authorization,
+    //     })
+    //   );
+    //   console.log('devsdatapoints', e, r);
+    //   const [e1, r1] = await to(
+    //     datapoints({ deviceId: this.dev.deviceid, apikey: this.dev.apikey })
+    //   );
+    //   console.log('DataStreams', e1, r1);
+    //   const wrodtobyts = r1.data.data.filter(
+    //     (item) => item.id === 'WordTo2Bytes[0]'
+    //   );
+    //   console.log(wrodtobyts);
+    // },
 
     /**
      * 根据wrodtobyts显示设置
@@ -468,7 +470,6 @@ export default {
       this.Units = b.slice(11, 12);
       this.Buzzer = b.slice(14, 16);
       this.disabled = true;
-      console.log('更改选项');
     },
   },
   watch: {
@@ -483,7 +484,6 @@ export default {
     },
     data: {
       handler(newValue) {
-        console.log('命令下发页面收到', { ...newValue });
         this.form.SampleInterval = newValue.Sample_Interval;
         this.wrodtobyts =
           newValue['WordTo2Bytes[1]'].toString(16).padStart(2, '0') +

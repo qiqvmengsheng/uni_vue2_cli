@@ -18,7 +18,7 @@
 			"name": "index"
 		},
 		{
-			"path": "pages/addDevice/index",
+			"path": "pages/index/addDevice/index",
 			"style": {
 				"navigationBarTitleText": "添加设备",
 				"backgroundColor": "#F8F8F8"
@@ -42,7 +42,7 @@
 			"name": "commandView"
 		},
 		{
-			"path": "pages/chartView/index",
+			"path": "pages/index/device/chartView/index",
 			"style": {
 				"navigationBarTitleText": "图表"
 			},
@@ -89,5 +89,19 @@
 				"text": "我的"
 			}
 		]
-	}
+	},
+	"subPackages": [
+		{
+			"root": "pages/Trigger",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "触发值"
+					},
+					"name": "TriggerView"
+				}
+			]
+		}
+	]
 }

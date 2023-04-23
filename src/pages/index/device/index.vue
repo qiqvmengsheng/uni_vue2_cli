@@ -55,8 +55,8 @@
 import to from 'await-to-js';
 import { mapGetters } from 'vuex';
 import { DataStreams } from '@/api/onenet';
-import CommandView from '../components/Command';
-import DataList from '../components/DataList';
+import CommandView from './components/Command';
+import DataList from './components/DataList';
 
 let that = null;
 export default {
