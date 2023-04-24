@@ -60,3 +60,14 @@ export function modifyabbreviation(data) {
     data: qs.stringify(data),
   });
 }
+/**
+ * 获取用户信息
+ * @param {Object} data
+ */
+export function getuserinfo(data) {
+  return request({
+   url: '/register/finduderinfo',
+   method: 'post',
+   data: qs.stringify(data),
+  })
+ }
