@@ -7,6 +7,7 @@
             <u-tabs
               :list="list1"
               @change="change1"
+              :current="current"
               scrollable="false"
               :itemStyle="{ 'background-color': '#fff', padding: '0' }"
               :activeStyle="{
@@ -41,12 +42,22 @@
     </view>
 
     <view class="dataview">
-      <view v-show="show">
-        <DataList ref="datalist" :dev="dev"> </DataList>
+      <swiper class="swiper" @change="change2" :current="current">
+        <swiper-item>
+          <scroll-view class="swiper">
+            <DataList ref="datalist" :dev="dev"> </DataList>
+          </scroll-view>
+        </swiper-item>
+        <swiper-item>
+          <scroll-view class="swiper" scroll-top="0" scroll-y="true">
+            <CommandView ref="command" :getdata="up" :dev="dev"> </CommandView>
+          </scroll-view>
+        </swiper-item>
+      </swiper>
+      <!-- <view v-show="show">
       </view>
       <view v-show="!show">
-        <CommandView ref="command" :getdata="up" :dev="dev"> </CommandView>
-      </view>
+      </view> -->
     </view>
   </div>
 </template>
@@ -66,10 +77,11 @@ export default {
       dev: null,
       // dlist: null,
       data: null,
-      show: true,
+      // show: true,
+      current: 0,
       list1: [
-        { name: '\t\t数据展示\t\t', show: true },
-        { name: '\t\t命令下发\t\t', show: false },
+        { name: '数据展示', show: true },
+        { name: '命令下发', show: false },
       ],
     };
   },
@@ -90,8 +102,14 @@ export default {
   },
   methods: {
     change1(item) {
-      this.show = item.show;
-      console.log(item);
+      // this.show = item.show;
+      this.current = item.index;
+      // console.log(item);
+    },
+    change2(item) {
+      // console.log(item.detail.current);
+      this.current = item.detail.current;
+      // console.log(item);
     },
 
     up() {
@@ -132,7 +150,14 @@ export default {
   watch: {},
 
   // 页面周期函数--监听页面加载
-  onLoad() {},
+  onLoad() {
+    // console.log('加载页面');
+    // const { windowWidth, windowHeight } = uni.getSystemInfoSync();
+    // const scrollHeight = px2rpx(windowHeight);
+    // rpx与px单位之间的换算 : 750/windowWidth = 屏幕的高度（rpx）/windowHeight
+    // console.log('获取窗口可用宽度', windowWidth, windowHeight);
+    // console.log(px2rpx(windowHeight), (750 * windowHeight) / windowWidth);
+  },
   // 页面周期函数--监听页面初次渲染完成
   onReady() {},
   // 页面周期函数--监听页面显示(not-nvue)
@@ -154,6 +179,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/style/mixin.scss';
+$swiper-height: 40vw;
 .head {
   position: fixed;
   top: 0;
@@ -180,7 +206,11 @@ export default {
 }
 .dataview {
   position: relative;
-  top: 40vw;
+  top: $swiper-height;
+}
+.swiper {
+  height: calc(100vh);
+  // height: calc(100vh - 40px - $swiper-height);
 }
 </style>
 
