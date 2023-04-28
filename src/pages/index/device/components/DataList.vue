@@ -206,7 +206,7 @@ export default {
           content: `${this.dev.deviceserial}修改备注成功！`,
           // type: 'success',
         });
-        console.log(this.devices, this.dev);
+        // console.log(this.devices, this.dev);
       } else {
         toast.showToast(res.data.msg);
       }
