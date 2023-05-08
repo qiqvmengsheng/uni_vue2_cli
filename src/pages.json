@@ -34,6 +34,36 @@
 			"name": "user"
 		},
 		{
+			"path":"pages/index/user/fuctionPage/BondPhone",
+			"style":{
+				"navigationBarTitleText":"绑定手机",
+				"backgroundColor": "#F8F8F8"
+
+			},
+			"name":"bondPhoneNumber"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/ProblemFeedBack",
+			"style":{
+				"navigationBarTitleText":"问题反馈"
+			},
+			"name":"userFeedBack"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/SystemInfo",
+			"style":{
+				"navigationBarTitleText":"系统消息"
+			},
+			"name":"systemInfo"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/EditPersonInfo",
+			"style":{
+				"navigationBarTitleText":"个人信息"
+			},
+			"name":"editPersonInfo"
+		},
+		{
 			"path": "pages/commandView/index",
 			"style": {
 				"navigationBarTitleText": "设置",
