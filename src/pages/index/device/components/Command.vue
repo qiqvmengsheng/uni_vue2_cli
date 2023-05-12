@@ -311,7 +311,7 @@ export default {
           console.log(err, res);
           return;
         }
-        console.log(res);
+        // console.log(res);
         if (res.data.code !== 200) {
           toast.showToast({ type: 'fail', content: res.data.msg, mask: true });
           return;
@@ -382,7 +382,7 @@ export default {
           console.log(err, res);
           return;
         }
-        console.log(res);
+        // console.log(res);
         if (res.data.code !== 200) {
           toast.showToast({ type: 'fail', content: '失败', mask: true });
           return;
@@ -461,7 +461,7 @@ export default {
             console.log(err, res);
             return;
           }
-          console.log(res);
+          // console.log(res);
           if (res.data.code !== 200) {
             toast.showToast({
               type: 'fail',
@@ -531,7 +531,7 @@ export default {
         console.log(err, res);
         return;
       }
-      console.log(res);
+      // console.log(res);
       if (res.data.code !== 200) {
         toast.showToast({ type: 'fail', content: '失败', mask: true });
         return;

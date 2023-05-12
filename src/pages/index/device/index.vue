@@ -55,6 +55,7 @@
 import to from 'await-to-js';
 import { mapGetters } from 'vuex';
 import { DataStreams } from '@/api/onenet';
+import { getlastDatas } from '@/api/devdata';
 import CommandView from './components/Command';
 import DataList from './components/DataList';
 
@@ -100,9 +101,38 @@ export default {
     },
 
     /**
+     * 新版最新数据
+     */
+    async newdevdata() {
+      const [err, res] = await to(
+        getlastDatas({ deviceid: this.dev.deviceid, numbers: 1 })
+      );
+      if (err) {
+        console.log(err, res);
+        return;
+      }
+      // console.log(res);
+
+      const data = {};
+      const keys = Object.keys(res.data.data.datastreams);
+      keys.forEach((key) => {
+        data[key] = res.data.data.datastreams[key][0]?.value;
+      });
+      data.update_at = res.data.data.datastreams.Radon[0]?.at;
+      this.data = data;
+      this.$refs.datalist.update(data);
+    },
+
+    /**
      * 获取数据
      */
     async getdata() {
+      // this.newdevdata();
+      console.log(this.dev.deviceid, !/^\d*$/.test(this.dev.deviceid));
+      if (!/^\d*$/.test(this.dev.deviceid)) {
+        this.newdevdata();
+        return;
+      }
       // const a = ['Radon', 'Thoron', 'temperature', 'Pressure', 'humidity'];
       const [err, res] = await to(
         DataStreams({ deviceId: this.dev.deviceid, apikey: this.dev.apikey })
