@@ -186,22 +186,20 @@
 </template>
 
 <script>
-import {
-  // datapoints,
-  // devsdatapoints,
-  // DataStreams,
-  onenetcmds,
-} from '@/api/onenet';
+import { mapGetters } from 'vuex';
+import { onenetcmds } from '@/api/onenet';
+import { startstop, getSeting, settingPropertySet } from '@/api/devseting';
 import to from 'await-to-js';
 import { toast, confirm } from '@uni/apis';
 
 export default {
   props: {
-    dev: { required: true },
     getdata: { required: true },
   },
   data() {
     return {
+      alarm: 0,
+      dev: null,
       data: null,
       lastDataTime: '',
       lastSettingTime: '',
@@ -267,6 +265,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['devices']),
     Buzzertext() {
       let text = '';
       if (this.Buzzer === '00') text = '关闭';
@@ -276,12 +275,23 @@ export default {
       return text;
     },
   },
-  created() {},
+  created() {
+    this.$AppReady.then(() => {
+      const id = this.$Route.query.deviceid;
+      [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
+      console.log('命令页面', { ...this.dev });
+      this.getsting();
+    });
+  },
   mounted() {},
   methods: {
     qx() {
-      const that = this.getdata();
-      that.getdata();
+      if (/^\d*$/.test(this.dev.deviceid)) {
+        const that = this.getdata();
+        that.getdata();
+      } else {
+        this.getsting();
+      }
       this.disabled = true;
     },
     /**
@@ -290,36 +300,34 @@ export default {
     update(data) {
       this.data = data;
     },
+
     /**
-     * 获取设置
+     * 新版获取设置
      */
-    // async getwrodtobyts() {
-    //   const [err, res] = await to(
-    //     DataStreams({ deviceId: this.dev.deviceid, apikey: this.dev.apikey })
-    //   );
-    //   if (err) {
-    //     console.log(err, res);
-    //     return;
-    //   }
-    //   const [wrodtobyts0] = res.data.data.filter(
-    //     (item) => item.id === 'WordTo2Bytes[0]'
-    //   );
-    //   const [wrodtobyts1] = res.data.data.filter(
-    //     (item) => item.id === 'WordTo2Bytes[1]'
-    //   );
-    //   const [SampleInterval] = res.data.data.filter(
-    //     (item) => item.id === 'Sample_Interval'
-    //   );
-    //   const [Radon] = res.data.data.filter((item) => item.id === 'Radon');
-    //   this.lastDataTime = Radon.update_at;
-    //   this.lastSettingTime = wrodtobyts0.update_at;
-    //   this.form.SampleInterval = SampleInterval.current_value;
-    //   this.wrodtobyts =
-    //     wrodtobyts1.current_value.toString(16).padStart(2, '0') +
-    //     wrodtobyts0.current_value.toString(16).padStart(2, '0');
-    //   // this.codeSetting(this.wrodtobyts);
-    //   console.log(Radon, this.wrodtobyts, this.form.SampleInterval);
-    // },
+    async getsting() {
+      if (!/^\d*$/.test(this.dev.deviceid)) {
+        const [err, res] = await to(getSeting({ deviceId: this.dev.deviceid }));
+        if (err) {
+          console.log(err, res);
+          return;
+        }
+        console.log(res);
+        if (res.data.code !== 200) {
+          toast.showToast({ type: 'fail', content: res.data.msg, mask: true });
+          return;
+        }
+
+        // this.disabled = false;
+        this.form.SampleInterval = res.data.data.intervall;
+        this.PumpMode = res.data.data.pumpmode.toString();
+        this.RadonMode = res.data.data.rnmode.toString();
+        this.Units = res.data.data.unit.toString();
+        this.Buzzer = parseInt(res.data.data.buzzer, 10)
+          .toString(2)
+          .padStart(2, '0');
+        this.alarm = res.data.data.alarm;
+      }
+    },
 
     /**
      * 选择设置
@@ -345,15 +353,46 @@ export default {
      * 修改周期方法
      */
     async setSampleInterval() {
-      const [err, res] = await to(this.$refs.uForm.validate());
-      if (err) {
-        console.log(err, res);
+      const [e, r] = await to(this.$refs.uForm.validate());
+      if (e) {
+        console.log(e, r);
         return;
       }
-      this.SendCommand(
-        `CMD:TIME+${this.form.SampleInterval}`,
-        `修改设备周期为${this.form.SampleInterval} 分钟`
-      );
+      if (/^\d*$/.test(this.dev.deviceid)) {
+        this.SendCommand(
+          `CMD:TIME+${this.form.SampleInterval}`,
+          `修改设备周期为${this.form.SampleInterval} 分钟`
+        );
+      } else {
+        const c = await confirm({
+          title: '提示',
+          content: `确认修改设备周期为${this.form.SampleInterval} 分钟？`,
+        });
+        if (c.cancel) {
+          return;
+        }
+        console.log(this.SamplingInterval);
+        const [err, res] = await to(
+          settingPropertySet({
+            deviceId: this.dev.deviceid,
+            intervall: this.SamplingInterval,
+          })
+        );
+        if (err) {
+          console.log(err, res);
+          return;
+        }
+        console.log(res);
+        if (res.data.code !== 200) {
+          toast.showToast({ type: 'fail', content: '失败', mask: true });
+          return;
+        }
+        toast.showToast({
+          type: 'success',
+          content: '成功',
+          mask: true,
+        });
+      }
       this.Intervalshow = false;
     },
 
@@ -367,38 +406,76 @@ export default {
         this.Units !== '' &&
         this.Buzzer !== ''
       ) {
-        const b =
-          (this.bits.slice(0, 11) || '00000000011') +
-          this.Units +
-          this.PumpMode +
-          this.RadonMode +
-          this.Buzzer;
-        let c = '';
-        let d = '';
-        let cs = '';
-        c += parseInt(b, 2).toString(16).padStart(4, '0').slice(2, 4);
-        c += parseInt(b, 2).toString(16).padStart(4, '0').slice(0, 2);
-        d += String.fromCharCode(parseInt(c.slice(0, 2), 16));
-        d += String.fromCharCode(parseInt(c.slice(2, 4), 16));
-        cs = `CMD:WordTo2Bytes+${d}`;
-        // console.log(b, c, d, cs);
+        if (/^\d*$/.test(this.dev.deviceid)) {
+          const b =
+            (this.bits.slice(0, 11) || '00000000011') +
+            this.Units +
+            this.PumpMode +
+            this.RadonMode +
+            this.Buzzer;
+          let c = '';
+          let d = '';
+          let cs = '';
+          c += parseInt(b, 2).toString(16).padStart(4, '0').slice(2, 4);
+          c += parseInt(b, 2).toString(16).padStart(4, '0').slice(0, 2);
+          d += String.fromCharCode(parseInt(c.slice(0, 2), 16));
+          d += String.fromCharCode(parseInt(c.slice(2, 4), 16));
+          cs = `CMD:WordTo2Bytes+${d}`;
+          // console.log(b, c, d, cs);
 
-        const res = await confirm({
-          title: '提示',
-          content: '确认修改设置!',
-        });
-        /**
+          const res = await confirm({
+            title: '提示',
+            content: '确认修改设置!',
+          });
+          /**
          * `确认修改设置! \r\n
           命令二进制数：${b} \r\n
           命令两个16进制bytes：${c} \r\n
           命令bytes转Unicode符： ${d} \r\n
           最终下发的命令：${cs}`
          */
-        if (res.cancel) {
-          return;
+          if (res.cancel) {
+            return;
+          }
+          this.wrodtobyts = c;
+          this.SendCommand(cs, '修改设置');
+        } else {
+          const r = await confirm({
+            title: '提示',
+            content: '确认修改设置？',
+          });
+          if (r.cancel) {
+            return;
+          }
+          const [err, res] = await to(
+            settingPropertySet({
+              deviceId: this.dev.deviceid,
+              alarm: this.alarm,
+              buzzer: parseInt(this.Buzzer, 2).toString(),
+              pumpmode: this.PumpMode,
+              rnmode: this.RadonMode,
+              unit: this.Units,
+            })
+          );
+          if (err) {
+            console.log(err, res);
+            return;
+          }
+          console.log(res);
+          if (res.data.code !== 200) {
+            toast.showToast({
+              type: 'fail',
+              content: '失败',
+              mask: true,
+            });
+            return;
+          }
+          toast.showToast({
+            type: 'success',
+            content: '成功',
+            mask: true,
+          });
         }
-        this.wrodtobyts = c;
-        this.SendCommand(cs, '修改设置');
       } else {
         toast('请选好设置');
       }
@@ -413,6 +490,11 @@ export default {
         content: `确认${text}？`,
       });
       if (r.cancel) {
+        return;
+      }
+      if (!/^\d*$/.test(this.dev.deviceid)) {
+        const value = sms === 'CMD:STOP' ? '0' : '1';
+        this.startstop(value);
         return;
       }
       const [err, res] = await to(
@@ -438,23 +520,28 @@ export default {
       });
     },
 
-    // async test() {
-    //   const [e, r] = await to(
-    //     devsdatapoints({
-    //       devIds: this.dev.deviceid,
-    //       auth: this.dev.authorization,
-    //     })
-    //   );
-    //   console.log('devsdatapoints', e, r);
-    //   const [e1, r1] = await to(
-    //     datapoints({ deviceId: this.dev.deviceid, apikey: this.dev.apikey })
-    //   );
-    //   console.log('DataStreams', e1, r1);
-    //   const wrodtobyts = r1.data.data.filter(
-    //     (item) => item.id === 'WordTo2Bytes[0]'
-    //   );
-    //   console.log(wrodtobyts);
-    // },
+    /**
+     * 新版设备停启方法
+     */
+    async startstop(value) {
+      const [err, res] = await to(
+        startstop({ deviceId: this.dev.deviceid, startStop: value })
+      );
+      if (err) {
+        console.log(err, res);
+        return;
+      }
+      console.log(res);
+      if (res.data.code !== 200) {
+        toast.showToast({ type: 'fail', content: '失败', mask: true });
+        return;
+      }
+      toast.showToast({
+        type: 'success',
+        content: '成功',
+        mask: true,
+      });
+    },
 
     /**
      * 根据wrodtobyts显示设置
