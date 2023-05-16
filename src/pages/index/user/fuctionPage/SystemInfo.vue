@@ -1,5 +1,5 @@
 <template>
-  <view> 这里是系统消息</view>
+  <view> </view>
 </template>
 
 <script>

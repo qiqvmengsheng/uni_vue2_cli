@@ -1,9 +1,18 @@
 <template>
-  <view>这是绑定手机页面</view>
+  <view></view>
 </template>
 
 <script>
-export default {};
+export default {
+  name: 'WebSocket',
+  data() {
+    return {};
+  },
+  created() {
+    this.initWebSocket();
+  },
+  methods: {},
+};
 </script>
 
 <style></style>

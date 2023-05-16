@@ -9,16 +9,16 @@
     <view class="radio"></view>
     <view class="person-info">
       <view class="photo">
-        <view class="t-icon t-icon-a-ziyuan112"></view>
+        <view class="t-icon {{ photo }}"></view>
       </view>
       <text class="user-name">{{ userInfo.username }}</text>
-      <text class="greet">下午好^_^</text>
+      <text class="greet">{{ time }}好^_^</text>
       <view class="bottom">
-        <view class="event-item">
+        <view class="event-item1">
           <view class="t-icon t-icon-dianhua-yuankuang"></view>
           <text>:{{ userInfo.userphone }}</text>
         </view>
-        <view class="event-item">
+        <view class="event-item2">
           <view class="t-icon t-icon-youxiang"></view>
           <text>:{{ userInfo.useremail }}</text>
         </view>
@@ -51,8 +51,8 @@
         <view class="t-icon t-icon-13-xitongxiaoxi-icon"></view>
         <view>系统消息</view>
       </view>
+      <!-- <button @click="getTime">这是一个测试button</button> -->
     </view>
-    <button @click="getUserInfo">这是一个按钮</button>
   </view>
 </template>
 <script>
@@ -66,20 +66,54 @@ export default {
   data() {
     return {
       userInfo: '',
+      photo: '',
+      time: '您',
     };
   },
   computed: {},
   methods: {
+    /**
+     * 获取该用户的个人信息数据
+     */
     async getUserInfo() {
       getuserinfo({}).then(
         (response) => {
           console.log(response);
           this.userInfo = response.data;
+          if (this.userInfo.attribute === null) {
+            this.userInfo.attribute = '';
+          }
+          if (this.userInfo.workunit === null) {
+            this.userInfo.workunit = '';
+          }
+          switch (this.userInfo.sex) {
+            case '男':
+              this.photo = 't-icon-a-ziyuan112';
+              break;
+            case '女':
+              this.photo = 't-icon-a-ziyuan97';
+              break;
+            default:
+              this.photo = 't-icon-yonghutouxiang';
+          }
         },
         (error) => {
           console.log(error);
         }
       );
+    },
+    // 判断现在时间段
+    async getTime() {
+      const date = new Date();
+      const hour = date.getHours();
+      console.log(hour);
+      if (hour >= 12 && hour <= 18) {
+        this.time = '下午';
+      } else if (hour < 12) {
+        this.time = '上午';
+      } else {
+        this.time = '晚上';
+      }
     },
     async systemInfo() {
       const index = this.$Router.options.routes.filter(
@@ -98,12 +132,25 @@ export default {
       console.log(index);
       this.$Router.push({ name: 'userFeedBack' });
     },
-    /* 跳转到个人信息编辑页面 */
+    /**
+     * 跳转到个人信息编辑页面
+     */
     async editPersonInfo() {
-      uni.navigateTo({
-        url: './fuctionPage/EditPersonInfo',
-        animationType: 'pop-in',
-        animationDuration: 300,
+      console.log(this.userInfo.attribute);
+      const index = this.$Router.options.routes.filter(
+        (r) => r.name === 'userFeedBack'
+      )[0];
+      console.log(index);
+      this.$Router.push({
+        name: 'editPersonInfo',
+        params: {
+          email: this.userInfo.useremail,
+          workunit: this.userInfo.workunit,
+          username: this.userInfo.username,
+          address: this.userInfo.address,
+          sex: this.userInfo.sex,
+          attribute: this.userInfo.attribute,
+        },
       });
     },
     /**
@@ -122,11 +169,19 @@ export default {
   // 页面周期函数--监听页面加载
   onLoad() {
     this.getUserInfo();
+    this.getTime();
   },
   // 页面周期函数--监听页面初次渲染完成
   onReady() {},
   // 页面周期函数--监听页面显示(not-nvue)
-  onShow() {},
+  onShow() {
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    if (currentPage.data.refreshIfNeeded) {
+      currentPage.data.refreshIfNeeded = false;
+      this.onLoad();
+    }
+  },
   // 页面周期函数--监听页面隐藏
   onHide() {},
   // 页面周期函数--监听页面卸载
@@ -183,7 +238,7 @@ export default {
 .greet {
   color: rgb(19, 67, 118);
   position: absolute;
-  left: 50%;
+  left: 49%;
   transform: translate(-50%, -50%);
   font-size: 25rpx;
   top: 30%;
@@ -194,11 +249,12 @@ export default {
   display: flex;
   margin-left: 6%;
   border-radius: 3%;
-  margin-top: 5%;
+  margin-top: 10%;
   box-shadow: 0px 0px 10px rgb(197, 197, 197);
   flex-direction: row;
 }
 .bottom {
+  margin-top: 10%;
   align-items: center;
   position: relative;
   display: flex;
@@ -211,12 +267,20 @@ export default {
   .single {
     width: 100%;
     bottom: 20%;
-    font-size: 28rpx;
+    font-size: 25rpx;
   }
-  .event-item {
-    width: 50%;
+  .event-item1 {
+    width: 37%;
+    bottom: 20%;
+    font-size: 25rpx;
+    text-align: left;
+    // padding: 10%;
+  }
+  .event-item2 {
+    width: 63%;
     bottom: 20%;
     font-size: 28rpx;
+    text-align: left;
     // padding: 10%;
   }
 }
@@ -288,6 +352,14 @@ export default {
     height: 85rpx;
   }
   &.t-icon-a-ziyuan112 {
+    width: 150rpx;
+    height: 150rpx;
+  }
+  &.t-icon-a-ziyuan97 {
+    width: 150rpx;
+    height: 150rpx;
+  }
+  &.t-icon-yonghutouxiang {
     width: 150rpx;
     height: 150rpx;
   }
