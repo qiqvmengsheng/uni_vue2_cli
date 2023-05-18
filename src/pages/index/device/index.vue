@@ -121,6 +121,10 @@ export default {
       data.update_at = res.data.data.datastreams.Radon[0]?.at;
       this.data = data;
       this.$refs.datalist.update(data);
+      // if (/^\d*$/.test(this.dev.deviceid)) {
+      //   console.log('新版数据', data);
+      //   // this.$refs.datalist.update(data);
+      // }
     },
 
     /**
@@ -154,7 +158,7 @@ export default {
       this.data = data;
       // this.dlist = arr;
       // console.log('组件', this.$refs);
-      // console.log(data);
+      // console.log('老版数据', data);
       this.$refs.datalist.update(data);
       this.$refs.command.update(data);
     },

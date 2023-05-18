@@ -157,7 +157,7 @@ export default {
      */
     update(data) {
       this.data = data;
-      console.log('更新数据', data);
+      // console.log('更新数据', data);
     },
     /**
      * 弹出选项，点击跳转对应页面
@@ -167,7 +167,7 @@ export default {
       actionSheet({
         itemList: ['历史数据', '添加触发警告值'],
       }).then((res) => {
-        console.log(res, route[res.tapIndex]);
+        // console.log(res, route[res.tapIndex]);
         if (res.tapIndex !== -1)
           this.$Router.push({
             name: route[res.tapIndex],

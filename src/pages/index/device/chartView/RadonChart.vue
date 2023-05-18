@@ -77,13 +77,13 @@ export default {
         grid: {
           right: '10%',
         },
-        toolbox: {
-          feature: {
-            dataView: { show: true, readOnly: false },
-            // restore: { show: true },
-            saveAsImage: { show: true },
-          },
-        },
+        // toolbox: {
+        //   feature: {
+        //     dataView: { show: true, readOnly: false },
+        //     // restore: { show: true },
+        //     saveAsImage: { show: true },
+        //   },
+        // },
         xAxis: { data: [] },
         yAxis: [
           {

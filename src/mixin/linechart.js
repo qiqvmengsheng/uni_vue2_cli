@@ -22,11 +22,14 @@ export default {
           // text: "Rtm1688示例",
         },
         legend: {
-          data: [name],
-          textStyle: {
-            // 图例字体大小
-            fontSize: 20,
-          },
+          data: [
+            {
+              name,
+              textStyle: {
+                fontSize: 20,
+              },
+            },
+          ],
         },
         tooltip: {
           trigger: 'axis',
@@ -36,14 +39,15 @@ export default {
         },
         grid: {
           right: '10%',
+          left: '15%',
         },
-        toolbox: {
-          feature: {
-            dataView: { show: true, readOnly: false },
-            // restore: { show: true },
-            saveAsImage: { show: true },
-          },
-        },
+        // toolbox: {
+        //   feature: {
+        //     dataView: { show: true, readOnly: false },
+        //     // restore: { show: true },
+        //     saveAsImage: { show: true },
+        //   },
+        // },
         xAxis: { data: [] },
         yAxis: [
           {

@@ -7,13 +7,11 @@
 </template>
 
 <script>
-import linechart from '@/mixin/linechart';
-import { hezhi } from '@/utils/disposalData';
 import LEchart from '@/components/l-echart/l-echart';
 // import * as echarts from 'echarts';
 // 按需引入 开始
 import * as echarts from 'echarts/core';
-import { LineChart, BarChart } from 'echarts/charts';
+import { LineChart } from 'echarts/charts';
 import {
   TitleComponent,
   TooltipComponent,
@@ -38,7 +36,6 @@ echarts.use([
   DatasetComponent,
   TransformComponent,
   LineChart,
-  BarChart,
   LabelLayout,
   UniversalTransition,
   CanvasRenderer,
@@ -49,23 +46,28 @@ echarts.use([
 // -------------按需引入结束------------------------
 
 export default {
-  name: 'ThoronChart',
+  name: 'PressureChart',
   components: { LEchart },
   data() {
     return {
+      colors: ['#5470C6', '#91CC75', '#EE6666', '#f5c85c', '#7fc0dd'],
       data: null,
       RadonAt: null,
       isfinished: false,
     };
   },
-  mixins: [linechart],
+  props: {
+    getzoom: { type: Function, required: true },
+    barUpdate: { type: Function, required: true },
+    setTooltip: { type: Function, required: true },
+  },
   methods: {
     /**
      * 更新数据
      */
     update(data) {
       // console.log('更新数据');
-      this.data = data.Thoron;
+      this.data = data;
       this.RadonAt = data.RadonAt;
       if (this.isfinished) {
         this.setdata();
@@ -77,7 +79,14 @@ export default {
         xAxis: {
           data: this.RadonAt,
         },
-        series: [{ name: '钍浓度(Bq/m³)', data: this.data }],
+        series: [
+          {
+            // 根据名字对应到相应的系列
+            name: '大气压(mbar)',
+            // yAxisIndex: 2,
+            data: this.data.Pressure,
+          },
+        ],
       });
       // this.barUpdate({ zoomStart: 0, zoomEnd: 100 });
       this.zoomdata(0, 100, this.data);
@@ -95,7 +104,7 @@ export default {
       // 2.初始化
       this.$refs.chart.init(echarts, (chart) => {
         // 3.配置数据
-        chart.setOption(this.initoption('钍浓度(Bq/m³)', 1));
+        chart.setOption(this.stoption());
         // 4.传入数据
         chart.on('datazoom', () => {
           const { endValue } = chart.getOption().dataZoom[1];
@@ -103,7 +112,7 @@ export default {
           this.getzoom({
             zoomStart: startValue,
             zoomEnd: endValue,
-            source: 'Thoronchar',
+            source: 'AmbientChart',
           });
           this.zoomdata(startValue, endValue, this.data);
         });
@@ -132,14 +141,14 @@ export default {
             this.setTooltip({
               type: 'showTip',
               dataIndex: xIndex,
-              source: 'Thoronchar',
+              source: 'radonchar',
             });
           } else {
             // 隐藏tooltip
             this.setTooltip({
               type: 'hideTip',
               dataIndex: 0,
-              source: 'Thoronchar',
+              source: 'radonchar',
             });
           }
         });
@@ -152,12 +161,11 @@ export default {
     },
 
     /**
-     * 缩放图表计算数据
+     * 缩放图表
      * @param {Number} startValue 图表区域起始下标
      * @param {Number} endValue 图表区域结束下标
      */
     zoomdata(startValue, endValue) {
-      console.log('添加标线');
       this.$refs.chart.setOption({
         dataZoom: [
           {
@@ -166,51 +174,89 @@ export default {
             endValue,
           },
         ],
-        series: [
+      });
+    },
+
+    /**
+     * 生成图表框架
+     */
+    stoption() {
+      const option = {
+        color: this.colors,
+        title: {
+          // text: "Rtm1688示例",
+        },
+        legend: {
+          data: [
+            {
+              name: '大气压(mbar)',
+              textStyle: {
+                fontSize: 20,
+              },
+            },
+          ],
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'line',
+          },
+        },
+        grid: {
+          right: '10%',
+          left: '15%',
+        },
+        xAxis: { data: [] },
+        yAxis: [
           {
-            // 根据名字对应到相应的系列
-            name: '钍浓度(Bq/m³)',
-            markLine: {
-              silent: true,
-              label: { show: true, formatter: '{b} : {c}' },
-              data: [
-                { type: 'average', name: 'X\u0305' },
-                {
-                  name: 'X\u0305+1xσ',
-                  yAxis: hezhi(this.data, startValue, endValue, 1, 1).toFixed(
-                    2
-                  ),
-                  label: {
-                    show: true,
-                    formatter: '{b} : {c}\n\n',
-                  },
-                },
-                {
-                  name: '\n\nX\u0305-1xσ',
-                  yAxis: hezhi(this.data, startValue, endValue, 0, 1),
-                },
-                {
-                  name: 'X\u0305+2xσ',
-                  yAxis: hezhi(this.data, startValue, endValue, 1, 2).toFixed(
-                    2
-                  ),
-                  label: {
-                    show: true,
-                    formatter: '{b} : {c}\n\n\n\n',
-                  },
-                },
-                {
-                  name: '\n\n\n\nX\u0305-2xσ',
-                  yAxis: hezhi(this.data, startValue, endValue, 0, 2),
-                },
-              ],
+            min: 0, // 最小刻度
+            max: 1100, // 最大刻度
+            type: 'value',
+            name: '大气压',
+            position: 'left',
+            axisLine: {
+              show: true,
+              lineStyle: {
+                color: this.colors[3],
+              },
+            },
+            axisLabel: {
+              formatter: '{value} mbar',
+            },
+            splitLine: {
+              // 修改背景线条样式
+              show: false, // 是否展示0
+              lineStyle: {
+                color: '#353b5a', // 线条颜色
+                type: 'dashed', // 线条样式，默认是实现，dashed是虚线
+              },
             },
           },
         ],
-      });
-      // if (Plot_Chart !== undefined && Plot_Chart !== null) {
-      //   Plot_Chart.setOption(Plotupoption(this.data, startValue, endValue));
-      // }
+        dataZoom: [
+          {
+            type: 'inside',
+            start: 80,
+            end: 100,
+          },
+          {
+            start: 80,
+            end: 100,
+          },
+        ],
+        series: [
+          {
+            // 根据名字对应到相应的系列
+            name: '大气压(mbar)',
+            type: 'line',
+            color: this.colors[4],
+            smooth: true,
+            data: [],
+          },
+        ],
+      };
+
+      return option;
     },
   },
 };

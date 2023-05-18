@@ -1,6 +1,13 @@
 <template>
   <div class="chartView">
-    <view class="chart">
+    <!-- <view class="card">
+      <uni-card>
+        <text>
+          这是一个基础卡片示例，内容较少，此示例展示了一个没有任何属性不带阴影的卡片。</text
+        >
+      </uni-card>
+    </view> -->
+    <view class="card" v-show="datastreams === 'Radon'">
       <RadonChart
         class="echart"
         ref="radonchar"
@@ -9,7 +16,7 @@
         :setTooltip="setTooltip"
       ></RadonChart>
     </view>
-    <view class="chart">
+    <view class="card" v-show="datastreams === 'Thoron'">
       <ThoronChart
         class="echart"
         ref="Thoronchar"
@@ -18,7 +25,7 @@
         :setTooltip="setTooltip"
       ></ThoronChart>
     </view>
-    <view class="chart">
+    <!-- <view class="card" v-show="datastreams === 'Radon'">
       <Tempera
         class="echart"
         ref="AmbientChart"
@@ -26,6 +33,33 @@
         :barUpdate="barUpdate"
         :setTooltip="setTooltip"
       ></Tempera>
+    </view> -->
+    <view class="card" v-show="datastreams === 'temperature'">
+      <TempChart
+        class="echart"
+        ref="TempChart"
+        :getzoom="getzoom"
+        :barUpdate="barUpdate"
+        :setTooltip="setTooltip"
+      ></TempChart>
+    </view>
+    <view class="card" v-show="datastreams === 'humidity'">
+      <RHChart
+        class="echart"
+        ref="TempChart"
+        :getzoom="getzoom"
+        :barUpdate="barUpdate"
+        :setTooltip="setTooltip"
+      ></RHChart>
+    </view>
+    <view class="card" v-show="datastreams === 'Pressure'">
+      <PressureChart
+        class="echart"
+        ref="TempChart"
+        :getzoom="getzoom"
+        :barUpdate="barUpdate"
+        :setTooltip="setTooltip"
+      ></PressureChart>
     </view>
   </div>
 </template>
@@ -33,17 +67,21 @@
 <script>
 import { mapGetters } from 'vuex';
 import to from 'await-to-js';
-import { toast, confirm } from '@uni/apis';
+// import { toast, confirm } from '@uni/apis';
 import { measuredGetdata, getlastDatas } from '@/api/devdata';
 import RadonChart from './RadonChart';
 import ThoronChart from './ThoronChart';
-import Tempera from './temperature';
+// import Tempera from './temperature';
+import TempChart from './TempChart';
+import RHChart from './RHChart';
+import PressureChart from './PressureChart';
 
 export default {
-  components: { RadonChart, ThoronChart, Tempera },
+  components: { RadonChart, ThoronChart, TempChart, RHChart, PressureChart },
   data() {
     return {
       data: null,
+      datastreams: '',
     };
   },
   computed: {
@@ -51,6 +89,8 @@ export default {
   },
   created() {
     this.$AppReady.then(() => {
+      console.log('收到参数', this.$Route.query);
+      this.datastreams = this.$Route.query.datastreams;
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
       console.log('获得dev', this.dev);
@@ -112,7 +152,8 @@ export default {
       // this.$refs.qhAmbientChart.update(data);
       this.$refs.radonchar.update(data);
       this.$refs.Thoronchar.update(data);
-      this.$refs.AmbientChart.update(data);
+      this.$refs.TempChart.update(data);
+      // this.$refs.AmbientChart.update(data);
     },
 
     barUpdate({ zoomStart, zoomEnd }) {
@@ -196,6 +237,15 @@ export default {
 <style scoped lang="scss">
 .chart {
   width: 730rpx;
-  height: 600rpx;
+  height: 700rpx;
+}
+.card {
+  width: calc(100% - 20px);
+  margin: 10px;
+  border-radius: 4px;
+  border: 1px solid #ebeef5;
+  overflow: hidden;
+  // height: 640rpx;
+  box-shadow: 0rpx 0rpx 3px 1px rgba(0, 0, 0, 0.08);
 }
 </style>
