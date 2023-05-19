@@ -61,13 +61,24 @@
         :setTooltip="setTooltip"
       ></PressureChart>
     </view>
+    <view>
+      <view class="btn">
+        <u-button
+          text="下载数据"
+          type="primary"
+          shape="circle"
+          @click="download"
+        ></u-button>
+      </view>
+    </view>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import to from 'await-to-js';
-// import { toast, confirm } from '@uni/apis';
+import { jsonClone } from '@/utils/disposalData';
+import { toast, confirm, file } from '@uni/apis';
 import { measuredGetdata, getlastDatas } from '@/api/devdata';
 import RadonChart from './RadonChart';
 import ThoronChart from './ThoronChart';
@@ -98,6 +109,93 @@ export default {
     });
   },
   methods: {
+    /**
+     * 下载数据
+     */
+    async download() {
+      const data = jsonClone(this.data);
+      for (let i = 0, len = data.RadonAt.length; i < len; i += 1) {
+        data.RadonAt[i] = ` ${data.RadonAt[i].toString()}`;
+      }
+      // 表头
+      const header = {
+        Data_ID: 'Data_ID',
+        RadonAt: 'time',
+        Radon: 'Radon',
+        Thoron: 'Thoron',
+        temperature: 'temperature',
+        Pressure: 'Pressure',
+        humidity: 'humidity',
+        Sample_Interval: 'Sample_Interval',
+        RadonError: 'RadonError',
+        ThoronError: 'ThoronError',
+      };
+      for (let i = 1; i <= 38; i += 1) {
+        header[`Plot_${i}`] = `Plot_${i}`;
+      }
+      const keys = Object.keys(header).filter((item) =>
+        Object.prototype.hasOwnProperty.call(data, item)
+      );
+      let csvString = '';
+      keys.forEach((item) => {
+        csvString += `${header[item]},`;
+      });
+      csvString += '\r\n';
+      for (let i = data.RadonAt.length - 1; i >= 0; i -= 1) {
+        // eslint-disable-next-line no-loop-func
+        keys.forEach((item) => {
+          csvString += `${data[item][i]},`;
+        });
+        csvString += '\r\n';
+      }
+      // let i = data.RadonAt.length - 1;
+      // while (i >= 0) {
+      //   keys.forEach((item) => {
+      //     csvString += `${data[item][i]},`;
+      //   });
+      //   csvString += '\r\n';
+      //   i -= 1;
+      // }
+
+      // csvString = `data:application/csv;charset=utf-8,\ufeff${encodeURIComponent(
+      //   csvString
+      // )}`;
+      // file.download({
+      //   url: csvString,
+      //   success: (res) => {
+      //     console.log(res.filePath);
+      //   },
+      //   fail: (res) => {
+      //     console.log(res);
+      //   },
+      // });
+
+      // 新建个文档，并写入数据
+      const fs = wx.getFileSystemManager();
+      fs.writeFile({
+        filePath: `${wx.env.USER_DATA_PATH}/HELLOWORLD2.csv`,
+        data: csvString,
+        success(res) {
+          console.log('写入成功->', res);
+          // 打开新建的对应的文档
+          wx.openDocument({
+            filePath: `${wx.env.USER_DATA_PATH}/HELLOWORLD2.csv`,
+            fileType: 'csv',
+            showMenu: true,
+            success(r) {
+              console.log('打开文档成功', r);
+            },
+            fail(r) {
+              console.log('打开文档失败->', r);
+            },
+          });
+        },
+        fail(res) {
+          console.log('写入失败->', res);
+        },
+      });
+    },
+
     async getdata() {
       const [err, res] = await to(
         getlastDatas({
@@ -247,5 +345,12 @@ export default {
   overflow: hidden;
   // height: 640rpx;
   box-shadow: 0rpx 0rpx 3px 1px rgba(0, 0, 0, 0.08);
+}
+
+.btn {
+  // position: relative;
+  // top: 70%;
+  width: 95%;
+  margin: 30rpx auto;
 }
 </style>
