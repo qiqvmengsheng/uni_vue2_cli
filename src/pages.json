@@ -34,13 +34,39 @@
 			"name": "user"
 		},
 		{
-			"path":"pages/index/user/fuctionPage/BondPhone",
+			"path":"pages/index/user/fuctionPage/bondOrChangeNumber/BondPhone",
 			"style":{
 				"navigationBarTitleText":"绑定手机",
 				"backgroundColor": "#F8F8F8"
 
 			},
 			"name":"bondPhoneNumber"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/bondOrChangeNumber/ChangeNumber",
+			"style":{
+				"navigationBarTitleText":"换绑手机",
+				"backgroundColor": "#F8F8F8"
+
+			},
+			"name":"changPhoneNumber"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/bondOrChangeNumber/ChangeNumber2",
+			"style":{
+				"navigationBarTitleText":"换绑手机",
+				"backgroundColor": "#F8F8F8"
+
+			},
+			"name":"changPhoneNumber2"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/bondOrChangeNumber/fillCode",
+			"style":{
+				"navigationBarTitleText":"填写验证码",
+				"backgroundColor": "#F8F8F8"
+			},
+			"name": "fillCode"
 		},
 		{
 			"path":"pages/index/user/fuctionPage/ProblemFeedBack",

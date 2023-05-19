@@ -9,7 +9,7 @@
     <view class="radio"></view>
     <view class="person-info">
       <view class="photo">
-        <view class="t-icon {{ photo }}"></view>
+        <view :class="photo"></view>
       </view>
       <text class="user-name">{{ userInfo.username }}</text>
       <text class="greet">{{ time }}好^_^</text>
@@ -88,13 +88,13 @@ export default {
           }
           switch (this.userInfo.sex) {
             case '男':
-              this.photo = 't-icon-a-ziyuan112';
+              this.photo = 't-icon t-icon-a-ziyuan112';
               break;
             case '女':
-              this.photo = 't-icon-a-ziyuan97';
+              this.photo = 't-icon t-icon-a-ziyuan97';
               break;
             default:
-              this.photo = 't-icon-yonghutouxiang';
+              this.photo = 't-icon t-icon-yonghutouxiang';
           }
         },
         (error) => {
@@ -157,11 +157,24 @@ export default {
      * 跳转到绑定手机号的页面
      *  */
     async bondPhoneNumber() {
-      const index = this.$Router.options.routes.filter(
-        (r) => r.name === 'bondPhoneNumber'
-      )[0];
-      console.log(index);
-      this.$Router.push({ name: 'bondPhoneNumber' });
+      if (this.userInfo.userphone === null || this.userInfo.userphone === '') {
+        const index = this.$Router.options.routes.filter(
+          (r) => r.name === 'bondPhoneNumber'
+        )[0];
+        console.log(index);
+        this.$Router.push({ name: 'bondPhoneNumber' });
+      } else {
+        const index = this.$Router.options.routes.filter(
+          (r) => r.name === 'bondPhoneNumber'
+        )[0];
+        console.log(index);
+        this.$Router.push({
+          name: 'changPhoneNumber',
+          params: {
+            phoneNumber: this.userInfo.userphone,
+          },
+        });
+      }
     },
   },
   watch: {},

@@ -5,7 +5,39 @@
     right: 0%;
     bottom: 0;
     top: 0%;
+}
+.input_phonenumber{
+    margin-top: 20%;
+    font-size: 40rpx;
+    margin-bottom: 20%;
+    text-align: center;
+}
+.background_bondphone {
+    background-color: rgb(249, 247, 247);
+    position: absolute;
+    margin-left: 10%;
+    margin-right: 10%;
+    bottom: 0;
+    top: 2%;
+}
+/* 横线 */
+.line{
+    float:right;
+    width: 100%;
+    height: 1px;
+    margin-top: 4%;
+    background:#d4c4c4;
+    position: relative;
+    text-align: center;
   }
+  
+  /*提示消息样式*/
+.message{
+    height: 10%;
+    width: 100%;
+    color: #787777;
+    font-size: 28rpx;
+}
 .item{
     background-color: #ffffff;
     height: 7%;
@@ -16,6 +48,7 @@
 }
 .item_name{
     margin-left: 6%;
+    font-size: 33rpx;
 }
 .item_data{
     width: 60%;
@@ -25,6 +58,15 @@
     color: #787777;
     font-size: 28rpx;
     text-align: right;
+}
+.bond_item{
+    background-color: #ffffff;
+    height: 10%;
+    margin-top: 5rpx;
+    top: 20%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 .radio{
     width: 35%;
@@ -38,10 +80,34 @@
     display: flex;
 }
 .save_button{
-    margin-top: 10%;
+    margin-top: 15%;
     width: 80%;
     align-items: center;
     text-align: center;
     background-color:  rgb(19, 67, 118);
     color: #ffffff;
+}
+.phone_code{
+    text-align: center;
+    font-size: 30rpx;
+    margin-right: 5%;
+    color: #ffffff;
+    background-color:  rgb(19, 67, 118);
+    height: 60%;
+    width: 30%;
+}
+.change_item{
+    margin-top: 10%;
+}
+.change_item2{
+    background-color: #ffffff;
+    height: 10%;
+    margin-top: 3rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.input_code{
+    width: 27%;
+    margin-left: 8%;
 }
