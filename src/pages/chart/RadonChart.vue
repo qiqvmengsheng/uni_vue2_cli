@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { hezhi } from '@/utils/disposalData';
 import LEchart from '@/components/l-echart/l-echart';
 // import * as echarts from 'echarts';
 // 按需引入 开始
@@ -51,10 +52,91 @@ export default {
   components: { LEchart },
   data() {
     return {
-      colors: ['#5470C6', '#91CC75', '#EE6666', '#f5c85c', '#7fc0dd'],
+      chart: null,
       data: null,
       RadonAt: null,
       isfinished: false,
+      option: {
+        color: ['#5470C6', '#91CC75', '#EE6666', '#f5c85c', '#7fc0dd'],
+        title: {
+          // text: "Rtm1688示例",
+        },
+        legend: {
+          data: ['氡浓度(Bq/m³)'],
+          textStyle: {
+            // 图例字体大小
+            fontSize: 20,
+          },
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+          },
+        },
+        grid: {
+          right: '10%',
+        },
+        // toolbox: {
+        //   feature: {
+        //     dataView: { show: true, readOnly: false },
+        //     // restore: { show: true },
+        //     saveAsImage: { show: true },
+        //   },
+        // },
+        xAxis: { data: [] },
+        yAxis: [
+          {
+            max(value) {
+              const len = 10 ** (parseInt(value.max, 10).toString().length - 1);
+              // 取最大值向上取整为最大刻度
+              return Math.ceil((value.max * 1.3) / len) * len;
+            },
+            type: 'value',
+            name: '浓度',
+            position: 'left',
+            axisLine: {
+              show: true,
+              lineStyle: {
+                color: '#5470C6',
+              },
+            },
+            axisLabel: {
+              formatter: '{value}',
+            },
+          },
+        ],
+        dataZoom: [
+          {
+            type: 'inside',
+            start: 0,
+            end: 50,
+          },
+          {
+            start: 80,
+            end: 100,
+          },
+        ],
+        series: [
+          {
+            // 根据名字对应到相应的系列
+            name: '氡浓度(Bq/m³)',
+            type: 'line',
+            // symbolSize: 10, //设定点的大小
+            color: '#5470C6',
+            smooth: true,
+            data: [],
+          },
+          {
+            // 根据名字对应到相应的系列
+            name: '氡浓度(Bq/m³)',
+            type: 'line',
+            color: '#ff0000',
+            smooth: true,
+            data: [],
+          },
+        ],
+      },
     };
   },
   props: {
@@ -68,7 +150,7 @@ export default {
      */
     update(data) {
       // console.log('更新数据');
-      this.data = data;
+      this.data = data.Radon;
       this.RadonAt = data.RadonAt;
       if (this.isfinished) {
         this.setdata();
@@ -80,13 +162,7 @@ export default {
         xAxis: {
           data: this.RadonAt,
         },
-        series: [
-          {
-            // 根据名字对应到相应的系列
-            name: '相对湿度(%)',
-            data: this.data.humidity,
-          },
-        ],
+        series: [{ name: '氡浓度(Bq/m³)', data: this.data }],
       });
       // this.barUpdate({ zoomStart: 0, zoomEnd: 100 });
       this.zoomdata(0, 100, this.data);
@@ -104,7 +180,7 @@ export default {
       // 2.初始化
       this.$refs.chart.init(echarts, (chart) => {
         // 3.配置数据
-        chart.setOption(this.stoption());
+        chart.setOption(this.option);
         // 4.传入数据
         chart.on('datazoom', () => {
           const { endValue } = chart.getOption().dataZoom[1];
@@ -112,7 +188,7 @@ export default {
           this.getzoom({
             zoomStart: startValue,
             zoomEnd: endValue,
-            source: 'AmbientChart',
+            source: 'radonchar',
           });
           this.zoomdata(startValue, endValue, this.data);
         });
@@ -161,11 +237,12 @@ export default {
     },
 
     /**
-     * 缩放图表
+     * 缩放图表计算数据
      * @param {Number} startValue 图表区域起始下标
      * @param {Number} endValue 图表区域结束下标
      */
     zoomdata(startValue, endValue) {
+      console.log('添加标线');
       this.$refs.chart.setOption({
         dataZoom: [
           {
@@ -174,83 +251,51 @@ export default {
             endValue,
           },
         ],
-      });
-    },
-
-    /**
-     * 生成图表框架
-     */
-    stoption() {
-      const option = {
-        color: this.colors,
-        title: {
-          // text: "Rtm1688示例",
-        },
-        legend: {
-          data: [
-            {
-              name: '相对湿度(%)',
-              textStyle: {
-                fontSize: 20,
-              },
-            },
-          ],
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'line',
-          },
-        },
-        grid: {
-          right: '10%',
-          left: '15%',
-        },
-        xAxis: { data: [] },
-        yAxis: [
-          {
-            min: 0, // 最小刻度
-            max: 100, // 最大刻度
-            type: 'value',
-            name: '相对湿度',
-            // offset: 50,
-            // offset: 130,
-            position: 'left',
-            axisLine: {
-              show: true,
-              lineStyle: {
-                color: this.colors[4],
-              },
-            },
-            axisLabel: {
-              formatter: '{value} %',
-            },
-          },
-        ],
-        dataZoom: [
-          {
-            type: 'inside',
-            start: 80,
-            end: 100,
-          },
-          {
-            start: 80,
-            end: 100,
-          },
-        ],
         series: [
           {
             // 根据名字对应到相应的系列
-            name: '相对湿度(%)',
-            type: 'line',
-            color: this.colors[3],
-            smooth: true,
-            data: [],
+            name: '氡浓度(Bq/m³)',
+            markLine: {
+              silent: true,
+              label: { show: true, formatter: '{b} : {c}' },
+              data: [
+                { type: 'average', name: 'X\u0305' },
+                {
+                  name: 'X\u0305+1xσ',
+                  yAxis: hezhi(this.data, startValue, endValue, 1, 1).toFixed(
+                    2
+                  ),
+                  label: {
+                    show: true,
+                    formatter: '{b} : {c}\n\n',
+                  },
+                },
+                {
+                  name: '\n\nX\u0305-1xσ',
+                  yAxis: hezhi(this.data, startValue, endValue, 0, 1),
+                },
+                {
+                  name: 'X\u0305+2xσ',
+                  yAxis: hezhi(this.data, startValue, endValue, 1, 2).toFixed(
+                    2
+                  ),
+                  label: {
+                    show: true,
+                    formatter: '{b} : {c}\n\n\n\n',
+                  },
+                },
+                {
+                  name: '\n\n\n\nX\u0305-2xσ',
+                  yAxis: hezhi(this.data, startValue, endValue, 0, 2),
+                },
+              ],
+            },
           },
         ],
-      };
-
-      return option;
+      });
+      // if (Plot_Chart !== undefined && Plot_Chart !== null) {
+      //   Plot_Chart.setOption(Plotupoption(this.data, startValue, endValue));
+      // }
     },
   },
 };

@@ -62,7 +62,11 @@
 		},
 		"usingComponents": true,
 		// 开启组件按需注入
-		"lazyCodeLoading": "requiredComponents"
+		"lazyCodeLoading": "requiredComponents",
+		// 微信小程序依赖分包
+		"optimization":{
+			"subPackages":true
+		}
 	},
 	"mp-alipay" : {
         "usingComponents" : true

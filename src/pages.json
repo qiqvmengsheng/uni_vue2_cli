@@ -41,13 +41,13 @@
 			},
 			"name": "commandView"
 		},
-		{
-			"path": "pages/index/device/chartView/index",
-			"style": {
-				"navigationBarTitleText": "图表"
-			},
-			"name": "chartView"
-		},
+		// {
+		// 	"path": "pages/index/device/chartView/index",
+		// 	"style": {
+		// 		"navigationBarTitleText": "图表"
+		// 	},
+		// 	"name": "chartView"
+		// },
 		{
 			"path": "pages/login/index",
 			"style": {
@@ -100,6 +100,18 @@
 						"navigationBarTitleText": "触发值"
 					},
 					"name": "TriggerView"
+				}
+			]
+		},
+		{
+			"root": "pages/chart",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "图表"
+					},
+					"name": "chartView"
 				}
 			]
 		}

@@ -82,7 +82,8 @@
     "uni-simple-router": "^2.0.7",
     "uview-ui": "^2.0.35",
     "vue": ">= 2.6.14 < 2.7",
-    "vuex": "^3.2.0"
+    "vuex": "^3.2.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",

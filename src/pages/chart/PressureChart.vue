@@ -11,7 +11,7 @@ import LEchart from '@/components/l-echart/l-echart';
 // import * as echarts from 'echarts';
 // 按需引入 开始
 import * as echarts from 'echarts/core';
-import { LineChart, BarChart } from 'echarts/charts';
+import { LineChart } from 'echarts/charts';
 import {
   TitleComponent,
   TooltipComponent,
@@ -36,7 +36,6 @@ echarts.use([
   DatasetComponent,
   TransformComponent,
   LineChart,
-  BarChart,
   LabelLayout,
   UniversalTransition,
   CanvasRenderer,
@@ -47,7 +46,7 @@ echarts.use([
 // -------------按需引入结束------------------------
 
 export default {
-  name: 'RadonChart',
+  name: 'PressureChart',
   components: { LEchart },
   data() {
     return {
@@ -83,8 +82,9 @@ export default {
         series: [
           {
             // 根据名字对应到相应的系列
-            name: '相对湿度(%)',
-            data: this.data.humidity,
+            name: '大气压(mbar)',
+            // yAxisIndex: 2,
+            data: this.data.Pressure,
           },
         ],
       });
@@ -189,7 +189,7 @@ export default {
         legend: {
           data: [
             {
-              name: '相对湿度(%)',
+              name: '大气压(mbar)',
               textStyle: {
                 fontSize: 20,
               },
@@ -210,20 +210,26 @@ export default {
         yAxis: [
           {
             min: 0, // 最小刻度
-            max: 100, // 最大刻度
+            max: 1100, // 最大刻度
             type: 'value',
-            name: '相对湿度',
-            // offset: 50,
-            // offset: 130,
+            name: '大气压',
             position: 'left',
             axisLine: {
               show: true,
               lineStyle: {
-                color: this.colors[4],
+                color: this.colors[3],
               },
             },
             axisLabel: {
-              formatter: '{value} %',
+              formatter: '{value} mbar',
+            },
+            splitLine: {
+              // 修改背景线条样式
+              show: false, // 是否展示0
+              lineStyle: {
+                color: '#353b5a', // 线条颜色
+                type: 'dashed', // 线条样式，默认是实现，dashed是虚线
+              },
             },
           },
         ],
@@ -241,9 +247,9 @@ export default {
         series: [
           {
             // 根据名字对应到相应的系列
-            name: '相对湿度(%)',
+            name: '大气压(mbar)',
             type: 'line',
-            color: this.colors[3],
+            color: this.colors[4],
             smooth: true,
             data: [],
           },

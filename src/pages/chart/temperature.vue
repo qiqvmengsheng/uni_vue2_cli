@@ -83,8 +83,21 @@ export default {
         series: [
           {
             // 根据名字对应到相应的系列
+            name: '温度(°C)',
+            yAxisIndex: 0,
+            data: this.data.temperature,
+          },
+          {
+            // 根据名字对应到相应的系列
             name: '相对湿度(%)',
+            yAxisIndex: 1,
             data: this.data.humidity,
+          },
+          {
+            // 根据名字对应到相应的系列
+            name: '大气压(mbar)',
+            yAxisIndex: 2,
+            data: this.data.Pressure,
           },
         ],
       });
@@ -189,7 +202,19 @@ export default {
         legend: {
           data: [
             {
+              name: '温度(°C)',
+              textStyle: {
+                fontSize: 20,
+              },
+            },
+            {
               name: '相对湿度(%)',
+              textStyle: {
+                fontSize: 20,
+              },
+            },
+            {
+              name: '大气压(mbar)',
               textStyle: {
                 fontSize: 20,
               },
@@ -204,18 +229,41 @@ export default {
         },
         grid: {
           right: '10%',
-          left: '15%',
         },
+        // toolbox: {
+        //   feature: {
+        //     dataView: { show: true, readOnly: false },
+        //     // restore: { show: true },
+        //     saveAsImage: { show: true },
+        //   },
+        // },
         xAxis: { data: [] },
         yAxis: [
+          {
+            min: -30, // 最小刻度
+            max: 70, // 最大刻度
+            type: 'value',
+            name: '温度',
+            // offset: 90,
+            position: 'right',
+            axisLine: {
+              show: true,
+              lineStyle: {
+                color: this.colors[2],
+              },
+            },
+            axisLabel: {
+              formatter: '{value} °C',
+            },
+          },
           {
             min: 0, // 最小刻度
             max: 100, // 最大刻度
             type: 'value',
             name: '相对湿度',
-            // offset: 50,
+            offset: 50,
             // offset: 130,
-            position: 'left',
+            position: 'right',
             axisLine: {
               show: true,
               lineStyle: {
@@ -224,6 +272,30 @@ export default {
             },
             axisLabel: {
               formatter: '{value} %',
+            },
+          },
+          {
+            min: 0, // 最小刻度
+            max: 1100, // 最大刻度
+            type: 'value',
+            name: '大气压',
+            position: 'left',
+            axisLine: {
+              show: true,
+              lineStyle: {
+                color: this.colors[3],
+              },
+            },
+            axisLabel: {
+              formatter: '{value} mbar',
+            },
+            splitLine: {
+              // 修改背景线条样式
+              show: false, // 是否展示0
+              lineStyle: {
+                color: '#353b5a', // 线条颜色
+                type: 'dashed', // 线条样式，默认是实现，dashed是虚线
+              },
             },
           },
         ],
@@ -241,7 +313,23 @@ export default {
         series: [
           {
             // 根据名字对应到相应的系列
-            name: '相对湿度(%)',
+            name: '温度',
+            type: 'line',
+            color: this.colors[2],
+            smooth: true,
+            data: [],
+          },
+          {
+            // 根据名字对应到相应的系列
+            name: '大气压',
+            type: 'line',
+            color: this.colors[4],
+            smooth: true,
+            data: [],
+          },
+          {
+            // 根据名字对应到相应的系列
+            name: '相对湿度',
             type: 'line',
             color: this.colors[3],
             smooth: true,

@@ -87,6 +87,7 @@ import ThoronChart from './ThoronChart';
 import TempChart from './TempChart';
 import RHChart from './RHChart';
 import PressureChart from './PressureChart';
+// eslint-disable-next-line import/no-relative-packages
 
 export default {
   components: { RadonChart, ThoronChart, TempChart, RHChart, PressureChart },
@@ -174,8 +175,7 @@ export default {
       //     console.log(res);
       //   },
       // });
-      // console.log(data, '生成数据');
-      // console.log(utils);
+
       const xlsx = XLSX.utils.json_to_sheet(xlsxjson);
       // console.log(xlsxjson, '生成数据', xlsx);
 
