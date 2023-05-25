@@ -11,55 +11,23 @@
       <RadonChart
         class="echart"
         ref="radonchar"
-        :getzoom="getzoom"
         :barUpdate="barUpdate"
-        :setTooltip="setTooltip"
       ></RadonChart>
     </view>
-    <view class="card" v-show="datastreams === 'Thoron'">
-      <ThoronChart
-        class="echart"
-        ref="Thoronchar"
-        :getzoom="getzoom"
-        :barUpdate="barUpdate"
-        :setTooltip="setTooltip"
-      ></ThoronChart>
+    <view class="card" v-show="showBarChart && datastreams === 'Radon'">
+      <BarChart class="echart" ref="barchar"></BarChart>
     </view>
-    <!-- <view class="card" v-show="datastreams === 'Radon'">
-      <Tempera
-        class="echart"
-        ref="AmbientChart"
-        :getzoom="getzoom"
-        :barUpdate="barUpdate"
-        :setTooltip="setTooltip"
-      ></Tempera>
-    </view> -->
+    <view class="card" v-show="datastreams === 'Thoron'">
+      <ThoronChart class="echart" ref="Thoronchar"></ThoronChart>
+    </view>
     <view class="card" v-show="datastreams === 'temperature'">
-      <TempChart
-        class="echart"
-        ref="TempChart"
-        :getzoom="getzoom"
-        :barUpdate="barUpdate"
-        :setTooltip="setTooltip"
-      ></TempChart>
+      <TempChart class="echart" ref="TempChart"></TempChart>
     </view>
     <view class="card" v-show="datastreams === 'humidity'">
-      <RHChart
-        class="echart"
-        ref="RHChart"
-        :getzoom="getzoom"
-        :barUpdate="barUpdate"
-        :setTooltip="setTooltip"
-      ></RHChart>
+      <RHChart class="echart" ref="RHChart"></RHChart>
     </view>
     <view class="card" v-show="datastreams === 'Pressure'">
-      <PressureChart
-        class="echart"
-        ref="PressureChart"
-        :getzoom="getzoom"
-        :barUpdate="barUpdate"
-        :setTooltip="setTooltip"
-      ></PressureChart>
+      <PressureChart class="echart" ref="PressureChart"></PressureChart>
     </view>
     <view>
       <view class="btn">
@@ -68,6 +36,7 @@
           type="primary"
           shape="circle"
           @click="download"
+          :disabled="!isOpen"
         ></u-button>
       </view>
     </view>
@@ -77,30 +46,44 @@
 <script>
 import { mapGetters } from 'vuex';
 import to from 'await-to-js';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import XLSX from 'xlsx';
 import { jsonClone } from '@/utils/disposalData';
 import { toast, confirm, file } from '@uni/apis';
 import { measuredGetdata, getlastDatas } from '@/api/devdata';
+import { devSettingGetmark } from '@/api/devParamSetting';
 import RadonChart from './RadonChart';
 import ThoronChart from './ThoronChart';
 // import Tempera from './temperature';
 import TempChart from './TempChart';
 import RHChart from './RHChart';
 import PressureChart from './PressureChart';
-// eslint-disable-next-line import/no-relative-packages
+import BarChart from './BarChart';
 
+let that = null;
 export default {
-  components: { RadonChart, ThoronChart, TempChart, RHChart, PressureChart },
+  components: {
+    RadonChart,
+    ThoronChart,
+    TempChart,
+    RHChart,
+    PressureChart,
+    BarChart,
+  },
   data() {
     return {
       data: null,
       datastreams: '',
+      showBarChart: false,
+      isOpen: false,
+      dev: null,
     };
   },
   computed: {
     ...mapGetters(['name', 'devices']),
   },
   created() {
+    that = this;
     this.$AppReady.then(() => {
       console.log('收到参数', this.$Route.query);
       this.datastreams = this.$Route.query.datastreams;
@@ -108,9 +91,36 @@ export default {
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
       console.log('获得dev', this.dev);
       this.getdata();
+      this.getmakings();
     });
   },
   methods: {
+    /**
+     * 获取标线信息
+     */
+    async getmakings() {
+      const [err, res] = await to(
+        devSettingGetmark({ deviceid: this.dev.deviceid })
+      );
+      if (err) {
+        console.log(err);
+        return;
+      }
+      // console.log(res);
+      this.marks = [];
+      [...res.data].forEach((item) => {
+        this.marks.push({ ...item });
+      });
+      console.log('标线信息', [...this.marks]);
+      // if (
+      //   this.systemrole === 'superadmin' ||
+      //   this.systemrole === 'normaladmin'
+      // ) {
+      //   // console.log(this.$refs.paramsetting);
+      //   this.$refs.paramsetting.updateMark(this.marks);
+      // }
+    },
+
     /**
      * 下载数据
      */
@@ -124,6 +134,7 @@ export default {
         Data_ID: 'Data_ID',
         RadonAt: 'time',
         Radon: 'Radon',
+        FastRadon: 'Radon',
         Thoron: 'Thoron',
         temperature: 'temperature',
         Pressure: 'Pressure',
@@ -139,21 +150,26 @@ export default {
         Object.prototype.hasOwnProperty.call(data, item)
       );
       const xlsxjson = [];
-      let csvString = '';
-      keys.forEach((item) => {
-        csvString += `${header[item]},`;
-      });
-      csvString += '\r\n';
+      // let csvString = '';
+      // keys.forEach((item) => {
+      //   csvString += `${header[item]},`;
+      // });
+      // csvString += '\r\n';
       for (let i = data.RadonAt.length - 1; i >= 0; i -= 1) {
         const xlsxobj = {};
         // eslint-disable-next-line no-loop-func
         keys.forEach((item) => {
-          csvString += `${data[item][i]},`;
-          xlsxobj[item] = data[item][i];
+          // csvString += `${data[item][i]},`;
+          if (item === 'RadonAt') {
+            xlsxobj.time = data[item][i];
+          } else {
+            xlsxobj[item] = data[item][i];
+          }
         });
         xlsxjson.push(xlsxobj);
-        csvString += '\r\n';
+        // csvString += '\r\n';
       }
+
       // let i = data.RadonAt.length - 1;
       // while (i >= 0) {
       //   keys.forEach((item) => {
@@ -162,19 +178,9 @@ export default {
       //   csvString += '\r\n';
       //   i -= 1;
       // }
-
       // csvString = `data:application/csv;charset=utf-8,\ufeff${encodeURIComponent(
       //   csvString
       // )}`;
-      // file.download({
-      //   url: csvString,
-      //   success: (res) => {
-      //     console.log(res.filePath);
-      //   },
-      //   fail: (res) => {
-      //     console.log(res);
-      //   },
-      // });
 
       const xlsx = XLSX.utils.json_to_sheet(xlsxjson);
       // console.log(xlsxjson, '生成数据', xlsx);
@@ -192,14 +198,18 @@ export default {
 
       // 新建个文档，并写入数据
       const fs = wx.getFileSystemManager();
+      const name = `${this.dev.devicename}-${
+        this.dev.deviceserial
+      }-${uni.$u.timeFormat(new Date(), 'yyyy-mm-dd hh：MM：ss')}`;
+      // console.log(uni.$u.timeFormat(new Date(), 'yyyy-mm-dd'));
       fs.writeFile({
-        filePath: `${wx.env.USER_DATA_PATH}/HELLOWORLD2.xlsx`,
+        filePath: `${wx.env.USER_DATA_PATH}/${name}.xlsx`,
         data: wbout,
         success(res) {
           console.log('写入成功->', res);
           // 打开新建的对应的文档
           wx.openDocument({
-            filePath: `${wx.env.USER_DATA_PATH}/HELLOWORLD2.xlsx`,
+            filePath: `${wx.env.USER_DATA_PATH}/${name}.xlsx`,
             fileType: 'xlsx',
             showMenu: true,
             success(r) {
@@ -217,6 +227,7 @@ export default {
     },
 
     async getdata() {
+      this.isOpen = false;
       const [err, res] = await to(
         getlastDatas({
           deviceid: this.dev.deviceid,
@@ -225,6 +236,7 @@ export default {
       );
       if (err) {
         console.log('获取服务器数据错误：\n', err);
+        this.isOpen = true;
         return Promise.reject(err);
       }
       // console.log('获取服务器数据：\n', res);
@@ -247,6 +259,7 @@ export default {
       this.data = { ...this.data, ...data };
       console.log(this.data);
       this.update(this.data);
+      this.isOpen = true;
       return Promise.resolve(data);
     },
     async getdevdata() {
@@ -276,37 +289,21 @@ export default {
       // this.$refs.AmbientChart.update(data);
     },
 
-    barUpdate({ zoomStart, zoomEnd }) {
-      // if (this.qh) {
-      //   this.$refs.qhbarchar.update({
-      //     datas: this.data,
-      //     startValue: zoomStart,
-      //     endValue: zoomEnd,
-      //   });
-      // } else {
-      //   this.$refs.barchar.update({
-      //     datas: this.data,
-      //     startValue: zoomStart,
-      //     endValue: zoomEnd,
-      //   });
-      // }
-    },
-    getzoom({ zoomStart, zoomEnd, source }) {
-      // this.zoomStart = zoomStart;
-      // this.zoomEnd = zoomEnd;
-      // this.setzoom({ zoomStart, zoomEnd, source });
-    },
-    setzoom({ zoomStart, zoomEnd, source }) {
-      this.barUpdate({ zoomStart, zoomEnd });
-      const { radonchar, Thoronchar, AmbientChart } = this.getchartRef();
-      if (source !== 'radonchar') radonchar.setzoom({ zoomStart, zoomEnd });
-      if (source !== 'Thoronchar') Thoronchar.setzoom({ zoomStart, zoomEnd });
-      if (source !== 'AmbientChart')
-        AmbientChart.setzoom({ zoomStart, zoomEnd });
-
-      // radonchar.setzoom({ zoomStart, zoomEnd });
-      // Thoronchar.setzoom({ zoomStart, zoomEnd });
-      // AmbientChart.setzoom({ zoomStart, zoomEnd });
+    barUpdate({ zoomStart, zoomEnd, show }) {
+      console.log('标线', that.data?.Radon?.length);
+      if (!that.data?.Radon?.length || that.data.Radon.length === 0) {
+        console.log(that.data);
+        return;
+      }
+      that.showBarChart = show;
+      if (!show) return;
+      console.log('标线refs', that.$refs);
+      that.$refs.barchar.update({
+        datas: that.data,
+        startValue: zoomStart,
+        endValue: zoomEnd,
+        marks: that.marks,
+      });
     },
 
     setTooltip({ type, dataIndex, source }) {
@@ -365,7 +362,7 @@ export default {
   border-radius: 4px;
   border: 1px solid #ebeef5;
   overflow: hidden;
-  // height: 640rpx;
+  height: 300px;
   box-shadow: 0rpx 0rpx 3px 1px rgba(0, 0, 0, 0.08);
 }
 
@@ -374,5 +371,11 @@ export default {
   // top: 70%;
   width: 95%;
   margin: 30rpx auto;
+}
+</style>
+
+<style lang="scss">
+page {
+  background: $uni-bg-color-grey;
 }
 </style>

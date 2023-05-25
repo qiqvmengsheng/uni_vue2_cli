@@ -46,7 +46,7 @@ echarts.use([
 // -------------按需引入结束------------------------
 
 export default {
-  name: 'RadonChart',
+  name: 'TempChart',
   components: { LEchart },
   data() {
     return {
@@ -57,9 +57,9 @@ export default {
     };
   },
   props: {
-    getzoom: { type: Function, required: true },
-    barUpdate: { type: Function, required: true },
-    setTooltip: { type: Function, required: true },
+    // getzoom: { type: Function, required: true },
+    // barUpdate: { type: Function, required: true },
+    // setTooltip: { type: Function, required: true },
   },
   methods: {
     /**
@@ -86,21 +86,8 @@ export default {
             // yAxisIndex: 1,
             data: this.data.temperature,
           },
-          // {
-          //   // 根据名字对应到相应的系列
-          //   name: '相对湿度(%)',
-          //   yAxisIndex: 1,
-          //   data: this.data.humidity,
-          // },
-          // {
-          //   // 根据名字对应到相应的系列
-          //   name: '大气压(mbar)',
-          //   yAxisIndex: 2,
-          //   data: this.data.Pressure,
-          // },
         ],
       });
-      // this.barUpdate({ zoomStart: 0, zoomEnd: 100 });
       this.zoomdata(0, 100, this.data);
     },
 
@@ -118,52 +105,6 @@ export default {
         // 3.配置数据
         chart.setOption(this.stoption());
         // 4.传入数据
-        chart.on('datazoom', () => {
-          const { endValue } = chart.getOption().dataZoom[1];
-          const { startValue } = chart.getOption().dataZoom[1];
-          this.getzoom({
-            zoomStart: startValue,
-            zoomEnd: endValue,
-            source: 'AmbientChart',
-          });
-          this.zoomdata(startValue, endValue, this.data);
-        });
-        chart.on('mouseover', (params) => {
-          let dataIndex;
-          if (params.componentType === 'series') {
-            dataIndex = params.dataIndex;
-
-            this.barUpdate({ zoomStart: dataIndex, zoomEnd: dataIndex });
-          }
-        });
-
-        chart.getZr().on('mousemove', (params) => {
-          const pointInPixel = [params.offsetX, params.offsetY];
-          // 判断当前鼠标移动的位置是否在图表中
-          if (chart.containPixel('grid', pointInPixel)) {
-            // 使用 convertFromPixel方法 转换像素坐标值到逻辑坐标系上的点。获取点击位置对应的x轴数据的索引值
-            const pointInGrid = chart.convertFromPixel(
-              { seriesIndex: 0 },
-              pointInPixel
-            );
-            // console.log(pointInGrid);
-            // x轴数据的索引值
-            const xIndex = pointInGrid[0];
-            // 调用方法传递x轴索引设定tooltip
-            this.setTooltip({
-              type: 'showTip',
-              dataIndex: xIndex,
-              source: 'radonchar',
-            });
-          } else {
-            // 隐藏tooltip
-            this.setTooltip({
-              type: 'hideTip',
-              dataIndex: 0,
-              source: 'radonchar',
-            });
-          }
-        });
         // console.log('结束初始化图表', this.data);
         this.isfinished = true;
         if (this.data) {

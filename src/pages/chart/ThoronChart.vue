@@ -96,54 +96,6 @@ export default {
       this.$refs.chart.init(echarts, (chart) => {
         // 3.配置数据
         chart.setOption(this.initoption('钍浓度(Bq/m³)', 1));
-        // 4.传入数据
-        chart.on('datazoom', () => {
-          const { endValue } = chart.getOption().dataZoom[1];
-          const { startValue } = chart.getOption().dataZoom[1];
-          this.getzoom({
-            zoomStart: startValue,
-            zoomEnd: endValue,
-            source: 'Thoronchar',
-          });
-          this.zoomdata(startValue, endValue, this.data);
-        });
-        chart.on('mouseover', (params) => {
-          let dataIndex;
-          if (params.componentType === 'series') {
-            dataIndex = params.dataIndex;
-
-            this.barUpdate({ zoomStart: dataIndex, zoomEnd: dataIndex });
-          }
-        });
-
-        chart.getZr().on('mousemove', (params) => {
-          const pointInPixel = [params.offsetX, params.offsetY];
-          // 判断当前鼠标移动的位置是否在图表中
-          if (chart.containPixel('grid', pointInPixel)) {
-            // 使用 convertFromPixel方法 转换像素坐标值到逻辑坐标系上的点。获取点击位置对应的x轴数据的索引值
-            const pointInGrid = chart.convertFromPixel(
-              { seriesIndex: 0 },
-              pointInPixel
-            );
-            // console.log(pointInGrid);
-            // x轴数据的索引值
-            const xIndex = pointInGrid[0];
-            // 调用方法传递x轴索引设定tooltip
-            this.setTooltip({
-              type: 'showTip',
-              dataIndex: xIndex,
-              source: 'Thoronchar',
-            });
-          } else {
-            // 隐藏tooltip
-            this.setTooltip({
-              type: 'hideTip',
-              dataIndex: 0,
-              source: 'Thoronchar',
-            });
-          }
-        });
-        // console.log('结束初始化图表', this.data);
         this.isfinished = true;
         if (this.data) {
           this.setdata();

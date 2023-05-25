@@ -1,9 +1,4 @@
 export default {
-  props: {
-    getzoom: { type: Function, required: true },
-    barUpdate: { type: Function, required: true },
-    setTooltip: { type: Function, required: true },
-  },
   data() {
     return {
       colors: ['#5470C6', '#91CC75', '#EE6666', '#f5c85c', '#7fc0dd'],
