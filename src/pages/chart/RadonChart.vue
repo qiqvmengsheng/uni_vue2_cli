@@ -140,9 +140,7 @@ export default {
     };
   },
   props: {
-    getzoom: { type: Function, required: true },
     barUpdate: { type: Function, required: true },
-    setTooltip: { type: Function, required: true },
   },
   methods: {
     /**
@@ -164,7 +162,7 @@ export default {
         },
         series: [{ name: '氡浓度(Bq/m³)', data: this.data }],
       });
-      // this.barUpdate({ zoomStart: 0, zoomEnd: 100 });
+      this.barUpdate({ zoomStart: 0, zoomEnd: 100, show: false });
       this.zoomdata(0, 100, this.data);
     },
 
@@ -185,49 +183,88 @@ export default {
         chart.on('datazoom', () => {
           const { endValue } = chart.getOption().dataZoom[1];
           const { startValue } = chart.getOption().dataZoom[1];
-          this.getzoom({
+          this.barUpdate({
             zoomStart: startValue,
             zoomEnd: endValue,
-            source: 'radonchar',
+            show: true,
           });
           this.zoomdata(startValue, endValue, this.data);
         });
         chart.on('mouseover', (params) => {
-          let dataIndex;
-          if (params.componentType === 'series') {
-            dataIndex = params.dataIndex;
+          console.log('鼠标悬停', params);
+          // let dataIndex;
+          // if (params.componentType === 'series') {
+          //   dataIndex = params.dataIndex;
 
-            this.barUpdate({ zoomStart: dataIndex, zoomEnd: dataIndex });
-          }
+          //   this.barUpdate({ zoomStart: dataIndex, zoomEnd: dataIndex });
+          // }
         });
 
-        chart.getZr().on('mousemove', (params) => {
-          const pointInPixel = [params.offsetX, params.offsetY];
-          // 判断当前鼠标移动的位置是否在图表中
-          if (chart.containPixel('grid', pointInPixel)) {
-            // 使用 convertFromPixel方法 转换像素坐标值到逻辑坐标系上的点。获取点击位置对应的x轴数据的索引值
-            const pointInGrid = chart.convertFromPixel(
-              { seriesIndex: 0 },
-              pointInPixel
-            );
-            // console.log(pointInGrid);
-            // x轴数据的索引值
-            const xIndex = pointInGrid[0];
-            // 调用方法传递x轴索引设定tooltip
-            this.setTooltip({
-              type: 'showTip',
-              dataIndex: xIndex,
-              source: 'radonchar',
-            });
-          } else {
-            // 隐藏tooltip
-            this.setTooltip({
-              type: 'hideTip',
-              dataIndex: 0,
-              source: 'radonchar',
-            });
-          }
+        chart.on('showTip', (params) => {
+          console.log('显示提示', params);
         });
+
+        chart.on('hideTip', (params) => {
+          console.log('隐藏提示', params);
+        });
+
+        chart.on('dblclick', (params) => {
+          console.log('双击事件', params);
+        });
+
+        chart.on('mousedown', (params) => {
+          console.log('鼠标按下', params);
+        });
+
+        chart.on('mousemove', (params) => {
+          console.log('鼠标移动', params);
+        });
+
+        chart.on('mouseup', (params) => {
+          console.log('鼠标松开', params);
+        });
+
+        chart.on('contextmenu', (params) => {
+          console.log('鼠标菜单', params);
+        });
+
+        chart.on('mouseout', (params) => {
+          console.log('鼠标移出', params);
+        });
+
+        chart.on('globalout', (params) => {
+          console.log('鼠标移出图表', params);
+        });
+
+        // chart.getZr().on('mousemove', (params) => {
+        //   const pointInPixel = [params.offsetX, params.offsetY];
+        //   // 判断当前鼠标移动的位置是否在图表中
+        //   if (chart.containPixel('grid', pointInPixel)) {
+        //     // 使用 convertFromPixel方法 转换像素坐标值到逻辑坐标系上的点。获取点击位置对应的x轴数据的索引值
+        //     const pointInGrid = chart.convertFromPixel(
+        //       { seriesIndex: 0 },
+        //       pointInPixel
+        //     );
+        //     // console.log(pointInGrid);
+        //     // x轴数据的索引值
+        //     const xIndex = pointInGrid[0];
+        //     this.barUpdate({ zoomStart: xIndex, zoomEnd: xIndex, show: true });
+        //     // 调用方法传递x轴索引设定tooltip
+        //     // this.setTooltip({
+        //     //   type: 'showTip',
+        //     //   dataIndex: xIndex,
+        //     //   source: 'radonchar',
+        //     // });
+        //   } else {
+        //     this.barUpdate({ show: false });
+        //     // 隐藏tooltip
+        //     // this.setTooltip({
+        //     //   type: 'hideTip',
+        //     //   dataIndex: 0,
+        //     //   source: 'radonchar',
+        //     // });
+        //   }
+        // });
         // console.log('结束初始化图表', this.data);
         this.isfinished = true;
         if (this.data) {
