@@ -112,6 +112,13 @@
 						"navigationBarTitleText": "图表"
 					},
 					"name": "chartView"
+				},
+				{
+					"path": "DataQuantity/index",
+					"style": {
+						"navigationBarTitleText": "DataQuantity"
+					},
+					"name": "DataQuantity"
 				}
 			]
 		}
