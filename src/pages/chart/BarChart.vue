@@ -157,6 +157,16 @@ export default {
         PlotNames.push(`Plot_${i}`);
       }
       const option = {
+        // title: {
+        //   text: '能谱',
+        // },
+        // legend: {
+        //   data: ['能谱'],
+        //   textStyle: {
+        //     // 图例字体大小
+        //     fontSize: 16,
+        //   },
+        // },
         tooltip: {
           trigger: 'axis',
           axisPointer: {
@@ -164,8 +174,8 @@ export default {
           },
         },
         grid: {
-          left: '8%',
-          right: '4%',
+          // left: '8%',
+          // right: '4%',
           bottom: '3%',
           containLabel: true,
         },

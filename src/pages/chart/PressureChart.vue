@@ -189,7 +189,7 @@ export default {
         },
         grid: {
           right: '10%',
-          left: '15%',
+          left: '20%',
         },
         xAxis: { data: [] },
         yAxis: [

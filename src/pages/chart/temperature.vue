@@ -182,6 +182,8 @@ export default {
         },
         grid: {
           right: '10%',
+          left: '15%',
+          // containLabel: true,
         },
         // toolbox: {
         //   feature: {

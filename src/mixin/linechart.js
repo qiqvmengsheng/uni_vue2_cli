@@ -33,8 +33,9 @@ export default {
           },
         },
         grid: {
-          right: '10%',
+          right: '20%',
           left: '15%',
+          // containLabel: true,
         },
         // toolbox: {
         //   feature: {
