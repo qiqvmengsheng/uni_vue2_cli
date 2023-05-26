@@ -1,6 +1,23 @@
 <template>
   <div class="chartView">
+    <view class="cell">
+      <u-cell-group>
+        <u-cell
+          title="显示数据量"
+          :value="form.number"
+          isLink
+          :disabled="disabled"
+        ></u-cell>
+      </u-cell-group>
+    </view>
+
     <!-- <view class="card">
+          @click="
+            $Router.push({
+              name: 'DataQuantity',
+              params: { number: form.number },
+            })
+          "
       <uni-card>
         <text>
           这是一个基础卡片示例，内容较少，此示例展示了一个没有任何属性不带阴影的卡片。</text
@@ -29,6 +46,23 @@
     <view class="card" v-show="datastreams === 'Pressure'">
       <PressureChart class="echart" ref="PressureChart"></PressureChart>
     </view>
+
+    <view v-show="showBarChart">
+      <view class="btn">
+        <u-button
+          text="隐藏能谱"
+          type="primary"
+          shape="circle"
+          @click="showBarChart = false"
+          :disabled="!isOpen"
+        ></u-button>
+      </view>
+    </view>
+    <view v-show="datastreams === 'Radon'" class="tips">
+      <text>
+        点击图表内显示对应数据点能谱，缩放图表显示范围内能谱，点击图表外隐藏能谱。
+      </text>
+    </view>
     <view>
       <view class="btn">
         <u-button
@@ -38,6 +72,11 @@
           @click="download"
           :disabled="!isOpen"
         ></u-button>
+      </view>
+      <view class="tips">
+        <text>
+          点击下载数据会打开微信自带的文件预览页面，在文件预览页面点击右上角三个点，即可转发或保存到手机。
+        </text>
       </view>
     </view>
   </div>
@@ -49,7 +88,7 @@ import to from 'await-to-js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import XLSX from 'xlsx';
 import { jsonClone } from '@/utils/disposalData';
-import { toast, confirm, file } from '@uni/apis';
+import { toast, file } from '@uni/apis';
 import { measuredGetdata, getlastDatas } from '@/api/devdata';
 import { devSettingGetmark } from '@/api/devParamSetting';
 import RadonChart from './RadonChart';
@@ -72,6 +111,7 @@ export default {
   },
   data() {
     return {
+      form: { number: 100 },
       data: null,
       datastreams: '',
       showBarChart: false,
@@ -81,6 +121,14 @@ export default {
   },
   computed: {
     ...mapGetters(['name', 'devices']),
+  },
+  beforeRouteEnter(toa, from, next) {
+    console.log('回跳转', toa, from);
+    // previousRouterName = from.name;
+    // if (from.name === "transportationTransferList") {
+    //   selectUser = from.params.user;
+    // }
+    next();
   },
   created() {
     that = this;
@@ -198,6 +246,7 @@ export default {
 
       // 新建个文档，并写入数据
       const fs = wx.getFileSystemManager();
+      console.log('对象file', { ...file });
       const name = `${this.dev.devicename}-${
         this.dev.deviceserial
       }-${uni.$u.timeFormat(new Date(), 'yyyy-mm-dd hh：MM：ss')}`;
@@ -216,16 +265,29 @@ export default {
               console.log('打开文档成功', r);
             },
             fail(r) {
+              toast.showToast({
+                type: 'fail',
+                content: '失败',
+                mask: true,
+              });
               console.log('打开文档失败->', r);
             },
           });
         },
         fail(res) {
+          toast.showToast({
+            type: 'fail',
+            content: '失败',
+            mask: true,
+          });
           console.log('写入失败->', res);
         },
       });
     },
 
+    /**
+     * 获取数据
+     */
     async getdata() {
       this.isOpen = false;
       const [err, res] = await to(
@@ -278,54 +340,27 @@ export default {
 
     update(data) {
       console.log(this.$refs);
-      // this.$refs.qhradonchar.update(data);
-      // this.$refs.qhThoronchar.update(data);
-      // this.$refs.qhAmbientChart.update(data);
       this.$refs.radonchar.update(data);
       this.$refs.Thoronchar.update(data);
       this.$refs.TempChart.update(data);
       this.$refs.RHChart.update(data);
       this.$refs.PressureChart.update(data);
-      // this.$refs.AmbientChart.update(data);
     },
 
     barUpdate({ zoomStart, zoomEnd, show }) {
-      console.log('标线', that.data?.Radon?.length);
+      // console.log('标线', that.data?.Radon?.length);
       if (!that.data?.Radon?.length || that.data.Radon.length === 0) {
         console.log(that.data);
         return;
       }
       that.showBarChart = show;
       if (!show) return;
-      console.log('标线refs', that.$refs);
       that.$refs.barchar.update({
         datas: that.data,
         startValue: zoomStart,
         endValue: zoomEnd,
         marks: that.marks,
       });
-    },
-
-    setTooltip({ type, dataIndex, source }) {
-      // const { radonchar, Thoronchar, AmbientChart } = this.getchartRef();
-      // if (source !== 'radonchar')
-      //   radonchar.chart.dispatchAction({
-      //     type,
-      //     seriesIndex: 0,
-      //     dataIndex,
-      //   });
-      // if (source !== 'Thoronchar')
-      //   Thoronchar.chart.dispatchAction({
-      //     type,
-      //     seriesIndex: 0,
-      //     dataIndex,
-      //   });
-      // if (source !== 'AmbientChart')
-      //   AmbientChart.chart.dispatchAction({
-      //     type,
-      //     seriesIndex: 0,
-      //     dataIndex,
-      //   });
     },
   },
   watch: {},
@@ -352,11 +387,16 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.cell {
+  background-color: #fff;
+  margin-bottom: 20rpx;
+}
 .chart {
   width: 730rpx;
   height: 700rpx;
 }
 .card {
+  background-color: #fff;
   width: calc(100% - 20px);
   margin: 10px;
   border-radius: 4px;
@@ -371,6 +411,11 @@ export default {
   // top: 70%;
   width: 95%;
   margin: 30rpx auto;
+}
+.tips {
+  padding: 0 10px;
+  margin-bottom: 10px;
+  background-color: $uni-bg-color-grey;
 }
 </style>
 
