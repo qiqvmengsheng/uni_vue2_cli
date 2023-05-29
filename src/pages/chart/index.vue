@@ -7,17 +7,17 @@
           :value="form.number"
           isLink
           :disabled="disabled"
-        ></u-cell>
-      </u-cell-group>
-    </view>
-
-    <!-- <view class="card">
           @click="
             $Router.push({
               name: 'DataQuantity',
               params: { number: form.number },
             })
           "
+        ></u-cell>
+      </u-cell-group>
+    </view>
+
+    <!-- <view class="card">
       <uni-card>
         <text>
           这是一个基础卡片示例，内容较少，此示例展示了一个没有任何属性不带阴影的卡片。</text
@@ -111,7 +111,7 @@ export default {
   },
   data() {
     return {
-      form: { number: 100 },
+      form: { number: 100, startTime: '', endTiem: '' },
       data: null,
       datastreams: '',
       showBarChart: false,
@@ -143,6 +143,14 @@ export default {
     });
   },
   methods: {
+    init({ number, startTime, endTiem }) {
+      console.log({ number, startTime, endTiem });
+      this.form = { number, startTime, endTiem };
+      console.log('图表页面初始化', this.form);
+      this.getdata();
+      this.getmakings();
+    },
+
     /**
      * 获取标线信息
      */
@@ -293,7 +301,7 @@ export default {
       const [err, res] = await to(
         getlastDatas({
           deviceid: this.dev.deviceid,
-          numbers: 100,
+          numbers: this.form.number,
         })
       );
       if (err) {

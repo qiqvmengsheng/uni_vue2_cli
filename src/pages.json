@@ -116,7 +116,7 @@
 				{
 					"path": "DataQuantity/index",
 					"style": {
-						"navigationBarTitleText": "DataQuantity"
+						"navigationBarTitleText": "数据量"
 					},
 					"name": "DataQuantity"
 				}

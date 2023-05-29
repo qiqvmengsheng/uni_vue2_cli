@@ -1,5 +1,70 @@
 <template>
   <div class="DataQuantity">
+    <view class="subsection">
+      <u-subsection
+        mode="subsection"
+        :list="list"
+        :current="current"
+        @change="sectionChange"
+      ></u-subsection>
+    </view>
+    <view class="form" v-show="current === 0">
+      <u-form :model="dev" ref="uForm" labelWidth="100">
+        <u-form-item
+          label="数量"
+          prop="devicename"
+          borderBottom
+          @click="showDevtype = true"
+          ref="item1"
+        >
+          <u-input
+            v-model="dev.devicename"
+            disabled
+            disabledColor="#ffffff"
+            placeholder="请选择设备类型"
+            border="none"
+          ></u-input>
+          <u-icon slot="right" name="arrow-right"></u-icon>
+        </u-form-item>
+      </u-form>
+    </view>
+
+    <view class="cell" v-show="current === 1">
+      <u-cell-group>
+        <u-cell
+          title="开始时间"
+          value="组件"
+          @click="show = true"
+          isLink
+        ></u-cell>
+        <u-cell
+          title="结束时间"
+          value="工具"
+          @click="show = true"
+          isLink
+        ></u-cell>
+      </u-cell-group>
+    </view>
+
+    <view class="btn">
+      <u-button
+        text="确认"
+        type="primary"
+        shape="circle"
+        @click="confirmform"
+      ></u-button>
+    </view>
+
+    <u-datetime-picker
+      :show="show"
+      v-model="value1"
+      mode="datetime"
+      closeOnClickOverlay
+      @confirm="confirm"
+      @cancel="cancel"
+      @change="change"
+      @close="close"
+    ></u-datetime-picker>
     <u-modal
       :show="formshow"
       title="显示数据量"
@@ -28,12 +93,18 @@
 </template>
 
 <script>
+import { application } from '@uni/apis';
+
 export default {
   components: {},
   data() {
     return {
-      form: { number: 100 },
-      formshow: true,
+      list: ['按数量', '按时间'],
+      current: 0,
+      show: false,
+      value1: Number(new Date()),
+      form: { number: 200 },
+      formshow: false,
       rules: [],
     };
   },
@@ -50,6 +121,24 @@ export default {
     });
   },
   methods: {
+    sectionChange(index) {
+      // console.log(index);
+      this.current = index;
+    },
+
+    close() {
+      this.show = false;
+    },
+    cancel() {
+      this.show = false;
+    },
+    confirm(e) {
+      this.show = false;
+      // this.result(e.value, e.mode);
+    },
+    change(e) {
+      // console.log('change', e);
+    },
     /**
      * 确认获取数据
      */
@@ -58,11 +147,16 @@ export default {
       //   name: 'chartView',
       //   params: { number: this.number },
       // });
+      const pages = application.getCurrentPages();
+      const chartVm = pages[pages.length - 2].$vm;
+      console.log('上一页数据', pages[pages.length - 2], chartVm);
       this.$Router.back(1, {
-        name: 'chartView',
-        params: { number: this.number },
+        success: (...arg) => {
+          console.log(this, '跳转成功', arg);
+          chartVm.init({ number: this.form.number });
+        },
       });
-      this.$route.params.user = '123';
+      // this.$route.params.user = '123';
     },
   },
   watch: {},
@@ -88,4 +182,26 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.DataQuantity {
+  margin-top: 10px;
+}
+.subsection {
+  padding: 10px 30px;
+  background-color: #fff;
+}
+.form {
+  background-color: #fff;
+  padding: 0 10px;
+}
+.cell {
+  background-color: #fff;
+}
+
+.btn {
+  // position: relative;
+  // top: 70%;
+  width: 95%;
+  margin: 30rpx auto;
+}
+</style>
