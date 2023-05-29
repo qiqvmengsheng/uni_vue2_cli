@@ -78,7 +78,7 @@ export default {
     this.attribute = decodeURI(option.attribute);
   },
   methods: {
-    async select_gender( e ){
+    async select_gender(e) {
       this.gender = e;
     },
     async save_data() {

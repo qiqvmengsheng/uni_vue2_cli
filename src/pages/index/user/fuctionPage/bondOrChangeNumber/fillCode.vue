@@ -1,7 +1,7 @@
 <template>
-  <view class="background_bondphone">
+  <view class="background_fillCode">
+    <view class="message"> 验证码已发送至{{ phoneNumber }}</view>
     <view>请输入验证码</view>
-    <view class="message"> 验证码已发送至</view>
     <view class="input_phonenumber">
       <input type="text" v-model="code"  placeholder="输入验证码"/>
       <view class="line"></view>
@@ -66,4 +66,10 @@ export default {
 };
 </script>
 <style scoped src="../fuctionstyle.css"></style>
-<style></style>
+<style>
+.put_code {
+  margin-top: 20%;
+  font-size: 30rpx;
+}
+
+</style>

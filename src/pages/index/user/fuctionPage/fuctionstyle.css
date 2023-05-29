@@ -12,13 +12,26 @@
     margin-bottom: 20%;
     text-align: center;
 }
+
 .background_bondphone {
-    background-color: rgb(249, 247, 247);
     position: absolute;
     margin-left: 10%;
     margin-right: 10%;
     bottom: 0;
     top: 2%;
+}
+.background_fillCode {
+    margin-left: 12%;
+    margin-right: 12%;
+    bottom: 0;
+    top: 2%;
+}
+
+/* 字体样式：小字，灰色 */
+.font_1{
+    margin-bottom: 40%;
+    font-size: 25rpx;
+    color: #5e5d5d;
 }
 /* 横线 */
 .line{
@@ -111,3 +124,4 @@
     width: 27%;
     margin-left: 8%;
 }
+

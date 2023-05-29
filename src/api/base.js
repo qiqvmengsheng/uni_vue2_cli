@@ -93,3 +93,14 @@ export function vertifyCode(data) {
     data: qs.stringify(data),
   });
 }
+/**
+ * 获取该发送给该用户的系统消息
+ * @param {object} data
+ */
+export function getNotice(data) {
+  return request({
+    url: '/notify/get_user_notify',
+    method: 'post',
+    data: qs.stringify(data),
+  });
+}

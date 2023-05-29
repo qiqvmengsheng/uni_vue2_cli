@@ -3,13 +3,13 @@
     <view class="bond_item">
       <view class="item_name">输入新手机号</view>
       <view class="input_code">
-        <input type="text" v-model="newPhoneNumber">
+        <input type="text" v-model="newPhoneNumber" placeholder="请输入新手机号">
       </view>
     </view>
     <view class="bond_item">
       <view class="item_name">输入验证码</view>
       <view class="input_code">
-        <input type="text" v-model="newCode">
+        <input type="text" v-model="newCode" placeholder="请输入验证码">
       </view>
       <button v-if="codeShow" class="phone_code" @click="getCode">
         获取验证码
@@ -43,6 +43,23 @@ export default {
   },
   methods: {
     async getCode() {
+      if (this.newPhoneNumber === '') {
+        uni.showToast({
+          title: '请输入电话号码',
+          icon: 'none',
+          duration: 2000,
+        });
+        return;
+      }
+      console.log(this.newPhoneNumber.length);
+      if (this.newPhoneNumber.length !== 11) {
+        uni.showToast({
+          title: '您输入的电话号码不正确',
+          icon: 'none',
+          duration: 2000,
+        });
+        return;
+      }
       sendsms({
         phonenumber: this.newPhoneNumber,
       }).then(
@@ -96,6 +113,14 @@ export default {
     //   );
     // },
     async bondPhone() {
+      if (this.newCode === '') {
+        uni.showToast({
+          title: '请输入验证码',
+          icon: 'none',
+          duration: 2000,
+        });
+        return;
+      }
       console.log(this.oldPhoneNumber);
       bondPhone({
         code: this.newCode,

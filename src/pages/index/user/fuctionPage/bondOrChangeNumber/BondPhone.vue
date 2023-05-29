@@ -1,7 +1,7 @@
 <template>
   <view class="background_bondphone">
     <view class="message">
-      绑定手机号后,设备列表将更新为手机号所绑定的设备列表,当前手机号为：15979355745</view
+      绑定手机号后,设备列表将更新为手机号所绑定的设备列表</view
     >
     <view class="input_phonenumber">
       <input type="text" v-model="phoneNumber"  placeholder="输入您本人的手机号"/>
@@ -23,6 +23,7 @@ export default {
   created() {},
   methods: {
     async fillCode() {
+      console.log(this.phoneNumber);
       const index = this.$Router.options.routes.filter(
         (r) => r.name === 'fillCode'
       )[0];

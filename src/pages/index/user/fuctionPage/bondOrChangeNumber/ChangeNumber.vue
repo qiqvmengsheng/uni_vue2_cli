@@ -3,20 +3,21 @@
     <view class="bond_item">
       <view class="item_name">输入原手机号</view>
       <view class="input_code">
-        <input type="text" v-model="inputNumber">
+        <!-- <text class="font_1" v-if="inputNumber == ''">请输入电话号码</text> -->
+        <input type="text" v-model="inputNumber" placeholder="请输入电话号码">
       </view>
     </view>
     <view class="bond_item">
       <view class="item_name">输入验证码</view>
       <view class="input_code">
-        <input type="text" v-model="oldCode">
+        <input type="text" v-model="oldCode" placeholder="请输入验证码">
       </view>
       <button v-if="codeShow" class="phone_code" @click="getCode">
         获取验证码
       </button>
       <button v-if="!codeShow" class="phone_code">{{ count }}后重试</button>
     </view>
-    <button class="save_button" @click="next">确认</button>
+    <button class="save_button" @click="toPage2">确认</button>
   </view>
 </template>
 <script>
@@ -40,6 +41,7 @@ export default {
   },
   onLoad(options) {
     console.log(options);
+
     this.oldPhoneNumber = options.phoneNumber;
   },
   methods: {
@@ -57,8 +59,25 @@ export default {
       });
     },
     async getCode() {
+      if (this.inputNumber === '') {
+        uni.showToast({
+          title: '请输入电话号码',
+          icon: 'none',
+          duration: 2000,
+        });
+        return;
+      }
+      console.log(this.inputNumber.length);
+      if (this.inputNumber.length !== 11) {
+        uni.showToast({
+          title: '您输入的电话号码不正确',
+          icon: 'none',
+          duration: 2000,
+        });
+        return;
+      }
       sendsms({
-        phonenumber: this.oldPhoneNumber,
+        phonenumber: this.inputNumber,
       }).then(
         (response) => {
           console.log(response);
@@ -91,9 +110,18 @@ export default {
       );
     },
     async next() {
-      let input = this.inputNumber;
-      let old = this.oldPhoneNumber;
+      console.log(this.inputNumber.length);
+      const input = this.inputNumber;
+      const old = this.oldPhoneNumber;
       if (input === old) {
+        if (this.oldCode === '') {
+          uni.showToast({
+            title: '请输入验证码',
+            icon: 'none',
+            duration: 2000,
+          });
+          return;
+        }
         // 如果输入的原手机号是对的就请求服务器接口验证验证码是否正确，并返回PassCode
         vertifyCode({
           phoneNumber: this.inputNumber,
@@ -121,7 +149,8 @@ export default {
         );
       } else {
         uni.showToast({
-          title: '原手号输入不正确',
+          title: '原手机号输入不正确',
+          icon: 'none',
           duration: 1000,
         });
       }
