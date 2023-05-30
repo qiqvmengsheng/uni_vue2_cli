@@ -9,22 +9,22 @@
       ></u-subsection>
     </view>
     <view class="form" v-show="current === 0">
-      <u-form :model="dev" ref="uForm" labelWidth="100">
+      <u-form :model="form" ref="uForm" :rules="rules" labelWidth="100">
         <u-form-item
           label="数量"
-          prop="devicename"
+          prop="number"
           borderBottom
           @click="showDevtype = true"
           ref="item1"
         >
           <u-input
-            v-model="dev.devicename"
-            disabled
-            disabledColor="#ffffff"
-            placeholder="请选择设备类型"
-            border="none"
-          ></u-input>
-          <u-icon slot="right" name="arrow-right"></u-icon>
+            placeholder="请输入周期"
+            type="number"
+            border="surround"
+            v-model="form.number"
+          >
+          </u-input>
+          <!-- <u-icon slot="right" name="arrow-right"></u-icon> -->
         </u-form-item>
       </u-form>
     </view>
@@ -33,14 +33,14 @@
       <u-cell-group>
         <u-cell
           title="开始时间"
-          value="组件"
-          @click="show = true"
+          :value="$u.timeFormat(startTime, 'yyyy年mm月dd日 hh时MM分ss秒')"
+          @click="startshow = true"
           isLink
         ></u-cell>
         <u-cell
           title="结束时间"
-          value="工具"
-          @click="show = true"
+          :value="$u.timeFormat(endTime, 'yyyy年mm月dd日 hh时MM分ss秒')"
+          @click="endshow = true"
           isLink
         ></u-cell>
       </u-cell-group>
@@ -56,7 +56,17 @@
     </view>
 
     <u-datetime-picker
-      :show="show"
+      :show="startshow"
+      v-model="startTime"
+      mode="datetime"
+      closeOnClickOverlay
+      @confirm="confirm"
+      @cancel="cancel"
+      @change="change"
+      @close="close"
+    ></u-datetime-picker>
+    <u-datetime-picker
+      :show="endshow"
       v-model="value1"
       mode="datetime"
       closeOnClickOverlay
@@ -65,7 +75,7 @@
       @change="change"
       @close="close"
     ></u-datetime-picker>
-    <u-modal
+    <!-- <u-modal
       :show="formshow"
       title="显示数据量"
       closeOnClickOverlay
@@ -88,7 +98,7 @@
           </u-form-item>
         </u-form>
       </view>
-    </u-modal>
+    </u-modal> -->
   </div>
 </template>
 
@@ -101,11 +111,24 @@ export default {
     return {
       list: ['按数量', '按时间'],
       current: 0,
-      show: false,
+      startshow: false,
+      endshow: false,
       value1: Number(new Date()),
+      startTime: Number(new Date()),
+      endTime: Number(new Date()),
       form: { number: 200 },
       formshow: false,
-      rules: [],
+      rules: {
+        number: [
+          {
+            // type: 'string',
+            required: true,
+            pattern: /^[\d]+$/,
+            message: '必须是整数',
+            trigger: 'blur',
+          },
+        ],
+      },
     };
   },
   computed: {},
@@ -164,7 +187,9 @@ export default {
   // 页面周期函数--监听页面加载
   onLoad() {},
   // 页面周期函数--监听页面初次渲染完成
-  onReady() {},
+  onReady() {
+    this.$refs.uForm.setRules(this.rules);
+  },
   // 页面周期函数--监听页面显示(not-nvue)
   onShow() {},
   // 页面周期函数--监听页面隐藏
@@ -192,7 +217,7 @@ export default {
 }
 .form {
   background-color: #fff;
-  padding: 0 10px;
+  padding: 0 15px;
 }
 .cell {
   background-color: #fff;
