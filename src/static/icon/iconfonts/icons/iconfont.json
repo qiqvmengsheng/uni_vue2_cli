@@ -1,0 +1,93 @@
+{
+  "id": "3995788",
+  "name": "uniapp",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "4152742",
+      "name": "用户头像",
+      "font_class": "yonghutouxiang",
+      "unicode": "e634",
+      "unicode_decimal": 58932
+    },
+    {
+      "icon_id": "29972092",
+      "name": "头像 简约男士",
+      "font_class": "a-ziyuan87",
+      "unicode": "e698",
+      "unicode_decimal": 59032
+    },
+    {
+      "icon_id": "29972100",
+      "name": "头像 职场商务女士",
+      "font_class": "a-ziyuan97",
+      "unicode": "e699",
+      "unicode_decimal": 59033
+    },
+    {
+      "icon_id": "29972109",
+      "name": "头像 商务男士",
+      "font_class": "a-ziyuan112",
+      "unicode": "e69a",
+      "unicode_decimal": 59034
+    },
+    {
+      "icon_id": "201638",
+      "name": "编辑",
+      "font_class": "aa123",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "376346",
+      "name": "工作单位",
+      "font_class": "commpany",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "1727433",
+      "name": "209电话-圆框",
+      "font_class": "dianhua-yuankuang",
+      "unicode": "e8be",
+      "unicode_decimal": 59582
+    },
+    {
+      "icon_id": "1929164",
+      "name": "邮箱",
+      "font_class": "youxiang",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "15722707",
+      "name": "地址",
+      "font_class": "dizhi",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "15847648",
+      "name": "【系统】更新日志",
+      "font_class": "xitonggengxinrizhi",
+      "unicode": "e65c",
+      "unicode_decimal": 58972
+    },
+    {
+      "icon_id": "25070914",
+      "name": "问题反馈",
+      "font_class": "wentifankui",
+      "unicode": "e6b7",
+      "unicode_decimal": 59063
+    },
+    {
+      "icon_id": "33543035",
+      "name": "注销",
+      "font_class": "a-dachebenteng_huaban1fuben15",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    }
+  ]
+}

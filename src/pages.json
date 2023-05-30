@@ -2,14 +2,13 @@
 	"easycom": {
 		"autoscan": true,
 		"custom": {
-			// uview-ui
+		
 			"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue",
-			// @dcloudio
-			// "^uni-(.*)": "@dcloudio/uniui/lib/uni-$1/uni-$1.vue",
+			
 			"^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
 		}
 	},
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	"pages": [ 
 		{
 			"path": "pages/index/index",
 			"style": {
@@ -29,9 +28,66 @@
 			"path": "pages/index/user/index",
 			"style": {
 				"navigationBarTitleText": "我的",
-				"enablePullDownRefresh": false
+				"enablePullDownRefresh": false ,
+				"navigationStyle":"custom"
 			},
 			"name": "user"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/bondOrChangeNumber/BondPhone",
+			"style":{
+				"navigationBarTitleText":"绑定手机",
+				"backgroundColor": "#F8F8F8"
+
+			},
+			"name":"bondPhoneNumber"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/bondOrChangeNumber/ChangeNumber",
+			"style":{
+				"navigationBarTitleText":"换绑手机",
+				"backgroundColor": "#F8F8F8"
+
+			},
+			"name":"changPhoneNumber"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/bondOrChangeNumber/ChangeNumber2",
+			"style":{
+				"navigationBarTitleText":"换绑手机",
+				"backgroundColor": "#F8F8F8"
+
+			},
+			"name":"changPhoneNumber2"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/bondOrChangeNumber/fillCode",
+			"style":{
+				"navigationBarTitleText":"填写验证码",
+				"backgroundColor": "#F8F8F8"
+			},
+			"name": "fillCode"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/ProblemFeedBack",
+			"style":{
+				"navigationBarTitleText":"问题反馈"
+			},
+			"name":"userFeedBack"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/SystemInfo",
+			"style":{
+				"navigationBarTitleText":"系统消息"
+			},
+			"name":"systemInfo"
+		},
+		{
+			"path":"pages/index/user/fuctionPage/EditPersonInfo",
+			"style":{
+				"navigationBarTitleText":"个人信息"
+			},
+			"name":"editPersonInfo"
 		},
 		{
 			"path": "pages/commandView/index",
@@ -70,7 +126,7 @@
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	},
-	// 原生的导航
+	
 	"tabBar": {
 		"color": "#000000",
 		"selectedColor": "#15406d",
@@ -84,6 +140,7 @@
 			},
 			{
 				"pagePath": "pages/index/user/index",
+				"navigationStyle":"custom",
 				"iconPath": "static/me2.png",
 				"selectedIconPath": "static/me.png",
 				"text": "我的"

@@ -49,6 +49,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import url(./static/icon/iconfonts/icons/iconfont.css);
+@import url(@/static/icon/iconfont-weapp/iconfont-weapp-icon.css);
 /*每个页面公共css */
 page {
   background: $uni-bg-color-grey;

@@ -60,3 +60,47 @@ export function modifyabbreviation(data) {
     data: qs.stringify(data),
   });
 }
+/**
+ * 获取用户信息
+ * @param {Object} data
+ */
+export function getuserinfo(data) {
+  return request({
+    url: '/register/finduderinfo',
+    method: 'post',
+    data: qs.stringify(data),
+  });
+}
+/**
+ * 绑定或换绑手机
+ * @param {Object} data
+ */
+export function bondPhone(data) {
+  return request({
+    url: '/base/bond_phone',
+    method: 'post',
+    data: qs.stringify(data),
+  });
+}
+/**
+ * 验证输入的手机号及验证码是否正确，并且返回1小时有效期的凭证码
+ * @param {Object} data
+ */
+export function vertifyCode(data) {
+  return request({
+    url: '/base/vertify_code',
+    method: 'post',
+    data: qs.stringify(data),
+  });
+}
+/**
+ * 获取该发送给该用户的系统消息
+ * @param {object} data
+ */
+export function getNotice(data) {
+  return request({
+    url: '/notify/get_user_notify',
+    method: 'post',
+    data: qs.stringify(data),
+  });
+}
