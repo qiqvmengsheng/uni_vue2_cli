@@ -30,7 +30,7 @@ export function devsdatapoints({ devIds, auth }) {
 }
 
 /**
- * 批量查询数据流信息
+ * 批量查询数据流信息和最新数据点
  * @param {Object} data
  */
 export function DataStreams({ deviceId, apikey, params }) {
@@ -52,7 +52,7 @@ export function onenetcmds({ deviceid, apikey, sms }) {
     url: '/cmds',
     method: 'POST',
     params: { device_id: deviceid, qos: 1 },
-    data: qs.stringify({ sms }),
+    data: sms,
     headers: { 'api-key': apikey },
     requestBase: 'VUE_APP_URL_THREE',
   });
