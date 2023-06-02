@@ -3,14 +3,20 @@
     <view class="cell">
       <u-cell-group>
         <u-cell
-          title="显示数据量"
-          :value="form.number"
+          title="历史范围"
+          :value="cellvalue"
+          :label="isnumber ? '按数量' : '按时间'"
           isLink
           :disabled="disabled"
           @click="
             $Router.push({
               name: 'DataQuantity',
-              params: { number: form.number },
+              params: {
+                number: form.number,
+                startTime: form.startTime,
+                endTime: form.endTime,
+                isnumber: isnumber ? 0 : 1,
+              },
             })
           "
         ></u-cell>
@@ -88,7 +94,7 @@ import to from 'await-to-js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import XLSX from 'xlsx';
 import { jsonClone } from '@/utils/disposalData';
-import { toast, file } from '@uni/apis';
+import { toast, loading } from '@uni/apis';
 import { measuredGetdata, getlastDatas } from '@/api/devdata';
 import { devSettingGetmark } from '@/api/devParamSetting';
 import RadonChart from './RadonChart';
@@ -111,7 +117,8 @@ export default {
   },
   data() {
     return {
-      form: { number: 100, startTime: '', endTiem: '' },
+      form: { number: 100, startTime: '', endTime: '' },
+      isnumber: true,
       data: null,
       datastreams: '',
       showBarChart: false,
@@ -121,6 +128,15 @@ export default {
   },
   computed: {
     ...mapGetters(['name', 'devices']),
+    cellvalue() {
+      if (this.isnumber) {
+        return `最新${this.form.number}个`;
+      }
+      return `${this.$u.timeFormat(
+        this.form.startTime,
+        'yy年mm月dd日 hh时MM分'
+      )}\n${this.$u.timeFormat(this.form.endTime, 'yy年mm月dd日 hh时MM分')}`;
+    },
   },
   beforeRouteEnter(toa, from, next) {
     console.log('回跳转', toa, from);
@@ -133,21 +149,24 @@ export default {
   created() {
     that = this;
     this.$AppReady.then(() => {
-      console.log('收到参数', this.$Route.query);
+      // console.log('收到参数', this.$Route.query);
       this.datastreams = this.$Route.query.datastreams;
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
-      console.log('获得dev', this.dev);
       this.getdata();
       this.getmakings();
     });
   },
   methods: {
-    init({ number, startTime, endTiem }) {
-      console.log({ number, startTime, endTiem });
-      this.form = { number, startTime, endTiem };
-      console.log('图表页面初始化', this.form);
-      this.getdata();
+    init({ number, startTime, endTime, isnumber }) {
+      this.isnumber = isnumber;
+      this.form = { number, startTime, endTime };
+      // console.log('图表页面初始化', { number, startTime, endTime, isnumber });
+      if (isnumber) {
+        this.getdata();
+      } else {
+        this.timegetdata();
+      }
       this.getmakings();
     },
 
@@ -162,19 +181,11 @@ export default {
         console.log(err);
         return;
       }
-      // console.log(res);
       this.marks = [];
       [...res.data].forEach((item) => {
         this.marks.push({ ...item });
       });
-      console.log('标线信息', [...this.marks]);
-      // if (
-      //   this.systemrole === 'superadmin' ||
-      //   this.systemrole === 'normaladmin'
-      // ) {
-      //   // console.log(this.$refs.paramsetting);
-      //   this.$refs.paramsetting.updateMark(this.marks);
-      // }
+      // console.log('标线信息', [...this.marks]);
     },
 
     /**
@@ -239,7 +250,6 @@ export default {
       // )}`;
 
       const xlsx = XLSX.utils.json_to_sheet(xlsxjson);
-      // console.log(xlsxjson, '生成数据', xlsx);
 
       /* 新建空workbook */
       const wb = XLSX.utils.book_new();
@@ -254,23 +264,21 @@ export default {
 
       // 新建个文档，并写入数据
       const fs = wx.getFileSystemManager();
-      console.log('对象file', { ...file });
       const name = `${this.dev.devicename}-${
         this.dev.deviceserial
       }-${uni.$u.timeFormat(new Date(), 'yyyy-mm-dd hh：MM：ss')}`;
-      // console.log(uni.$u.timeFormat(new Date(), 'yyyy-mm-dd'));
       fs.writeFile({
         filePath: `${wx.env.USER_DATA_PATH}/${name}.xlsx`,
         data: wbout,
-        success(res) {
-          console.log('写入成功->', res);
+        success() {
+          // console.log('写入成功->', res);
           // 打开新建的对应的文档
           wx.openDocument({
             filePath: `${wx.env.USER_DATA_PATH}/${name}.xlsx`,
             fileType: 'xlsx',
             showMenu: true,
-            success(r) {
-              console.log('打开文档成功', r);
+            success() {
+              // console.log('打开文档成功', r);
             },
             fail(r) {
               toast.showToast({
@@ -294,7 +302,55 @@ export default {
     },
 
     /**
-     * 获取数据
+     * 按时间获取数据
+     */
+    async timegetdata() {
+      this.isOpen = false;
+      const [err, response] = await to(
+        measuredGetdata({
+          deviceid: this.dev.deviceid,
+          starttime: this.$u.timeFormat(
+            this.form.startTime,
+            'yyyy-mm-ddThh:MM:ss'
+          ),
+          endtime: this.$u.timeFormat(this.form.endTime, 'yyyy-mm-ddThh:MM:ss'),
+        })
+      );
+      if (err) {
+        console.log('获取服务器数据错误：\n', err);
+        return Promise.reject(err);
+      }
+      loading.showLoading();
+      const data = {};
+      const { datastreams } = response.data.data;
+      if (
+        !datastreams ||
+        !(datastreams.Radon && datastreams.Radon.length >= 1)
+      ) {
+        toast.showToast({
+          content: '当前时间段没有数据！',
+        });
+        return Promise.reject(new Error('当前时间段没有数据！'));
+      }
+      data.RadonAt = [];
+      const keys = Object.keys(datastreams);
+      keys.forEach((key) => {
+        data[key] = [];
+        datastreams[key].forEach((item) => {
+          data[key].push(+item.value);
+        });
+      });
+      datastreams.Radon.forEach((item) => {
+        data.RadonAt.push(item.at);
+      });
+      this.data = data;
+      this.update(this.data);
+      this.isOpen = true;
+      return data;
+    },
+
+    /**
+     * 按数量获取数据
      */
     async getdata() {
       this.isOpen = false;
@@ -310,6 +366,7 @@ export default {
         return Promise.reject(err);
       }
       // console.log('获取服务器数据：\n', res);
+      loading.showLoading();
       const { datastreams } = res.data.data;
       const data = { RadonAt: [] };
       const keys = Object.keys(datastreams);
@@ -327,36 +384,23 @@ export default {
 
       if (this.data && this.data.Map) data.Map = this.data.Map;
       this.data = { ...this.data, ...data };
-      console.log(this.data);
-      this.update(this.data);
+      // console.log(this.data);
       this.isOpen = true;
+      this.update(this.data);
       return Promise.resolve(data);
-    },
-    async getdevdata() {
-      const [err, res] = await to(
-        measuredGetdata({
-          deviceId: this.dev.deviceid,
-          apikey: this.dev.apikey,
-        })
-      );
-      if (err) {
-        console.log(err, res);
-        return;
-      }
-      console.log(res);
     },
 
     update(data) {
-      console.log(this.$refs);
+      // console.log(this.$refs);
       this.$refs.radonchar.update(data);
       this.$refs.Thoronchar.update(data);
       this.$refs.TempChart.update(data);
       this.$refs.RHChart.update(data);
       this.$refs.PressureChart.update(data);
+      loading.hideLoading();
     },
 
     barUpdate({ zoomStart, zoomEnd, show }) {
-      // console.log('标线', that.data?.Radon?.length);
       if (!that.data?.Radon?.length || that.data.Radon.length === 0) {
         console.log(that.data);
         return;
