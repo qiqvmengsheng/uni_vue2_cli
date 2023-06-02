@@ -4,13 +4,13 @@
 </style>
 <script>
 import to from 'await-to-js';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  created() {
-    // console.log('开始登录');
-    this.login();
-  },
+  // created() {
+  //   // console.log('开始登录');
+  //   this.login();
+  // },
   mounted() {
     // console.log('程序页面挂载');
     this.$nextTick(() => {
@@ -22,6 +22,15 @@ export default {
     // console.log('App Launch');
   },
   onShow() {
+    this.login();
+    // this.getInfo().then(
+    //   (r) => {
+    //     console.log(r);
+    //   },
+    //   (e) => {
+    //     console.log(e);
+    //   }
+    // );
     // 启动，或从后台进入前台显示
     // console.log('App Show');
   },
@@ -30,6 +39,7 @@ export default {
     // console.log('App Hide');
   },
   watch: {},
+  computed: { ...mapGetters(['name', 'devices', 'userInfo']) },
   methods: {
     ...mapActions('user', ['wxlogin', 'getInfo']),
     /**
