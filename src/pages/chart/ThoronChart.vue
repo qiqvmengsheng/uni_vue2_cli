@@ -80,7 +80,7 @@ export default {
         series: [{ name: '钍浓度(Bq/m³)', data: this.data }],
       });
       // this.barUpdate({ zoomStart: 0, zoomEnd: 100 });
-      this.zoomdata(0, 100, this.data);
+      // this.zoomdata(0, 100, this.data);
     },
 
     /**

@@ -75,7 +75,7 @@ export default {
           },
         },
         grid: {
-          right: '20%',
+          // right: '20%',
           left: '15%',
           // containLabel: true,
         },
@@ -112,10 +112,10 @@ export default {
           {
             type: 'inside',
             start: 0,
-            end: 50,
+            end: 100,
           },
           {
-            start: 80,
+            start: 0,
             end: 100,
           },
         ],
@@ -164,8 +164,8 @@ export default {
         },
         series: [{ name: '氡浓度(Bq/m³)', data: this.data }],
       });
-      this.barUpdate({ zoomStart: 0, zoomEnd: 100, show: false });
-      this.zoomdata(0, 100, this.data);
+      this.barUpdate({ zoomStart: 0, zoomEnd: 100, show: true });
+      // this.zoomdata(0, 100, this.data);
     },
 
     /**
@@ -182,16 +182,17 @@ export default {
         // 3.配置数据
         chart.setOption(this.option);
         // 4.传入数据
-        chart.on('datazoom', () => {
-          const { endValue } = chart.getOption().dataZoom[1];
-          const { startValue } = chart.getOption().dataZoom[1];
-          this.barUpdate({
-            zoomStart: startValue,
-            zoomEnd: endValue,
-            show: true,
-          });
-          this.zoomdata(startValue, endValue, this.data);
-        });
+        // 缩放图表添加能谱数据和平均值标线
+        // chart.on('datazoom', () => {
+        //   const { endValue } = chart.getOption().dataZoom[1];
+        //   const { startValue } = chart.getOption().dataZoom[1];
+        //   this.barUpdate({
+        //     zoomStart: startValue,
+        //     zoomEnd: endValue,
+        //     show: true,
+        //   });
+        //   this.zoomdata(startValue, endValue, this.data);
+        // });
 
         // chart.on('showTip', (params) => {
         //   console.log('显示提示', params);
