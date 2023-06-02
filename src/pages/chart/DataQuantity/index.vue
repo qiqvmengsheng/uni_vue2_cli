@@ -33,14 +33,22 @@
       <u-cell-group>
         <u-cell
           title="开始时间"
-          :value="$u.timeFormat(startTime, 'yyyy年mm月dd日 hh时MM分ss秒')"
-          @click="startshow = true"
+          :value="
+            startTime
+              ? $u.timeFormat(startTime, 'yyyy年mm月dd日 hh时MM分')
+              : '点击选择时间'
+          "
+          @click="setstart"
           isLink
         ></u-cell>
         <u-cell
           title="结束时间"
-          :value="$u.timeFormat(endTime, 'yyyy年mm月dd日 hh时MM分ss秒')"
-          @click="endshow = true"
+          :value="
+            endTime
+              ? $u.timeFormat(endTime, 'yyyy年mm月dd日 hh时MM分')
+              : '点击选择时间'
+          "
+          @click="setend"
           isLink
         ></u-cell>
       </u-cell-group>
@@ -56,24 +64,15 @@
     </view>
 
     <u-datetime-picker
-      :show="startshow"
-      v-model="startTime"
-      mode="datetime"
-      closeOnClickOverlay
-      @confirm="confirm"
-      @cancel="cancel"
-      @change="change"
-      @close="close"
-    ></u-datetime-picker>
-    <u-datetime-picker
-      :show="endshow"
+      ref="datetimePicker"
+      :show="show"
       v-model="value1"
       mode="datetime"
       closeOnClickOverlay
       @confirm="confirm"
       @cancel="cancel"
-      @change="change"
       @close="close"
+      :formatter="formatter"
     ></u-datetime-picker>
     <!-- <u-modal
       :show="formshow"
@@ -103,7 +102,8 @@
 </template>
 
 <script>
-import { application } from '@uni/apis';
+import to from 'await-to-js';
+import { application, toast } from '@uni/apis';
 
 export default {
   components: {},
@@ -111,11 +111,11 @@ export default {
     return {
       list: ['按数量', '按时间'],
       current: 0,
-      startshow: false,
-      endshow: false,
+      show: false,
+      startEnd: false,
       value1: Number(new Date()),
-      startTime: Number(new Date()),
-      endTime: Number(new Date()),
+      startTime: '',
+      endTime: '',
       form: { number: 200 },
       formshow: false,
       rules: {
@@ -134,21 +134,42 @@ export default {
   computed: {},
   created() {
     this.$AppReady.then(() => {
-      console.log('收到参数', this.$Route.query);
+      // console.log('收到参数', this.$Route.query);
+      this.form.number = this.$Route.query.number;
+      this.startTime = this.$Route.query.startTime;
+      this.endTime = this.$Route.query.endTime;
+      this.current = parseInt(this.$Route.query.isnumber, 10);
       // this.datastreams = this.$Route.query.datastreams;
       // const id = this.$Route.query.deviceid;
       // [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
-      // console.log('获得dev', this.dev);
       // this.getdata();
       // this.getmakings();
     });
   },
   methods: {
-    sectionChange(index) {
-      // console.log(index);
-      this.current = index;
+    // 格式化时间选择器
+    formatter(type, value) {
+      if (type === 'year') {
+        return `${value}年`;
+      }
+      if (type === 'month') {
+        return `${value}月`;
+      }
+      if (type === 'day') {
+        return `${value}日`;
+      }
+      if (type === 'hour') {
+        return `${value}时`;
+      }
+      if (type === 'minute') {
+        return `${value}分`;
+      }
+      return value;
     },
 
+    sectionChange(index) {
+      this.current = index;
+    },
     close() {
       this.show = false;
     },
@@ -157,29 +178,105 @@ export default {
     },
     confirm(e) {
       this.show = false;
+      if (e.value > Number(new Date())) {
+        toast.showToast({
+          content: '不能选择未来时间',
+          mask: true,
+        });
+        return;
+      }
+
+      if (this.startEnd) {
+        if (!!this.endTime && this.endTime <= e.value) {
+          toast.showToast({
+            content: '开始时间必须小于结束时间',
+            mask: true,
+          });
+          return;
+        }
+        this.startTime = e.value;
+      } else {
+        if (!!this.startTime && this.startTime >= e.value) {
+          toast.showToast({
+            content: '结束时间必须大于开始时间',
+            mask: true,
+          });
+          return;
+        }
+        this.endTime = e.value;
+      }
       // this.result(e.value, e.mode);
     },
-    change(e) {
-      // console.log('change', e);
+
+    setstart() {
+      this.startEnd = true;
+      this.show = true;
     },
+
+    setend() {
+      this.startEnd = false;
+      this.show = true;
+    },
+
     /**
      * 确认获取数据
      */
-    confirmform() {
-      // this.$Router.replace({
-      //   name: 'chartView',
-      //   params: { number: this.number },
+    async confirmform() {
+      const isnumber = !this.current;
+      if (isnumber) {
+        const [err, res] = await to(this.$refs.uForm.validate());
+        if (err) {
+          console.log(err, res);
+          toast.showToast({
+            content: '请输入整数',
+            mask: true,
+          });
+          return;
+        }
+        if (this.form.number > 500) {
+          toast.showToast({
+            content: '最多获取500个,更多数据请上官网查看',
+            // mask: true,
+          });
+          return;
+        }
+      } else {
+        if (!(this.startTime && this.endTime)) {
+          toast.showToast({
+            content: '请选择时间',
+            mask: true,
+          });
+          return;
+        }
+        if ((this.endTime - 60000 - this.startTime) / 86400000 >= 7) {
+          toast.showToast({
+            content: '最多获取七天数据,更大时间段数据请上官网查看',
+            // mask: true,
+          });
+          return;
+        }
+      }
+
+      // console.log('传递数据', {
+      //   number: this.form.number,
+      //   isnumber,
+      //   startTime: this.startTime,
+      //   endTime: this.endTime,
       // });
       const pages = application.getCurrentPages();
       const chartVm = pages[pages.length - 2].$vm;
-      console.log('上一页数据', pages[pages.length - 2], chartVm);
-      this.$Router.back(1, {
-        success: (...arg) => {
-          console.log(this, '跳转成功', arg);
-          chartVm.init({ number: this.form.number });
-        },
+      chartVm.init({
+        number: this.form.number,
+        isnumber,
+        startTime: this.startTime,
+        endTime: this.endTime,
       });
-      // this.$route.params.user = '123';
+      this.$Router.back(1, {
+        // success: (...arg) => {
+        //   loading.showLoading();
+        //   // console.log(this, '跳转成功', arg);
+        // },
+      });
     },
   },
   watch: {},
@@ -189,6 +286,7 @@ export default {
   // 页面周期函数--监听页面初次渲染完成
   onReady() {
     this.$refs.uForm.setRules(this.rules);
+    this.$refs.datetimePicker.setFormatter(this.formatter);
   },
   // 页面周期函数--监听页面显示(not-nvue)
   onShow() {},
