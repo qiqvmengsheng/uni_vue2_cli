@@ -35,11 +35,12 @@ export function devDettingDeletemark({ id }) {
 /**
  * 查询设备的所有标注
  */
-export function devSettingGetmark({ deviceid }) {
+export function devSettingGetmark({ deviceid }, isloading = false) {
   return request({
     url: '/device_set/query_devicemark',
     method: 'post',
     data: qs.stringify({ deviceid }),
+    isloading,
   });
 }
 

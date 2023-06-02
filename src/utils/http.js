@@ -5,6 +5,7 @@ import { toast, loading } from '@uni/apis';
 import { getToken } from './uniStorsge';
 
 let baseURL;
+let loadingNum = 0;
 
 // 环境的切换
 if (process.env.NODE_ENV === 'development') {
@@ -151,7 +152,9 @@ request.interceptors.request.use(async (config) => {
   // 取消重复请求
   removePending(config);
   addPending(config);
-  loading.showLoading({ mask: true });
+  // console.log('开始加载', config.isloading, config.isloading === undefined);
+  if (config.isloading === undefined) loadingNum += 1;
+  if (loadingNum >= 1) loading.showLoading({ mask: true });
   // 修改baseURL
   if (config.requestBase === 'VUE_APP_URL_THREE') {
     config.baseURL = process.env.VUE_APP_URL_THREE;
@@ -168,7 +171,8 @@ request.interceptors.request.use(async (config) => {
 
 request.interceptors.response.use(
   async (response) => {
-    loading.hideLoading();
+    if (response.config.isloading === undefined) loadingNum -= 1;
+    if (loadingNum === 0) loading.hideLoading();
     // 判断是否断网了
     if (response.data === undefined) {
       console.log('成功的返回拦截', response);
