@@ -63,7 +63,6 @@ export default {
   },
   props: {
     // getzoom: { type: Function, required: true },
-    // barUpdate: { type: Function, required: true },
     // setTooltip: { type: Function, required: true },
   },
   computed: {
@@ -71,10 +70,10 @@ export default {
   },
   created() {
     this.$AppReady.then(() => {
-      console.log('bar收到参数', this.$Route.query);
+      // console.log('bar收到参数', this.$Route.query);
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
-      console.log('bar获得dev', this.dev);
+      // console.log('bar获得dev', this.dev);
     });
   },
   mounted() {
@@ -88,7 +87,7 @@ export default {
      * 更新数据
      */
     update({ datas, startValue, endValue, marks }) {
-      console.log('bar获取到数据', { datas, startValue, endValue, marks });
+      // console.log('bar获取到数据', { datas, startValue, endValue, marks });
       this.data = datas;
       this.startValue = startValue;
       this.endValue = endValue;
@@ -129,7 +128,7 @@ export default {
     },
 
     init() {
-      console.log('开始初始化bar图表');
+      // console.log('开始初始化bar图表');
       // 2.初始化
       this.$refs.chart.init(echarts, (chart) => {
         // 3.配置数据

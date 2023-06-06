@@ -37,9 +37,6 @@
         :barUpdate="barUpdate"
       ></RadonChart>
     </view>
-    <view class="card" v-show="showBarChart && datastreams === 'Radon'">
-      <BarChart class="echart" ref="barchar"></BarChart>
-    </view>
     <view class="card" v-show="datastreams === 'Thoron'">
       <ThoronChart class="echart" ref="Thoronchar"></ThoronChart>
     </view>
@@ -53,20 +50,65 @@
       <PressureChart class="echart" ref="PressureChart"></PressureChart>
     </view>
 
-    <view v-show="showBarChart">
+    <view v-show="showBarChart && isSingle && datastreams === 'Radon'">
+      <view class="btn updown">
+        <view class="udbtn">
+          <u-button
+            text="上一个"
+            type="primary"
+            class="upbtn"
+            @click="$refs.radonchar.setTip(-1)"
+            :disabled="!isOpen"
+          >
+            上一个
+          </u-button>
+        </view>
+        <view class="udbtn">
+          <u-button
+            text="下一个"
+            type="primary"
+            class="downbtn"
+            @click="$refs.radonchar.setTip(1)"
+            :disabled="!isOpen"
+          >
+            下一个
+          </u-button>
+        </view>
+      </view>
+    </view>
+    <view v-show="!isSingle && datastreams === 'Radon'">
+      <view class="btn">
+        <u-button
+          text="显示图表范围内能谱"
+          type="primary"
+          shape="circle"
+          @click="showrange"
+          :disabled="!isOpen"
+        ></u-button>
+      </view>
+    </view>
+
+    <view class="card" v-show="showBarChart && datastreams === 'Radon'">
+      <BarChart class="echart" ref="barchar"></BarChart>
+    </view>
+
+    <view v-show="showBarChart && datastreams === 'Radon'">
       <view class="btn">
         <u-button
           text="隐藏能谱"
           type="primary"
           shape="circle"
-          @click="showBarChart = false"
+          @click="
+            showBarChart = false;
+            isSingle = false;
+          "
           :disabled="!isOpen"
         ></u-button>
       </view>
     </view>
     <view v-show="datastreams === 'Radon'" class="tips">
       <text>
-        点击图表内显示对应数据点能谱，缩放图表显示范围内能谱，点击图表外隐藏能谱。
+        点击按钮显示图表缩放后范围内能谱，点击图表内显示对应数据点能谱，点击上一个下一个调整选中的单个数据点，点击隐藏按钮或图表外隐藏能谱。
       </text>
     </view>
     <view>
@@ -105,7 +147,6 @@ import RHChart from './RHChart';
 import PressureChart from './PressureChart';
 import BarChart from './BarChart';
 
-let that = null;
 export default {
   components: {
     RadonChart,
@@ -119,6 +160,7 @@ export default {
     return {
       form: { number: 100, startTime: '', endTime: '' },
       isnumber: true,
+      isSingle: false,
       data: null,
       datastreams: '',
       showBarChart: false,
@@ -138,16 +180,7 @@ export default {
       )}\n${this.$u.timeFormat(this.form.endTime, 'yy年mm月dd日 hh时MM分')}`;
     },
   },
-  beforeRouteEnter(toa, from, next) {
-    console.log('回跳转', toa, from);
-    // previousRouterName = from.name;
-    // if (from.name === "transportationTransferList") {
-    //   selectUser = from.params.user;
-    // }
-    next();
-  },
   created() {
-    that = this;
     this.$AppReady.then(() => {
       // console.log('收到参数', this.$Route.query);
       this.datastreams = this.$Route.query.datastreams;
@@ -168,6 +201,18 @@ export default {
         this.timegetdata();
       }
       this.getmakings();
+    },
+
+    /**
+     * 显示图表范围内能谱
+     */
+    showrange() {
+      this.barUpdate({
+        zoomStart: this.$refs.radonchar.startValue,
+        zoomEnd: this.$refs.radonchar.endValue,
+        show: true,
+        isSingle: false,
+      });
     },
 
     /**
@@ -400,18 +445,19 @@ export default {
       loading.hideLoading();
     },
 
-    barUpdate({ zoomStart, zoomEnd, show }) {
-      if (!that.data?.Radon?.length || that.data.Radon.length === 0) {
-        console.log(that.data);
+    barUpdate({ zoomStart, zoomEnd, show, isSingle = true }) {
+      if (!this.data?.Radon?.length || this.data.Radon.length === 0) {
+        console.log(this.data);
         return;
       }
-      that.showBarChart = show;
+      this.showBarChart = show;
+      this.isSingle = isSingle;
       if (!show) return;
-      that.$refs.barchar.update({
-        datas: that.data,
+      this.$refs.barchar.update({
+        datas: this.data,
         startValue: zoomStart,
         endValue: zoomEnd,
-        marks: that.marks,
+        marks: this.marks,
       });
     },
   },
@@ -456,6 +502,32 @@ export default {
   overflow: hidden;
   height: 300px;
   box-shadow: 0rpx 0rpx 3px 1px rgba(0, 0, 0, 0.08);
+}
+
+.updown {
+  display: flex;
+  /* 主轴空位分配方式justify-content */
+  justify-content: center;
+}
+
+.udbtn {
+  width: 50%;
+}
+.upbtn {
+  color: #fff;
+  background-color: #3c9cff;
+  border-color: #3c9cff;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 50px 0px 0px 50px;
+}
+.downbtn {
+  color: #fff;
+  background-color: #3c9cff;
+  border-color: #3c9cff;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0px 50px 50px 0px;
 }
 
 .btn {

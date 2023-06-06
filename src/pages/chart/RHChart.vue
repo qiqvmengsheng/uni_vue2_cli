@@ -59,7 +59,6 @@ export default {
   },
   props: {
     // getzoom: { type: Function, required: true },
-    // barUpdate: { type: Function, required: true },
     // setTooltip: { type: Function, required: true },
   },
   methods: {
