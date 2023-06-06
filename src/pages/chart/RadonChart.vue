@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { application } from '@uni/apis';
 import { hezhi } from '@/utils/disposalData';
 import LEchart from '@/components/l-echart/l-echart';
 // import * as echarts from 'echarts';
@@ -52,8 +53,11 @@ export default {
   components: { LEchart },
   data() {
     return {
-      chart: null,
       data: null,
+      chartVm: null,
+      xIndex: 0,
+      startValue: 0,
+      endValue: 0,
       RadonAt: null,
       isfinished: false,
       option: {
@@ -144,6 +148,11 @@ export default {
   props: {
     barUpdate: { type: Function, required: true },
   },
+  created() {
+    const pages = application.getCurrentPages();
+    const chartVm = pages[pages.length - 1].$vm;
+    this.chartVm = chartVm;
+  },
   methods: {
     /**
      * 更新数据
@@ -152,9 +161,27 @@ export default {
       // console.log('更新数据');
       this.data = data.Radon;
       this.RadonAt = data.RadonAt;
+      this.endValue = this.RadonAt.length - 1;
       if (this.isfinished) {
         this.setdata();
       }
+    },
+
+    setTip(i) {
+      this.xIndex += i;
+      // console.log(this.xIndex, this.startValue, this.endValue);
+      if (this.xIndex > this.endValue) this.xIndex = this.startValue;
+      if (this.xIndex < this.startValue) this.xIndex = this.endValue;
+      this.$refs.chart.chart.dispatchAction({
+        type: 'showTip',
+        seriesIndex: 0,
+        dataIndex: this.xIndex,
+      });
+      this.chartVm.barUpdate({
+        zoomStart: this.xIndex,
+        zoomEnd: this.xIndex,
+        show: true,
+      });
     },
 
     setdata() {
@@ -164,7 +191,7 @@ export default {
         },
         series: [{ name: '氡浓度(Bq/m³)', data: this.data }],
       });
-      this.barUpdate({ zoomStart: 0, zoomEnd: 100, show: true });
+      // this.chartVm.barUpdate({ zoomStart: 0, zoomEnd: this.endValue, show: true });
       // this.zoomdata(0, 100, this.data);
     },
 
@@ -183,16 +210,19 @@ export default {
         chart.setOption(this.option);
         // 4.传入数据
         // 缩放图表添加能谱数据和平均值标线
-        // chart.on('datazoom', () => {
-        //   const { endValue } = chart.getOption().dataZoom[1];
-        //   const { startValue } = chart.getOption().dataZoom[1];
-        //   this.barUpdate({
-        //     zoomStart: startValue,
-        //     zoomEnd: endValue,
-        //     show: true,
-        //   });
-        //   this.zoomdata(startValue, endValue, this.data);
-        // });
+        chart.on('datazoom', () => {
+          const { startValue, endValue } = chart.getOption().dataZoom[1];
+          this.startValue = startValue;
+          this.endValue = endValue;
+          this.chartVm.isSingle = false;
+          // console.log(startValue, endValue);
+          // this.chartVm.barUpdate({
+          //   zoomStart: startValue,
+          //   zoomEnd: endValue,
+          //   show: true,
+          // });
+          // this.zoomdata(startValue, endValue, this.data);
+        });
 
         // chart.on('showTip', (params) => {
         //   console.log('显示提示', params);
@@ -202,34 +232,34 @@ export default {
         //   console.log('隐藏提示', params);
         // });
         /**
-        chart.on('click', (params) => {
-          // 要点中数据线
-          console.log('鼠标点击', params);
-        });
+        // chart.on('click', (params) => {
+        //   // 要点中数据线
+        //   console.log('鼠标点击', params);
+        // });
 
-        chart.on('mousedown', (params) => {
-          // 要点中数据线
-          console.log('鼠标按下', params);
-        });
+        // chart.on('mousedown', (params) => {
+        //   // 要点中数据线
+        //   console.log('鼠标按下', params);
+        // });
 
-        chart.on('mousemove', (params) => {
-          // 要点中数据线
-          console.log('鼠标移动', params);
-        });
+        // chart.on('mousemove', (params) => {
+        //   // 要点中数据线
+        //   console.log('鼠标移动', params);
+        // });
 
-        chart.on('mouseup', (params) => {
-          // 要点中数据线
-          console.log('鼠标松开', params);
-        });
+        // chart.on('mouseup', (params) => {
+        //   // 要点中数据线
+        //   console.log('鼠标松开', params);
+        // });
 
-        chart.on('mouseout', (params) => {
-          // 要点中数据线
-          console.log('鼠标移出', params);
-        });
+        // chart.on('mouseout', (params) => {
+        //   // 要点中数据线
+        //   console.log('鼠标移出', params);
+        // });
         */
 
         // chart.on('globalout', (params) => {
-        //   this.barUpdate({ show: false });
+        //   this.chartVm.barUpdate({ show: false });
         //   console.log('鼠标移出图表', params);
         // });
 
@@ -242,11 +272,16 @@ export default {
               pointInPixel
             );
             const xIndex = pointInGrid[0];
+            this.xIndex = xIndex;
             // console.log('鼠标点击图表内空白', xIndex);
-            this.barUpdate({ zoomStart: xIndex, zoomEnd: xIndex, show: true });
+            this.chartVm.barUpdate({
+              zoomStart: xIndex,
+              zoomEnd: xIndex,
+              show: true,
+            });
           } else {
             // console.log('点击图表外');
-            this.barUpdate({ show: false });
+            this.chartVm.barUpdate({ show: false, isSingle: false });
           }
         });
 
