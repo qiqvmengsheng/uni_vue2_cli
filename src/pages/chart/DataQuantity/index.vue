@@ -52,6 +52,35 @@
           isLink
         ></u-cell>
       </u-cell-group>
+      <view>
+        <view class="btn">
+          <u-button
+            text="最近1小时"
+            type="primary"
+            shape="circle"
+            plain
+            @click="setnewtime(1000 * 60 * 60)"
+          ></u-button>
+        </view>
+        <view class="btn">
+          <u-button
+            text="最近24小时"
+            type="primary"
+            shape="circle"
+            plain
+            @click="setnewtime(1000 * 60 * 60 * 24)"
+          ></u-button>
+        </view>
+        <view class="btn">
+          <u-button
+            text="最近七天"
+            type="primary"
+            shape="circle"
+            plain
+            @click="setnewtime(1000 * 60 * 60 * 24 * 7)"
+          ></u-button>
+        </view>
+      </view>
     </view>
 
     <view class="btn">
@@ -147,6 +176,11 @@ export default {
     });
   },
   methods: {
+    setnewtime(t) {
+      const time = Number(new Date());
+      this.endTime = time;
+      this.startTime = time - t;
+    },
     // 格式化时间选择器
     formatter(type, value) {
       if (type === 'year') {
@@ -209,11 +243,13 @@ export default {
     },
 
     setstart() {
+      if (this.startTime) this.value1 = this.startTime;
       this.startEnd = true;
       this.show = true;
     },
 
     setend() {
+      if (this.endTime) this.value1 = this.endTime;
       this.startEnd = false;
       this.show = true;
     },
