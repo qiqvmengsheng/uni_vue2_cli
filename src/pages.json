@@ -179,5 +179,12 @@
 				}
 			]
 		}
-	]
+	],
+	// 分包预加载
+	"preloadRule": {
+		"pages/index/device/index": {
+			"network": "all",
+			"packages": ["pages/chart"]
+		}
+	}
 }
