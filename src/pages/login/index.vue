@@ -1,5 +1,7 @@
 <template>
   <div class="login">
+    <view class="bg"> </view>
+    <Lottie width="150" height="150" class="lottie"></Lottie>
     <view class="btn">
       <u-button
         slot="confirmButton"
@@ -18,6 +20,7 @@
 import to from 'await-to-js';
 import { getPnumber } from '@/api/user';
 import { alert } from '@uni/apis';
+import Lottie from '@/components/lottie';
 
 export default {
   data() {
@@ -25,6 +28,7 @@ export default {
       show: false,
     };
   },
+  components: { Lottie },
   methods: {
     /**
      * 显示
@@ -65,6 +69,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/style/mixin.scss';
+.bg {
+  // @include ArcBackground();
+  position: fixed;
+  top: -65vw;
+  right: -40vw;
+  z-index: -10;
+  width: 150vw;
+  height: 150vw;
+  background-color: #184677;
+  // border-radius: 0px 0px 25vw 100vw / 0px 0px 5vh 25vh;
+  border-radius: 75vw;
+}
+
+.lottie {
+  position: fixed;
+  top: 10vw;
+  right: 10vw;
+}
+
 .login {
   height: 100vh;
   position: relative;

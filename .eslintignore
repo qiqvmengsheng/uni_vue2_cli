@@ -7,3 +7,5 @@ shime-uni.d.ts
 shime-vue.d.ts
 # 添加echart组件
 src/components/l-echart
+# 静态文件
+src/static

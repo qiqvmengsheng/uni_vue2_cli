@@ -215,6 +215,7 @@ export default {
           this.startValue = startValue;
           this.endValue = endValue;
           this.chartVm.isSingle = false;
+          // this.chartVm.showBarChart = false;
           // console.log(startValue, endValue);
           // this.chartVm.barUpdate({
           //   zoomStart: startValue,
