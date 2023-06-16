@@ -108,23 +108,15 @@ const actions = {
 
   // get user info
   async getInfo({ commit }) {
-    finduderinfo().then(
-      (r) => {
-        // console.log('用户信息', r.data);
-        commit('SET_INFO', r.data);
-      },
-      (e) => {
-        console.log(e);
-      }
-    );
-    const [err, res] = await to(getdata());
+    const [err, res] = await to(Promise.all([getdata(), finduderinfo()]));
     if (err) {
       console.log('获取用户信息出错', err);
       return Promise.reject(err);
     }
     // console.log('获取用户设备：', res);
-    const { data } = res.data;
+    const { data } = res[0].data;
     const { username, device, systemrole } = data;
+    commit('SET_INFO', res[1].data);
     commit('SET_NAME', username);
     commit('SET_DEVICES', device);
     commit('SET_SYSTEMROLR', systemrole);

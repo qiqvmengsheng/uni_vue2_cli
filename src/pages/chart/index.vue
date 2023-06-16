@@ -111,7 +111,7 @@
         点击按钮显示图表缩放后范围内能谱，点击图表内显示对应数据点能谱，点击上一个下一个调整选中的单个数据点，点击隐藏按钮或图表外隐藏能谱。
       </text>
     </view>
-    <view>
+    <view class="bottom">
       <view class="btn">
         <u-button
           text="下载数据"
@@ -485,6 +485,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.chartView {
+  padding-bottom: 20px;
+}
 .cell {
   background-color: #fff;
   margin-bottom: 20rpx;
@@ -540,6 +543,9 @@ export default {
   padding: 0 10px;
   margin-bottom: 10px;
   background-color: $uni-bg-color-grey;
+}
+.bottom {
+  margin-bottom: 20px;
 }
 </style>
 

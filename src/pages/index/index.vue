@@ -129,16 +129,32 @@
     </view>
     <view class="grid">
       <u-grid :border="false" col="2">
-        <u-grid-item
-          v-for="(item, baseListIndex) in devices"
-          :key="baseListIndex"
-        >
-          <view class="dev-view" @click="tocommandView(index, item)">
+        <template v-if="!loginbtnshow">
+          <u-grid-item
+            v-for="(item, baseListIndex) in devices"
+            :key="baseListIndex"
+          >
+            <view
+              class="dev-view"
+              @longpress="handleDelete(index, item)"
+              @click="tocommandView(index, item)"
+            >
+              <view>
+                <text>设备昵称: {{ item.abbreviation || '无' }}</text>
+              </view>
+              <view>
+                <text>序列号： {{ item.deviceserial }}</text>
+              </view>
+            </view>
+          </u-grid-item>
+        </template>
+        <u-grid-item v-if="loginbtnshow">
+          <view class="dev-view" @click="tocommandView('tset')">
             <view>
-              <text>设备昵称: {{ item.abbreviation || '无' }}</text>
+              <text>设备昵称: 示例设备</text>
             </view>
             <view>
-              <text>序列号： {{ item.deviceserial }}</text>
+              <text>序列号：无</text>
             </view>
           </view>
         </u-grid-item>
@@ -230,11 +246,12 @@ export default {
       show: true,
     };
   },
-  computed: { ...mapGetters(['name', 'devices', 'userInfo']) },
+  computed: { ...mapGetters(['name', 'devices', 'systemrole', 'userInfo']) },
   watch: {
     userInfo(newValue) {
+      // console.log(this.systemrole);
       // console.log('参数', newValue.userphone);
-      if (newValue.userphone.length !== 11) {
+      if (this.systemrole === 'user' && newValue.userphone?.length !== 11) {
         this.loginbtnshow = true;
         // this.$refs.getpnumber.showModal();
       }
@@ -288,6 +305,13 @@ export default {
      */
     tocommandView(index, row) {
       // console.log(row);
+      if (index === 'test') {
+        this.$Router.push({
+          name: 'device',
+          params: { test: 'test' },
+        });
+        return;
+      }
       this.$Router.push({
         name: 'device',
         params: { deviceid: row.deviceid },
