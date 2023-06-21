@@ -9,8 +9,8 @@ let loadingNum = 0;
 
 // 环境的切换
 if (process.env.NODE_ENV === 'development') {
-  // baseURL = process.env.VUE_APP_URL_TWO;
-  baseURL = process.env.VUE_APP_BASE_URL;
+  baseURL = process.env.VUE_APP_URL_TWO;
+  // baseURL = process.env.VUE_APP_BASE_URL;
 } else if (process.env.NODE_ENV === 'production') {
   baseURL = process.env.VUE_APP_BASE_URL;
 } else {

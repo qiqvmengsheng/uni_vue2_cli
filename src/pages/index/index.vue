@@ -149,7 +149,7 @@
           </u-grid-item>
         </template>
         <u-grid-item v-if="loginbtnshow">
-          <view class="dev-view" @click="tocommandView('tset')">
+          <view class="dev-view" @click="tocommandView('test')">
             <view>
               <text>设备昵称: 示例设备</text>
             </view>
@@ -249,11 +249,20 @@ export default {
   computed: { ...mapGetters(['name', 'devices', 'systemrole', 'userInfo']) },
   watch: {
     userInfo(newValue) {
-      // console.log(this.systemrole);
+      // console.log(
+      //   this.systemrole,
+      //   newValue.userphone,
+      //   uni.$u.test.mobile(newValue.userphone)
+      // );
       // console.log('参数', newValue.userphone);
-      if (this.systemrole === 'user' && newValue.userphone?.length !== 11) {
+      if (
+        this.systemrole === 'user' &&
+        !uni.$u.test.mobile(newValue.userphone)
+      ) {
         this.loginbtnshow = true;
         // this.$refs.getpnumber.showModal();
+      } else {
+        this.loginbtnshow = false;
       }
     },
   },
@@ -304,7 +313,6 @@ export default {
      * 跳转设置页面
      */
     tocommandView(index, row) {
-      // console.log(row);
       if (index === 'test') {
         this.$Router.push({
           name: 'device',
@@ -390,6 +398,10 @@ export default {
       //   (r) => r.name === 'addDevice'
       // )[0];
       // console.log(index);
+      if (this.loginbtnshow) {
+        toast.showToast('请登录后添加设备。');
+        return;
+      }
       this.$Router.push({ name: 'addDevice' });
     },
     async test() {

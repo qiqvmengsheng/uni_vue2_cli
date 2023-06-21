@@ -19,7 +19,7 @@
 <script>
 import to from 'await-to-js';
 import { getPnumber } from '@/api/user';
-import { alert } from '@uni/apis';
+import { alert, toast, application } from '@uni/apis';
 import Lottie from '@/components/lottie';
 
 export default {
@@ -29,6 +29,10 @@ export default {
     };
   },
   components: { Lottie },
+  mounted() {
+    const app = application.getApp();
+    console.log(app);
+  },
   methods: {
     /**
      * 显示
@@ -44,17 +48,39 @@ export default {
       if (e.detail.errMsg === 'getPhoneNumber:ok') {
         console.log('用户点击了接受', e);
         const code =
-          (e.detail && e.detail.code !== undefined && e.detail.code) || '123';
+          (e.detail && e.detail.code !== undefined && e.detail.code) || '';
         const [err, res] = await to(getPnumber({ code }));
         if (err) {
           console.log('失败', err);
           return;
         }
+        if (res.data.code !== 200) {
+          console.log(res);
+          toast.showToast({
+            content: '登录失败请重试',
+            mask: true,
+          });
+          return;
+        }
+        const app = application.getApp();
+        app.$vm.login().then(() => {
+          toast
+            .showToast({
+              content: '登录成功',
+              type: 'success',
+              mask: true,
+              duration: 1000,
+            })
+            .then(() => {
+              this.$Router.pushTab({ name: 'index' });
+            });
+        });
         console.log('获取电话返回', res);
         // e.detail这里会有三个属性
         // encryptedData
         // errMsg
         // iv
+        // '123' ||
       } else {
         alert({
           title: '提示',

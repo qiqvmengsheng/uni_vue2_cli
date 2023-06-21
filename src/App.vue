@@ -22,7 +22,14 @@ export default {
     // console.log('App Launch');
   },
   onShow() {
-    this.login();
+    this.login().then(
+      (r) => {
+        console.log('成功');
+      },
+      (e) => {
+        console.log('失败');
+      }
+    );
     // this.getInfo().then(
     //   (r) => {
     //     console.log(r);
@@ -49,10 +56,15 @@ export default {
       const [err, res] = await to(this.wxlogin());
       if (err) {
         console.log(err, res);
-        return;
+        return this.login();
       }
       // console.log('登录返回信息：', res);
-      this.getInfo();
+      const [e, r] = await to(this.getInfo());
+      if (e) {
+        console.log(e, r);
+        return this.login();
+      }
+      return true;
     },
   },
 };
