@@ -115,12 +115,43 @@ export default {
         dataZoom: [
           {
             type: 'inside',
-            start: 0,
-            end: 100,
+            zoomLock: true,
+            startValue: 0,
+            endValue: 20,
           },
+          // {
+          //   type: 'slider',
+          //   width: '30%',
+          //   // start: 0,
+          //   // end: 50,
+          //   showDataShadow: false,
+          //   fillerColor: 'rgba(64, 158, 255)',
+          //   borderRadius: '50%',
+          //   moveHandleSize: 0,
+          //   moveHandleStyle: {},
+          //   left: '35%',
+          //   height: 12,
+          //   handleSize: '80%',
+          //   handleIcon:
+          //     'path://M512,512m-448,0a448,448,0,1,0,896,0a448,448,0,1,0,-896,0Z',
+          //   handleStyle: {
+          //     borderWidth: 0,
+          //     color: 'rgba(64, 158, 255)',
+          //   },
+          // },
+          // {
+          //   type: 'inside',
+          //   zoomLock: true,
+          //   startValue: 0,
+          //   endValue: 20,
+          // },
           {
-            start: 0,
-            end: 100,
+            type: 'slider',
+            zoomLock: true,
+            handleSize: 0,
+            brushSelect: false,
+            startValue: 0,
+            endValue: 20,
           },
         ],
         series: [
@@ -190,6 +221,14 @@ export default {
           data: this.RadonAt,
         },
         series: [{ name: '氡浓度(Bq/m³)', data: this.data }],
+        dataZoom: [
+          {
+            type: 'inside',
+            zoomLock: true,
+            startValue: this.RadonAt.length - 21,
+            endValue: this.RadonAt.length - 1,
+          },
+        ],
       });
       // this.chartVm.barUpdate({ zoomStart: 0, zoomEnd: this.endValue, show: true });
       // this.zoomdata(0, 100, this.data);
@@ -210,20 +249,20 @@ export default {
         chart.setOption(this.option);
         // 4.传入数据
         // 缩放图表添加能谱数据和平均值标线
-        chart.on('datazoom', () => {
-          const { startValue, endValue } = chart.getOption().dataZoom[1];
-          this.startValue = startValue;
-          this.endValue = endValue;
-          this.chartVm.isSingle = false;
-          // this.chartVm.showBarChart = false;
-          // console.log(startValue, endValue);
-          // this.chartVm.barUpdate({
-          //   zoomStart: startValue,
-          //   zoomEnd: endValue,
-          //   show: true,
-          // });
-          // this.zoomdata(startValue, endValue, this.data);
-        });
+        // chart.on('datazoom', () => {
+        //   const { startValue, endValue } = chart.getOption().dataZoom[1];
+        //   this.startValue = startValue;
+        //   this.endValue = endValue;
+        //   this.chartVm.isSingle = false;
+        //   // this.chartVm.showBarChart = false;
+        //   // console.log(startValue, endValue);
+        //   // this.chartVm.barUpdate({
+        //   //   zoomStart: startValue,
+        //   //   zoomEnd: endValue,
+        //   //   show: true,
+        //   // });
+        //   // this.zoomdata(startValue, endValue, this.data);
+        // });
 
         // chart.on('showTip', (params) => {
         //   console.log('显示提示', params);
@@ -232,11 +271,11 @@ export default {
         // chart.on('hideTip', (params) => {
         //   console.log('隐藏提示', params);
         // });
+        chart.on('click', (params) => {
+          // 要点中数据线
+          console.log('鼠标点击', params);
+        });
         /**
-        // chart.on('click', (params) => {
-        //   // 要点中数据线
-        //   console.log('鼠标点击', params);
-        // });
 
         // chart.on('mousedown', (params) => {
         //   // 要点中数据线
@@ -267,6 +306,7 @@ export default {
         chart.getZr().on('click', (params) => {
           const pointInPixel = [params.offsetX, params.offsetY];
           if (chart.containPixel('grid', pointInPixel)) {
+            console.log('鼠标点击空白', params);
             // 使用 convertFromPixel方法 转换像素坐标值到逻辑坐标系上的点。获取点击位置对应的x轴数据的索引值
             const pointInGrid = chart.convertFromPixel(
               { seriesIndex: 0 },
