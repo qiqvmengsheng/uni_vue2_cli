@@ -101,6 +101,9 @@
     color: #ffffff;
 }
 .phone_code{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     font-size: 30rpx;
     margin-right: 5%;
@@ -121,7 +124,7 @@
     align-items: center;
 }
 .input_code{
-    width: 27%;
+    width: 30%;
     margin-left: 8%;
 }
 

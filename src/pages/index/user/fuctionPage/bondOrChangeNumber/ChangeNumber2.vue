@@ -3,7 +3,11 @@
     <view class="bond_item">
       <view class="item_name">输入新手机号</view>
       <view class="input_code">
-        <input type="text" v-model="newPhoneNumber" placeholder="请输入新手机号">
+        <input
+          type="text"
+          v-model="newPhoneNumber"
+          placeholder="请输入新手机号"
+        />
       </view>
     </view>
     <view class="bond_item">

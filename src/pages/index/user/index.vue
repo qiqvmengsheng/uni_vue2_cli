@@ -53,17 +53,10 @@
         ></button>
         <view>绑定手机</view>
       </view>
-    </view>
-    <view class="fuction_card">
-      <view class="fuction_style" @click="userFeedBack">
-        <view class="t-icon t-icon-zuixing-75"></view>
-        <view>问题反馈</view>
-      </view>
       <view class="fuction_style" @click="systemInfo">
         <view class="t-icon t-icon-13-xitongxiaoxi-icon"></view>
         <view>系统消息</view>
       </view>
-      <!-- <button @click="getTime">这是一个测试button</button> -->
     </view>
   </view>
 </template>
