@@ -73,7 +73,7 @@ export default {
     this.username = decodeURI(option.username);
     this.workunit = decodeURI(option.workunit);
     this.address = decodeURI(option.address);
-    this.email = decodeURI(option.email);
+    this.email = decodeURIComponent(option.email);
     this.gender = decodeURI(option.sex);
     this.attribute = decodeURI(option.attribute);
   },
@@ -82,7 +82,6 @@ export default {
       this.gender = e;
     },
     async save_data() {
-      console.log(this.email+'这是邮箱地址');
       updateuserinfo({
         address: this.address,
         attribute: this.attribute,
