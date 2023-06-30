@@ -1,12 +1,17 @@
 <template>
   <view>
     <view class="chart">
-      <l-echart ref="chart" @finished="init"></l-echart>
+      <l-echart
+        ref="chart"
+        @finished="init"
+        custom-style="width: calc(100vw - 20px);"
+      ></l-echart>
     </view>
   </view>
 </template>
 
 <script>
+import { systemInfo } from '@uni/apis';
 import { mapGetters } from 'vuex';
 import { PlotData } from '@/utils/disposalData';
 import LEchart from '@/components/l-echart/l-echart';
@@ -98,6 +103,7 @@ export default {
     },
 
     setdata({ datas, startValue, endValue, marks }) {
+      this.$refs.chart.resize();
       // console.log('收到数据', datas, startValue, endValue, marks);
       this.marks = marks;
       if (startValue === endValue && datas.RadonAt.length > startValue) {
