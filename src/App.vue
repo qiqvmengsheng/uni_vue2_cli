@@ -23,10 +23,10 @@ export default {
   },
   onShow() {
     this.login().then(
-      (r) => {
+      () => {
         console.log('成功');
       },
-      (e) => {
+      () => {
         console.log('失败');
       }
     );

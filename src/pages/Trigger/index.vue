@@ -1,22 +1,20 @@
 <template>
   <div class="Trigger">
-    <view>
-      <text
-        >触发警告值是当设备上传的数据满足了设定的条件时就会发邮件提醒。本功能必须填了邮箱才能使用。
-      </text>
+    <view class="tips">
+      触发告警是当设备测量的数据满足了设定的条件时就会发邮件提醒。本功能必须填了邮箱才能使用。
     </view>
     <view class="title">
-      <view>{{ title[datastreams].text }}触发条件</view>
+      <view>触发条件</view>
     </view>
     <view class="cell">
       <u-cell-group>
         <template v-for="(item, index) in triggers">
           <u-cell
             :key="index"
-            :title="item.type"
-            :value="item.threshold"
+            :title="title[item.datastreamsid].text"
+            :value="`${item.threshold} ${title[item.datastreamsid].unit}`"
             isLink
-            :label="label[item.type]"
+            :label="`${item.type} ${label[item.type]}`"
             @click="handleDelete(index, item)"
           ></u-cell>
         </template>
@@ -30,7 +28,7 @@
 
     <view class="btn">
       <u-button
-        text="添加触发值"
+        text="添加触发"
         type="primary"
         shape="circle"
         @click="show = true"
@@ -39,13 +37,29 @@
 
     <u-modal
       :show="show"
-      :title="`添加${title[datastreams].text}触发值`"
+      :title="`添加触发`"
       closeOnClickOverlay
       @close="this.show = false"
-      @confirm="handleAdd()"
+      @confirm="handleAdd"
     >
       <view>
         <u-form :model="trigger" ref="uForm" :rules="rules" labelWidth="100">
+          <u-form-item
+            label="数据类型"
+            prop="ds_id"
+            borderBottom
+            @click="actionDsId"
+            ref="ds_id"
+          >
+            <u-input
+              v-model="title[trigger.ds_id].text"
+              disabled
+              disabledColor="#ffffff"
+              placeholder="请选择类型"
+              border="none"
+            ></u-input>
+            <u-icon slot="right" name="arrow-right"></u-icon>
+          </u-form-item>
           <u-form-item
             label="触发类型"
             prop="type"
@@ -136,7 +150,7 @@ export default {
             // type: 'number',
             required: true,
             pattern: /^[\d]+$/,
-            message: '必须填个整数',
+            message: '必须填整数',
             trigger: 'blur',
           },
         ],
@@ -166,32 +180,42 @@ export default {
         console.log(err);
         return;
       }
-      console.log(res);
+      // console.log(res);
       if (res.data.code === 200) {
-        this.triggers = res.data.data.filter(
-          (i) => i.datastreamsid === this.datastreams
-        );
-        console.log(res.data.data);
+        this.triggers = res.data.data;
+        // res.data.data.filter((i) => i.datastreamsid === this.datastreams);
+        // console.log(res.data.data);
       }
     },
 
     /**
-     * 弹出选项，点击跳转对应页面
+     * 选择触发类型
      */
-    action(e) {
-      console.log(e);
-      const label = {
-        '<': '数据小于时触发',
-        '=': '数据等于时触发',
-        '>': '数据大于时触发',
-        '<=': '数据小于等于时触发',
-        '>=': '数据大于等于时触发',
-      };
+    action() {
+      // console.log(e);
       const types = ['<', '=', '>', '<=', '>='];
       actionSheet({
         itemList: types,
       }).then((res) => {
         if (res.tapIndex !== -1) this.trigger.type = types[res.tapIndex];
+        // this.$Router.push({
+        //   name: route[res.tapIndex],
+        //   params: { deviceid: this.dev.deviceid, datastreams: this.value },
+        // });
+      });
+    },
+
+    /**
+     * 选择数据类型
+     */
+    actionDsId() {
+      // console.log(e);
+      const label = ['Radon', 'Thoron', 'temperature', 'Pressure', 'humidity'];
+      const types = ['氡浓度', '钍浓度', '温度', '大气压', '相对湿度'];
+      actionSheet({
+        itemList: types,
+      }).then((res) => {
+        if (res.tapIndex !== -1) this.trigger.ds_id = label[res.tapIndex];
         // this.$Router.push({
         //   name: route[res.tapIndex],
         //   params: { deviceid: this.dev.deviceid, datastreams: this.value },
@@ -208,17 +232,17 @@ export default {
         console.log(e, r);
         return;
       }
-      console.log(this.trigger);
+      // console.log(this.trigger);
       const [err, res] = await to(addtrigger({ ...this.trigger }));
       if (err) {
         console.log(err, res);
         return;
       }
-      console.log(res);
+      // console.log(res);
       if (res.data.code === 200) {
         await this.gettrigger();
         toast.showToast({
-          content: `添加成功！`,
+          content: '添加成功！',
           type: 'success',
         });
         this.show = false;
@@ -231,10 +255,12 @@ export default {
      * 删除触发器
      */
     async handleDelete(index, item) {
-      console.log(item);
+      // console.log(item);
       const r = await confirm({
         title: '提示',
-        content: `确认删除数据${item.type}${item.threshold}时的触发条件？`,
+        content: `确认删除${this.title[item.datastreamsid].text} ${item.type} ${
+          item.threshold
+        }时的触发条件？`,
       });
       if (r.cancel) {
         return;
@@ -247,7 +273,7 @@ export default {
       if (res.data.code === 200) {
         await this.gettrigger();
         toast.showToast({
-          content: `删除成功！`,
+          content: '删除成功！',
           type: 'success',
         });
       } else {
@@ -298,6 +324,14 @@ export default {
   // top: 70%;
   width: 95%;
   margin: 30rpx auto;
+}
+
+.tips {
+  padding: 10px;
+  margin: 0 10px 10px;
+  background-color: #fff;
+  border-radius: 10rpx;
+  box-shadow: 4rpx 4rpx 10rpx 6rpx rgba(0, 0, 0, 0.1);
 }
 </style>
 
