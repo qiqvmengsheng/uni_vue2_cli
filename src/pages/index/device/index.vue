@@ -83,6 +83,10 @@ export default {
   created() {
     that = this;
     this.$AppReady.then(() => {
+      console.log(this.$Route.query);
+      if (this.$Route.query.test === 'test') {
+        return;
+      }
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
       // console.log('设备页面', this.dev);

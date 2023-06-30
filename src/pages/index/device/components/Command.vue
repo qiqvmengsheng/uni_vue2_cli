@@ -190,7 +190,7 @@ import { mapGetters } from 'vuex';
 import { onenetcmds } from '@/api/onenet';
 import { startstop, getSeting, settingPropertySet } from '@/api/devseting';
 import to from 'await-to-js';
-import { toast, confirm } from '@uni/apis';
+import { toast, confirm, application } from '@uni/apis';
 
 export default {
   props: {
@@ -277,6 +277,12 @@ export default {
   },
   created() {
     this.$AppReady.then(() => {
+      const pages = application.getCurrentPages();
+      const chartVm = pages[pages.length - 1].$vm;
+      console.log(chartVm);
+      if (this.$Route.query.test === 'test') {
+        return;
+      }
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
       console.log('命令页面', { ...this.dev });

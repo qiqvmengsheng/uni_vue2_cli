@@ -315,13 +315,13 @@ export default {
     tocommandView(index, row) {
       if (index === 'test') {
         this.$Router.push({
-          name: 'device',
+          name: 'chartView',
           params: { test: 'test' },
         });
         return;
       }
       this.$Router.push({
-        name: 'device',
+        name: 'chartView',
         params: { deviceid: row.deviceid },
       });
     },
