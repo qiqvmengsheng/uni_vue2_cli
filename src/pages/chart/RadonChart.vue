@@ -84,11 +84,11 @@ export default {
           axisPointer: {
             type: 'cross',
           },
-          // formatter(params) {
-          //   // alert(JSON.stringify(params));
-          //   console.log(params);
-          //   return params[0].value;
-          // },
+          formatter() {
+            // alert(JSON.stringify(params));
+            // console.log(params);
+            // return;
+          },
         },
         grid: {
           // right: '20%',
@@ -282,13 +282,13 @@ export default {
         //   console.log('隐藏提示', params);
         // });
         chart.getZr().on('mouseup', (params) => {
-          console.log(
-            '鼠标松开',
-            params
-            // params.target,
-            // params.target?.cursor === 'move',
-            // params.target === params.topTarget
-          );
+          // console.log(
+          //   '鼠标松开',
+          //   params
+          //   // params.target,
+          //   // params.target?.cursor === 'move',
+          //   // params.target === params.topTarget
+          // );
           if (this.data[this.xIndex] !== this.chartVm.dataPoint.Radon) {
             this.setTip(0);
             // console.log(this.data[this.xIndex], this.chartVm.dataPoint.Radon);
