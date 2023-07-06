@@ -4,6 +4,7 @@ import uView from 'uview-ui';
 import App from './App';
 import { router } from './router'; // 路径换成自己的
 import store from './store';
+
 Vue.use(router);
 Vue.use(uView);
 

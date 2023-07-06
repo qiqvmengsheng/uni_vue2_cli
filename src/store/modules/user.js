@@ -74,7 +74,7 @@ const actions = {
     commit('SET_TOKEN', token);
     commit('SET_NAME', username);
     try {
-      setToken(token);
+      await setToken(token);
       setName(username);
     } catch (e) {
       console.log(e);

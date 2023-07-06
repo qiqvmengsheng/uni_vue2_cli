@@ -1,6 +1,6 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3966234 */
-  src: url('@/static/icon/iconfont.ttf?t=1679378128750') format('truetype');
+  src: url('@/static/icon/iconfont.ttf?t=1688550135517') format('truetype');
 }
 /* url('@/static/icon/iconfont.woff2?t=1679378128750') format('woff2'),
        url('@/static/icon/iconfont.woff?t=1679378128750') format('woff'), */
@@ -12,7 +12,10 @@
   -moz-osx-font-smoothing: grayscale; */
 }
 
-.icon-tubiao-zhexiantu:before {
+/* .icon-tubiao-zhexiantu:before {
   content: "\eb96";
-}
+} */
 
+.icon-dianziyiqi:before {
+  content: "\e65b";
+}

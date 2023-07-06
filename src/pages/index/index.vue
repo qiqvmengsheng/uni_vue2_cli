@@ -140,10 +140,34 @@
               @click="tocommandView(index, item)"
             >
               <view>
-                <text>设备昵称: {{ item.abbreviation || '无' }}</text>
+                <view class="devname">
+                  <text class="iconfont icon-dianziyiqi"></text>
+                  <text>{{ item.devicename || 'RTM1688' }}</text>
+                </view>
+                <view class="devname">
+                  <text>序列号：</text> <text> {{ item.deviceserial }}</text>
+                </view>
+                <view class="devname">
+                  <text>昵称: </text>
+                  <text :style="item.abbreviation ? '' : 'color: #999;'">{{
+                    item.abbreviation || '无'
+                  }}</text>
+                </view>
               </view>
-              <view>
-                <text>序列号： {{ item.deviceserial }}</text>
+              <view style="width: 100%">
+                <text class="textLeft">最新数据更新时间</text>
+              </view>
+              <text
+                class="textRight"
+                :style="item.RadonAt ? '' : 'color: #999;'"
+              >
+                {{ item.RadonAt || '无' }}
+              </text>
+              <view class="devname">
+                <text>氡浓度: </text>
+                <text :style="item.Radon ? '' : 'color: #999;'">{{
+                  item.Radon || '无'
+                }}</text>
               </view>
             </view>
           </u-grid-item>
@@ -159,7 +183,11 @@
           </view>
         </u-grid-item>
         <u-grid-item>
-          <view class="dev-view" @click="addDevice">
+          <view
+            class="dev-view"
+            style="align-content: center"
+            @click="addDevice"
+          >
             <u-icon name="plus" color="#2979ff" size="45"> </u-icon>
           </view>
         </u-grid-item>
@@ -236,6 +264,7 @@ import to from 'await-to-js';
 import { mapGetters, mapActions } from 'vuex';
 import { toast, confirm } from '@uni/apis';
 import GetPhoneNumberVue from '@/components/GetPhoneNumber';
+import { getlastDatas } from '@/api/devdata';
 import { modifyabbreviation, addpermission, disassociate } from '@/api/base';
 
 export default {
@@ -244,6 +273,7 @@ export default {
     return {
       loginbtnshow: false,
       show: true,
+      isLastdata: false,
     };
   },
   computed: { ...mapGetters(['name', 'devices', 'systemrole', 'userInfo']) },
@@ -265,6 +295,13 @@ export default {
         this.loginbtnshow = false;
       }
     },
+    devices() {
+      if (!this.isLastdata) {
+        console.log(this.devices);
+        this.isLastdata = true;
+        this.lastData();
+      }
+    },
   },
   // 页面周期函数--监听页面加载
   created() {},
@@ -279,6 +316,23 @@ export default {
   },
   methods: {
     ...mapActions('user', ['getInfo']),
+
+    lastData() {
+      [...this.devices].forEach((dev) => {
+        getlastDatas({
+          deviceid: dev.deviceid,
+          numbers: 1,
+          isloading: false,
+        }).then((r) => {
+          const { datastreams } = r.data.data;
+          console.log(r);
+          this.$set(dev, 'Radon', datastreams.Radon[0].value);
+          this.$set(dev, 'RadonAt', datastreams.Radon[0].at);
+          // this.$set()
+        });
+      });
+    },
+
     change(e) {
       console.log(`'当前模式：' + ${e.type} + ',状态：' + ${e.show}`);
     },
@@ -454,6 +508,7 @@ export default {
 @import '@/style/mixin.scss';
 .iconfont {
   color: #999;
+  font-size: 30px;
 }
 .bg {
   @include ArcBackground();
@@ -473,18 +528,30 @@ export default {
   width: 90vw;
   margin: 1vw 5vw;
 }
+.devname {
+  width: 100%;
+  display: inline-flex;
+  justify-content: space-between;
+}
+.textLeft {
+  text-align: left;
+}
+.textRight {
+  text-align: right;
+}
 .dev-view {
   background-color: #fff;
-  width: 40vw;
-  height: 400rpx;
+  width: calc(40vw - 20px);
+  height: calc(400rpx - 20px);
   margin: 2.5vw;
+  padding: 10px;
   border-radius: 20rpx;
   box-shadow: 4rpx 4rpx 10rpx 6rpx rgba(0, 0, 0, 0.1);
   display: flex;
   // flex轴横向，溢出换行。 flex-direction: row;  flex-wrap: wrap; 简写 flex-flow
   flex-flow: row wrap;
-  // 副轴对齐方式align-items  上下居中
-  align-items: center;
+  // 副轴对齐方式align-items  平均分配
+  align-content: space-between;
   /* 主轴对齐方式justify-content */
   justify-content: center;
 }

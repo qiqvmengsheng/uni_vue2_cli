@@ -27,11 +27,12 @@ export function measuredGetdata({
  * 按量获取最新数据
  * @param {Object} data
  */
-export function getlastDatas({ deviceid, datastreamid, numbers }) {
+export function getlastDatas({ deviceid, datastreamid, numbers, isloading }) {
   return request({
     url: '/measured_data/getlastDatas',
     method: 'post',
     data: qs.stringify({ deviceid, datastreamid, numbers }),
+    isloading,
   });
 }
 
