@@ -1,5 +1,14 @@
 <template>
   <div class="Download">
+    <view class="cell">
+      <u-cell-group>
+        <u-cell
+          title="历史范围"
+          :value="cellvalue"
+          :label="isnumber ? '按数量' : '按时间'"
+        ></u-cell>
+      </u-cell-group>
+    </view>
     <view>
       <view class="tips">
         <text>
@@ -29,6 +38,8 @@ export default {
   data() {
     return {
       dev: null,
+      cellvalue: '',
+      isNumber: false,
       chartVm: null,
     };
   },
@@ -40,6 +51,9 @@ export default {
     const pages = application.getCurrentPages();
     const chartVm = pages[pages.length - 2].$vm;
     this.chartVm = chartVm;
+    this.cellvalue = chartVm.cellvalue;
+    this.isNumber = chartVm.isNumber;
+    console.log(chartVm);
     this.$AppReady.then(() => {
       // console.log('收到参数', this.$Route.query);
       const id = this.$Route.query.deviceid;
@@ -184,9 +198,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.Download {
-  margin-top: 50px;
+.cell {
+  background-color: #fff;
+  margin-bottom: 20rpx;
 }
+// .Download {
+// }
 .btn {
   // position: relative;
   // top: 70%;
@@ -195,7 +212,7 @@ export default {
 }
 .tips {
   padding: 10px;
-  margin: 0 10px 50px;
+  margin: 50px 10px 50px;
   background-color: #fff;
   border-radius: 10rpx;
   box-shadow: 4rpx 4rpx 10rpx 6rpx rgba(0, 0, 0, 0.1);
