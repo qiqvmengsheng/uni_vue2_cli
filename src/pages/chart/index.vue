@@ -54,30 +54,39 @@
       <view class="btn updown">
         <view class="udbtn">
           <u-button
-            text="上一个"
+            text="上一页"
             type="primary"
             class="upbtn"
-            @click="$refs.radonchar.setTip(-1)"
+            @click="$refs.radonchar.PreviousNextPage(false)"
             :disabled="!isOpen"
           >
-            上一个
+            上一页
           </u-button>
         </view>
         <view class="udbtn">
           <u-button
-            text="下一个"
+            text="下一页"
             type="primary"
             class="downbtn"
-            @click="$refs.radonchar.setTip(1)"
+            @click="$refs.radonchar.PreviousNextPage(true)"
             :disabled="!isOpen"
           >
-            下一个
+            下一页
           </u-button>
         </view>
       </view>
     </view>
 
-    <view class="cell">
+    <view class="subsection">
+      <u-subsection
+        :list="list"
+        mode="subsection"
+        :current="showBarChart"
+        @change="change1"
+      ></u-subsection>
+    </view>
+
+    <view class="cell" v-show="!showBarChart">
       <u-cell-group>
         <!--
           isLink
@@ -121,18 +130,18 @@
       </u-cell-group>
     </view>
 
-    <view class="card" v-show="showBarChart">
+    <view class="card" v-show="!!showBarChart">
       <BarChart class="echart" ref="barchar"></BarChart>
     </view>
 
-    <view v-show="!showBarChart">
+    <!-- <view v-show="!showBarChart">
       <view class="btn">
         <u-button
           text="显示能谱"
           type="primary"
           shape="circle"
           @click="
-            showBarChart = true;
+            showBarChart = 1;
             showrange();
           "
           :disabled="!isOpen"
@@ -140,17 +149,17 @@
       </view>
     </view>
 
-    <view v-show="showBarChart">
+    <view v-show="!!showBarChart">
       <view class="btn">
         <u-button
           text="隐藏能谱"
           type="primary"
           shape="circle"
-          @click="showBarChart = false"
+          @click="showBarChart = 0"
           :disabled="!isOpen"
         ></u-button>
       </view>
-    </view>
+    </view> -->
 
     <view class="cell">
       <u-cell-group>
@@ -232,6 +241,7 @@ export default {
   },
   data() {
     return {
+      list: ['详细数据', '能谱数据'],
       form: { number: 100, startTime: '', endTime: '' },
       isnumber: true,
       data: null,
@@ -243,7 +253,7 @@ export default {
         temperature: '',
         humidity: '',
       },
-      showBarChart: false,
+      showBarChart: 0,
       isOpen: false,
       dev: null,
     };
@@ -280,6 +290,11 @@ export default {
         this.timegetdata();
       }
       this.getmakings();
+    },
+
+    change1(index) {
+      this.showBarChart = !!index;
+      if (index) this.showrange();
     },
 
     /**
@@ -327,6 +342,7 @@ export default {
         })
       );
       if (err) {
+        this.isOpen = true;
         console.log('获取服务器数据错误：\n', err);
         return Promise.reject(err);
       }
@@ -340,6 +356,7 @@ export default {
         toast.showToast({
           content: '当前时间段没有数据！',
         });
+        this.isOpen = true;
         return Promise.reject(new Error('当前时间段没有数据！'));
       }
       data.RadonAt = [];
@@ -501,6 +518,11 @@ export default {
   border-width: 1px;
   border-style: solid;
   border-radius: 0px 50px 50px 0px;
+}
+
+.subsection {
+  background-color: #fff;
+  padding: 10px 5%;
 }
 
 .btn {
