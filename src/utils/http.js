@@ -21,9 +21,9 @@ if (process.env.NODE_ENV === 'development') {
  * 创建axios实例
  */
 const request = axios.create({
-  // baseURL: 'http://192.168.3.44:8080',
+  baseURL: 'http://192.168.0.11:8080',
   // baseURL: 'http://localhost/user',
-  baseURL,
+  // baseURL,
   timeout: 30000,
   adapter: UniAdapter,
 });

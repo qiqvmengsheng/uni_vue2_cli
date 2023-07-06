@@ -37,26 +37,34 @@
         <view class="t-icon t-icon-bianji1"></view>
         <view>编辑信息</view>
       </view>
-      <view class="fuction_style" @click="bondPhoneNumber">
-        <view class="t-icon t-icon-bangdingshouji"></view>
+      <view class="fuction_style">
+        <!-- <view class="t-icon t-icon-bangdingshouji"></view> -->
+        <button
+          v-if="userInfo.userphone === '' || userInfo.userphone === undefined"
+          open-type="getPhoneNumber"
+          bindgetphonenumber="getPhoneNumber"
+          @getphonenumber="getPhoneNumber"
+          class="t-icon t-icon-bangdingshouji"
+        ></button>
+        <button
+          class="t-icon t-icon-bangdingshouji"
+          @click="bondPhoneNumber()"
+          v-else
+        ></button>
         <view>绑定手机</view>
-      </view>
-    </view>
-    <view class="fuction_card">
-      <view class="fuction_style" @click="userFeedBack">
-        <view class="t-icon t-icon-zuixing-75"></view>
-        <view>问题反馈</view>
       </view>
       <view class="fuction_style" @click="systemInfo">
         <view class="t-icon t-icon-13-xitongxiaoxi-icon"></view>
         <view>系统消息</view>
       </view>
-      <!-- <button @click="getTime">这是一个测试button</button> -->
     </view>
   </view>
 </template>
 <script>
 import { getuserinfo } from '@/api/base';
+import to from 'await-to-js';
+import { getPnumber } from '@/api/user';
+import { alert } from '@uni/apis';
 import myNav from './my-nav';
 
 export default {
@@ -65,19 +73,43 @@ export default {
   },
   data() {
     return {
-      userInfo: '',
+      userInfo: {
+        userphone: '',
+        address: '',
+        attribute: '',
+        workunit: '',
+        useremail: '',
+        sex: '',
+      },
       photo: '',
       time: '您',
     };
   },
   computed: {},
   methods: {
+    reload() {
+      this.isRouterAlive = false;
+      this.$nextTick(function () {
+        this.isRouterAlive = true;
+      });
+    },
+    showModal() {
+      this.show = true;
+    },
     /**
      * 获取该用户的个人信息数据
      */
     async getUserInfo() {
       getuserinfo({}).then(
         (response) => {
+          // 如果用户未绑定手机号码则个人信息不展示，为空
+          if (
+            response.data.userphone === null ||
+            response.data.userphone === ''
+          ) {
+            this.photo = 't-icon t-icon-yonghutouxiang';
+            return;
+          }
           console.log(response);
           this.userInfo = response.data;
           if (this.userInfo.attribute === null) {
@@ -140,7 +172,6 @@ export default {
       const index = this.$Router.options.routes.filter(
         (r) => r.name === 'userFeedBack'
       )[0];
-      console.log(index);
       this.$Router.push({
         name: 'editPersonInfo',
         params: {
@@ -175,6 +206,36 @@ export default {
           },
         });
       }
+    },
+    /**
+     * 绑定手机号
+     * */
+    async getPhoneNumber(e) {
+      console.log(e);
+      if (e.detail.errMsg === 'getPhoneNumber:ok') {
+        console.log('用户点击了接受', e);
+        const code =
+          (e.detail && e.detail.code !== undefined && e.detail.code) || '123';
+        const [err, res] = await to(getPnumber({ code }));
+        if (err) {
+          console.log('失败', err);
+          return;
+        }
+        console.log('开始刷新');
+        // e.detail这里会有三个属性
+        // encryptedData
+        // errMsg
+        // iv
+      } else {
+        alert({
+          title: '提示',
+          content: '您以拒绝授权，请重新点击并授权！',
+          buttonText: '确认',
+        });
+        console.log('用户点击了拒绝');
+      }
+      console.log('开始刷新');
+      this.getUserInfo();
     },
   },
   watch: {},
@@ -227,7 +288,7 @@ export default {
 .person-info {
   background-color: #ffffff;
   width: 88%;
-  height: 35%;
+  height: 40%;
   display: flex;
   margin-left: 6%;
   border-radius: 10% 10% 10% 10%;
@@ -267,7 +328,7 @@ export default {
   flex-direction: row;
 }
 .bottom {
-  margin-top: 10%;
+  margin-top: 13%;
   align-items: center;
   position: relative;
   display: flex;
