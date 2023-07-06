@@ -311,7 +311,7 @@ export default {
         // chart.on('hideTip', (params) => {
         //   console.log('隐藏提示', params);
         // });
-        chart.getZr().on('mouseup', (params) => {
+        chart.getZr().on('mouseup', () => {
           // console.log(
           //   '鼠标松开',
           //   params
