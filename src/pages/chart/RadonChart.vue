@@ -176,6 +176,7 @@ export default {
       this.data = data.Radon;
       this.RadonAt = data.RadonAt;
       this.endValue = this.RadonAt.length - 1;
+      this.startValue = this.RadonAt.length - this.Range;
       this.xIndex = this.endValue;
       if (this.isfinished) {
         this.setdata();
@@ -198,11 +199,40 @@ export default {
         }
         if (this.xIndex < 0) {
           this.xIndex = this.RadonAt.length - 1;
-          this.startValue = this.RadonAt.length - this.Range - 1;
+          this.startValue = this.RadonAt.length - this.Range;
           this.endValue = this.RadonAt.length - 1;
         }
         this.setzoom({ zoomStart: this.startValue, zoomEnd: this.endValue });
       }
+      this.$refs.chart.chart.dispatchAction({
+        type: 'showTip',
+        seriesIndex: 0,
+        dataIndex: this.xIndex,
+      });
+      this.chartVm.barUpdate({
+        zoomStart: this.xIndex,
+        zoomEnd: this.xIndex,
+        show: true,
+      });
+      this.chartVm.setDataPoint(this.xIndex);
+    },
+
+    /**
+     * 上下一页功能
+     */
+    PreviousNextPage(isNext) {
+      this.startValue += isNext ? this.Range : -this.Range;
+      this.endValue += isNext ? this.Range : -this.Range;
+      if (isNext && this.endValue >= this.RadonAt.length) {
+        this.startValue = this.RadonAt.length - this.Range;
+        this.endValue = this.RadonAt.length - 1;
+      }
+      if (!isNext && this.startValue < 0) {
+        this.startValue = 0;
+        this.endValue = this.Range - 1;
+      }
+      this.xIndex = this.endValue;
+      this.setzoom({ zoomStart: this.startValue, zoomEnd: this.endValue });
       this.$refs.chart.chart.dispatchAction({
         type: 'showTip',
         seriesIndex: 0,
@@ -229,7 +259,7 @@ export default {
           {
             type: 'inside',
             zoomLock: true,
-            startValue: this.RadonAt.length - this.Range - 1,
+            startValue: this.RadonAt.length - this.Range,
             endValue: this.RadonAt.length - 1,
           },
         ],
