@@ -52,18 +52,17 @@
 
     <view>
       <view class="btn updown">
-        <view class="udbtn">
+        <view class="udbtn upbtn">
           <u-button
             text="上一页"
             type="primary"
-            class="upbtn"
             @click="$refs.radonchar.PreviousNextPage(false)"
             :disabled="!isOpen"
           >
             上一页
           </u-button>
         </view>
-        <view class="udbtn">
+        <view class="udbtn downbtn">
           <u-button
             text="下一页"
             type="primary"
@@ -241,7 +240,7 @@ export default {
   },
   data() {
     return {
-      list: ['详细数据', '能谱数据'],
+      list: ['详情', '能谱'],
       form: { number: 100, startTime: '', endTime: '' },
       isnumber: true,
       data: null,
@@ -472,6 +471,8 @@ export default {
   // onPageScroll(event) {},
   // 页面处理函数--用户点击右上角分享
   // onShareAppMessage(options) {},
+  // 关闭组件样式隔离，可以修改组件样式
+  options: { styleIsolation: 'apply-shared' },
 };
 </script>
 
@@ -481,6 +482,7 @@ export default {
 }
 .cell {
   background-color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
   margin-bottom: 20rpx;
 }
 .card {
@@ -503,21 +505,16 @@ export default {
 .udbtn {
   width: 50%;
 }
-.upbtn {
-  color: #fff;
-  background-color: #3c9cff;
-  border-color: #3c9cff;
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 50px 0px 0px 50px;
+// 在node-sass使用/deep/，在sass中使用::v-deep
+::v-deep .upbtn {
+  .u-button {
+    border-radius: 3px 0px 0px 3px;
+  }
 }
-.downbtn {
-  color: #fff;
-  background-color: #3c9cff;
-  border-color: #3c9cff;
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 0px 50px 50px 0px;
+::v-deep .downbtn {
+  .u-button {
+    border-radius: 0px 3px 3px 0px;
+  }
 }
 
 .subsection {
