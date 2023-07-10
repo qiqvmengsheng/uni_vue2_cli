@@ -139,33 +139,31 @@
               @longpress="handleDelete(index, item)"
               @click="tocommandView(index, item)"
             >
-              <view>
+              <view class="devname">
+                <text
+                  class="nichen"
+                  :style="item.abbreviation ? '' : 'color: #999;'"
+                  >{{ item.abbreviation || '无昵称' }}
+                </text>
+              </view>
+              <view class="devname">
+                <text class="ziti">{{ item.devicename || 'RTM1688' }}</text>
+                <text class="ziti"> {{ item.deviceserial }}</text>
+              </view>
+              <!-- <view>
                 <view class="devname">
                   <text class="iconfont icon-dianziyiqi"></text>
-                  <text>{{ item.devicename || 'RTM1688' }}</text>
                 </view>
-                <view class="devname">
-                  <text>序列号：</text> <text> {{ item.deviceserial }}</text>
-                </view>
-                <view class="devname">
-                  <text>昵称: </text>
-                  <text :style="item.abbreviation ? '' : 'color: #999;'">{{
-                    item.abbreviation || '无'
-                  }}</text>
-                </view>
-              </view>
-              <view style="width: 100%">
-                <text class="textLeft">最新数据更新时间</text>
-              </view>
+              </view> -->
               <text
-                class="textRight"
+                class="textRight ziti"
                 :style="item.RadonAt ? '' : 'color: #999;'"
               >
                 {{ item.RadonAt || '无' }}
               </text>
-              <view class="devname">
+              <view class="devname" style="line-height: 21px">
                 <text>氡浓度: </text>
-                <text :style="item.Radon ? '' : 'color: #999;'">{{
+                <text class="ziti" :style="item.Radon ? '' : 'color: #999;'">{{
                   item.Radon || '无'
                 }}</text>
               </view>
@@ -306,6 +304,10 @@ export default {
   // 页面周期函数--监听页面加载
   created() {},
   onLoad() {},
+  // 页面周期函数--监听页面显示(not-nvue)
+  onShow() {
+    this.lastData();
+  },
   async mounted() {
     // this.$Router.push({ name: 'commandView' });
     // const [err, res] = await to(this.getInfo());
@@ -537,14 +539,26 @@ export default {
   text-align: left;
 }
 .textRight {
+  font-size: 14px;
   text-align: right;
+}
+.nichen {
+  width: 100%;
+  text-align: center;
+  color: #184677;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 20px;
+}
+.ziti {
+  font-family: Arial, Helvetica, sans-serif;
 }
 .dev-view {
   background-color: #fff;
-  width: calc(40vw - 20px);
-  height: calc(400rpx - 20px);
+  width: calc(40vw - 40rpx);
+  height: calc(260rpx - 40rpx);
   margin: 2.5vw;
-  padding: 10px;
+  padding: 20rpx;
   border-radius: 20rpx;
   box-shadow: 4rpx 4rpx 10rpx 6rpx rgba(0, 0, 0, 0.1);
   display: flex;
