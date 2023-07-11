@@ -23,6 +23,15 @@
       </u-cell-group>
     </view>
 
+    <view class="subsection">
+      <u-subsection
+        :list="list1"
+        mode="subsection"
+        :current="isThoronData"
+        @change="change2"
+      ></u-subsection>
+    </view>
+
     <!-- <view class="card">
       <uni-card>
         <text>
@@ -241,6 +250,7 @@ export default {
   data() {
     return {
       list: ['详情', '能谱'],
+      list1: ['氡浓度', '钍浓度'],
       form: { number: 100, startTime: '', endTime: '' },
       isnumber: true,
       data: null,
@@ -253,6 +263,7 @@ export default {
         humidity: '',
       },
       showBarChart: 0,
+      isThoronData: 0,
       isOpen: false,
       dev: null,
     };
@@ -292,8 +303,14 @@ export default {
     },
 
     change1(index) {
+      if (this.showBarChart === !!index) return;
       this.showBarChart = !!index;
       if (index) this.showrange();
+    },
+    change2(index) {
+      if (this.isThoronData === index) return;
+      this.isThoronData = index;
+      this.$refs.radonchar.setdata(!!this.isThoronData, this.data.Thoron);
     },
 
     /**

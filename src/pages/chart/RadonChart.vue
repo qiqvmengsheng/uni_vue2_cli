@@ -150,14 +150,6 @@ export default {
             smooth: true,
             data: [],
           },
-          {
-            // 根据名字对应到相应的系列
-            name: '氡浓度(Bq/m³)',
-            type: 'line',
-            color: '#ff0000',
-            smooth: true,
-            data: [],
-          },
         ],
       },
     };
@@ -178,6 +170,7 @@ export default {
       this.endValue = this.RadonAt.length - 1;
       this.startValue = this.RadonAt.length - this.Range;
       this.xIndex = this.endValue;
+      this.chartVm.isThoronData = 0;
       if (this.isfinished) {
         this.setdata();
       }
@@ -249,12 +242,46 @@ export default {
     /**
      * 设置图表数据
      */
-    setdata() {
+    setdata(isThoron, data2) {
+      let title;
+      let color;
+      let data;
+      if (isThoron) {
+        title = '钍浓度(Bq/m³)';
+        color = '#91CC75';
+        data = data2;
+      } else {
+        title = '氡浓度(Bq/m³)';
+        color = '#5470C6';
+        data = this.data;
+      }
       this.$refs.chart.setOption({
+        legend: {
+          data: [title],
+          textStyle: {
+            fontSize: 20,
+          },
+        },
         xAxis: {
           data: this.RadonAt,
         },
-        series: [{ name: '氡浓度(Bq/m³)', data: this.data }],
+        yAxis: {
+          axisLine: {
+            show: true,
+            lineStyle: {
+              color,
+            },
+          },
+        },
+        series: [
+          {
+            name: title,
+            type: 'line',
+            color,
+            smooth: true,
+            data,
+          },
+        ],
         dataZoom: [
           {
             type: 'inside',
