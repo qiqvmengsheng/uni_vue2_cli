@@ -185,7 +185,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 import { onenetcmds, DataStreams } from '@/api/onenet';
 import { startstop, getSeting, settingPropertySet } from '@/api/devseting';
 import to from 'await-to-js';
@@ -273,7 +273,7 @@ export default {
     },
   },
   async created() {
-    await this.getInfo();
+    // await this.getInfo();
     // const pages = application.getCurrentPages();
     // const chartVm = pages[pages.length - 2].$vm;
     // console.log(chartVm);
@@ -288,7 +288,7 @@ export default {
   },
   mounted() {},
   methods: {
-    ...mapActions('user', ['getInfo']),
+    // ...mapActions('user', ['getInfo']),
 
     /**
      * 判断版本
@@ -383,9 +383,9 @@ export default {
      * 修改周期方法
      */
     async setSampleInterval() {
-      const [e, r] = await to(this.$refs.uForm.validate());
-      if (e) {
-        console.log(e, r);
+      const [e1, r1] = await to(this.$refs.uForm.validate());
+      if (e1) {
+        console.log(e1, r1);
         return;
       }
       if (this.dev.version === '1.0') {
@@ -402,14 +402,20 @@ export default {
           return;
         }
         console.log(this.form.SampleInterval);
+        const [e, r] = await to(getSeting({ deviceId: this.dev.deviceid }));
         const [err, res] = await to(
           settingPropertySet({
             deviceId: this.dev.deviceid,
             intervall: this.form.SampleInterval,
+            alarm: r.data.data.alarm,
+            buzzer: r.data.data.buzzer,
+            pumpmode: r.data.data.pumpmode,
+            rnmode: r.data.data.rnmode,
+            unit: r.data.data.unit,
           })
         );
-        if (err) {
-          console.log(err, res);
+        if (e || err) {
+          console.log(e, err, res);
           return;
         }
         // console.log(res);
@@ -470,13 +476,14 @@ export default {
           this.wrodtobyts = c;
           this.SendCommand(cs, '修改设置');
         } else {
-          const r = await confirm({
+          const c = await confirm({
             title: '提示',
             content: '确认修改设置？',
           });
-          if (r.cancel) {
+          if (c.cancel) {
             return;
           }
+          const [e, r] = await to(getSeting({ deviceId: this.dev.deviceid }));
           const [err, res] = await to(
             settingPropertySet({
               deviceId: this.dev.deviceid,
@@ -485,10 +492,11 @@ export default {
               pumpmode: this.PumpMode,
               rnmode: this.RadonMode,
               unit: this.Units,
+              intervall: r.data.data.intervall,
             })
           );
-          if (err) {
-            console.log(err, res);
+          if (e || err) {
+            console.log(e, err, res);
             return;
           }
           // console.log(res);
@@ -515,6 +523,10 @@ export default {
      * 提示下发修改命令
      */
     async SendCommand(sms, text) {
+      if (this.dev.version !== '1.0' && sms === 'CMD:CLEAR') {
+        toast.showToast('此设备无此功能！');
+        return;
+      }
       const r = await confirm({
         title: '提示',
         content: `确认${text}？`,
