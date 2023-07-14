@@ -168,9 +168,6 @@ export default {
       // console.log('更新数据');
       this.data = data.Radon;
       this.RadonAt = data.RadonAt;
-      this.endValue = this.RadonAt.length - 1;
-      this.startValue = this.RadonAt.length - this.Range;
-      this.xIndex = this.endValue;
       this.chartVm.isThoronData = 0;
       if (this.isfinished) {
         this.setdata();
@@ -244,6 +241,9 @@ export default {
      * 设置图表数据
      */
     setdata(isThoron, data2) {
+      this.endValue = this.RadonAt.length - 1;
+      this.startValue = this.RadonAt.length - this.Range;
+      this.xIndex = this.endValue;
       let title;
       let color;
       let data;
