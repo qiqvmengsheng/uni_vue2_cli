@@ -125,10 +125,11 @@ export default {
         dataZoom: [
           {
             type: 'inside',
-            zoomLock: true,
+            zoomLock: true, // 禁止缩放
             startValue: 0,
             endValue: 20,
-            moveOnMouseMove: false,
+            moveOnMouseMove: false, // 随鼠标移动
+            filterMode: 'none', // 显示范围外数据过滤模式
           },
           {
             type: 'slider',

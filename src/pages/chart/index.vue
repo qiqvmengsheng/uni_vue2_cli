@@ -224,6 +224,13 @@
           "
           :disabled="!isOpen"
         ></u-cell>
+        <u-cell
+          v-if="map"
+          title="地图位置"
+          isLink
+          @click="showMap"
+          :disabled="!isOpen"
+        ></u-cell>
       </u-cell-group>
     </view>
   </div>
@@ -232,10 +239,12 @@
 <script>
 import { mapGetters } from 'vuex';
 import to from 'await-to-js';
+import gcoord from 'gcoord';
 // eslint-disable-next-line import/no-extraneous-dependencies
 // import XLSX from 'xlsx';
 // import { jsonClone } from '@/utils/disposalData';
-import { toast, loading } from '@uni/apis';
+import { toast, loading, location } from '@uni/apis';
+import { DataStreams } from '@/api/onenet';
 import { measuredGetdata, getlastDatas } from '@/api/devdata';
 import { devSettingGetmark } from '@/api/devParamSetting';
 import RadonChart from './RadonChart';
@@ -266,6 +275,7 @@ export default {
       isThoronData: 0,
       isOpen: false,
       dev: null,
+      map: null,
     };
   },
   computed: {
@@ -285,8 +295,10 @@ export default {
       // console.log('收到参数', this.$Route.query);
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
+      console.log(this.dev);
       this.getdata();
       this.getmakings();
+      this.getMap();
     });
   },
   methods: {
@@ -300,6 +312,52 @@ export default {
         this.timegetdata();
       }
       this.getmakings();
+    },
+
+    showMap() {
+      console.log('原坐标', { ...this.map });
+      const gcj02 = gcoord.transform(
+        [this.map.lon, this.map.lat],
+        gcoord.WGS84,
+        gcoord.GCJ02
+      );
+      console.log('转换后', gcj02);
+      location
+        .openLocation({
+          longitude: gcj02[0],
+          latitude: gcj02[1],
+          name: `设备：${this.dev.devicename}  序列号：${this.dev.deviceserial}`,
+          address: `昵称：${this.dev.abbreviation}`,
+        })
+        .then(() => {
+          // toast.showToast('成功');
+        })
+        .catch(() => {
+          toast.showToast('出错请重试！');
+        });
+    },
+
+    async getMap() {
+      if (this.dev.version !== '1.0') {
+        return;
+      }
+      const [err, response] = await to(
+        DataStreams({
+          deviceId: this.dev.deviceid,
+          apikey: this.dev.apikey,
+        })
+      );
+      if (err) {
+        console.log('获取数据流id错误： \r\n', err);
+        return;
+      }
+      const { data } = response.data;
+      data.forEach((item) => {
+        if (item.id === 'Map') {
+          this.map = item.current_value;
+          console.log(item);
+        }
+      });
     },
 
     change1(index) {
