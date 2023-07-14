@@ -1,34 +1,31 @@
 <template>
   <view class="background">
     <myNav
-      leftText="我的"
+      leftText=""
       backgroundColor="#134376"
       leftColor="#ffffff"
       barHeight="90"
     ></myNav>
     <view class="radio"></view>
     <view class="person-info">
-      <view class="photo">
-        <view :class="photo"></view>
-      </view>
       <text class="user-name">{{ userInfo.username }}</text>
       <text class="greet">{{ time }}好^_^</text>
       <view class="bottom">
-        <view class="event-item1">
+        <view class="single">
           <view class="t-icon t-icon-dianhua-yuankuang"></view>
-          <text>:{{ userInfo.userphone }}</text>
+          <text class="icon-text">{{ userInfo.userphone }}</text>
         </view>
-        <view class="event-item2">
+        <view class="single">
           <view class="t-icon t-icon-youxiang"></view>
-          <text>:{{ userInfo.useremail }}</text>
+          <text class="icon-text">{{ userInfo.useremail }}</text>
         </view>
         <view class="single">
           <view class="t-icon t-icon-dizhi"></view>
-          <text>:{{ userInfo.address }}</text>
+          <text class="icon-text">{{ userInfo.address }}</text>
         </view>
         <view class="single">
           <view class="t-icon t-icon-commpany"></view>
-          <text>:{{ userInfo.workunit }}</text>
+          <text class="icon-text">{{ userInfo.workunit }}</text>
         </view>
       </view>
     </view>
@@ -37,22 +34,21 @@
         <view class="t-icon t-icon-bianji1"></view>
         <view>编辑信息</view>
       </view>
-      <view class="fuction_style">
+      <view
+        class="fuction_style"
+        v-if="userInfo.userphone === '' || userInfo.userphone === undefined"
+        open-type="getPhoneNumber"
+        bindgetphonenumber="getPhoneNumber"
+        @click="$Router.push({ name: 'login' })"
+      >
         <!-- <view class="t-icon t-icon-bangdingshouji"></view> -->
-        <button
-          v-if="userInfo.userphone === '' || userInfo.userphone === undefined"
-          open-type="getPhoneNumber"
-          bindgetphonenumber="getPhoneNumber"
-          @getphonenumber="getPhoneNumber"
-          class="t-icon t-icon-bangdingshouji"
-        ></button>
-        <button
-          class="t-icon t-icon-bangdingshouji"
-          @click="bondPhoneNumber()"
-          v-else
-        ></button>
-        <view>绑定手机</view>
+        <button class="t-icon t-icon-bangdingshouji"></button>
+        <view>手机登录</view>
       </view>
+      <view class="fuction_style" @click="bondPhoneNumber()" v-else>
+        <button class="t-icon t-icon-bangdingshouji"></button>
+        <view>绑定手机</view></view
+      >
       <view class="fuction_style" @click="systemInfo">
         <view class="t-icon t-icon-13-xitongxiaoxi-icon"></view>
         <view>系统消息</view>
@@ -241,20 +237,13 @@ export default {
   watch: {},
 
   // 页面周期函数--监听页面加载
-  onLoad() {
-    this.getUserInfo();
-    this.getTime();
-  },
+  onLoad() {},
   // 页面周期函数--监听页面初次渲染完成
   onReady() {},
   // 页面周期函数--监听页面显示(not-nvue)
   onShow() {
-    const pages = getCurrentPages();
-    const currentPage = pages[pages.length - 1];
-    if (currentPage.data.refreshIfNeeded) {
-      currentPage.data.refreshIfNeeded = false;
-      this.onLoad();
-    }
+    this.getUserInfo();
+    this.getTime();
   },
   // 页面周期函数--监听页面隐藏
   onHide() {},
@@ -288,7 +277,8 @@ export default {
 .person-info {
   background-color: #ffffff;
   width: 88%;
-  height: 40%;
+  height: 550rpx;
+
   display: flex;
   margin-left: 6%;
   border-radius: 10% 10% 10% 10%;
@@ -315,7 +305,7 @@ export default {
   left: 49%;
   transform: translate(-50%, -50%);
   font-size: 25rpx;
-  top: 30%;
+  top: 25%;
 }
 .fuction_card {
   background-color: rgb(255, 255, 255);
@@ -328,13 +318,13 @@ export default {
   flex-direction: row;
 }
 .bottom {
-  margin-top: 13%;
+  margin-top: 36%;
   align-items: center;
-  position: relative;
+  position: absolute;
   display: flex;
   justify-content: space-around;
   width: 100%;
-  line-height: 230%;
+  line-height: 170%;
   margin-bottom: 7%;
   margin-left: 5%;
   flex-wrap: wrap;
@@ -383,7 +373,7 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 25rpx;
-  top: 27%;
+  top: 20%;
   font-size: 35rpx;
 }
 .left {
@@ -405,6 +395,9 @@ export default {
   width: 150rpx;
   padding: 50rpx;
   font-size: 25rpx;
+}
+.icon-text {
+  margin-left: 10rpx;
 }
 .t-icon {
   &.t-icon-zuixing-75 {
@@ -437,5 +430,22 @@ export default {
     width: 150rpx;
     height: 150rpx;
   }
+  &.t-icon-dianhua-yuankuang {
+    margin-bottom: 14rpx;
+    vertical-align: bottom;
+  }
+  &.t-icon-youxiang {
+    margin-bottom: 14rpx;
+    vertical-align: bottom;
+  }
+  &.t-icon-dizhi {
+    margin-bottom: 15rpx;
+    vertical-align: bottom;
+  }
+  &.t-icon-commpany {
+    margin-bottom: 15rpx;
+    vertical-align: bottom;
+  }
 }
+
 </style>
