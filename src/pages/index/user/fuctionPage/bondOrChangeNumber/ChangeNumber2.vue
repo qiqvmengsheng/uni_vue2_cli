@@ -8,7 +8,7 @@
           v-model="newPhoneNumber"
           placeholder="请输入新手机号"
         />
-      </view>
+git      </view>
     </view>
     <view class="bond_item">
       <view class="item_name">输入验证码</view>
