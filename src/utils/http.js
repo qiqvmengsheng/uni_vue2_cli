@@ -196,10 +196,9 @@ request.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.config.isloading === undefined) loadingNum -= 1;
+    console.log('失败的返回拦截', error);
+    if (error.config?.isloading === undefined) loadingNum -= 1;
     if (loadingNum === 0) loading.hideLoading();
-    console.log('失败的返回拦截');
-    console.log('http162', error);
     httpErrorStatusHandle(error);
     return Promise.reject(error);
   }
