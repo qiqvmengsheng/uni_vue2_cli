@@ -170,7 +170,7 @@
             </view>
           </u-grid-item>
         </template>
-        <u-grid-item v-if="loginbtnshow">
+        <u-grid-item v-if="loginbtnshow || devices.length === 0">
           <view class="dev-view" @click="tocommandView('test')">
             <view>
               <text>设备昵称: 示例设备</text>
