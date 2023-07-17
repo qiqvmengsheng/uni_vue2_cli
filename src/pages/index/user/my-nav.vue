@@ -6,7 +6,7 @@
       <view class="bar-left">
           <image class="left_icon" @click="onClickLeft" v-if="leftIcon.length > 0" :src="leftIcon" mode="scaleToFill">
           </image>
-          <text class="txt-left" @click="onClickLeft" v-else :style="'color: '+leftColor+';'">{{leftText}}</text>
+          <text class="txt-left" @click="onClickLeft" v-else :style="'color: '+leftColor+';'">{{}}</text>
       </view>
       <!--  导航栏 中间标题 -->
       <text class="bar-center" :style="'color: '+titleColor+';'">{{title}}</text>
