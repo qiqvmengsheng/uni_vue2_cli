@@ -7,7 +7,7 @@
           :value="cellvalue"
           :label="isnumber ? '按数量' : '按时间'"
           isLink
-          :disabled="!isOpen"
+          :disabled="!isOpen || test"
           @click="
             $Router.push({
               name: 'DataQuantity',
@@ -85,7 +85,7 @@
       </view>
     </view>
 
-    <view class="subsection">
+    <view class="subsection" v-show="!test">
       <u-subsection
         :list="list"
         mode="subsection"
@@ -183,7 +183,7 @@
               },
             })
           "
-          :disabled="!isOpen"
+          :disabled="!isOpen || test"
         ></u-cell>
         <u-cell
           title="下载数据"
@@ -196,7 +196,7 @@
               },
             })
           "
-          :disabled="!isOpen"
+          :disabled="!isOpen || test"
         ></u-cell>
         <u-cell
           title="触发告警"
@@ -209,7 +209,7 @@
               },
             })
           "
-          :disabled="!isOpen"
+          :disabled="!isOpen || test"
         ></u-cell>
         <u-cell
           title="命令设置"
@@ -222,14 +222,14 @@
               },
             })
           "
-          :disabled="!isOpen"
+          :disabled="!isOpen || test"
         ></u-cell>
         <u-cell
           v-if="map"
           title="地图位置"
           isLink
           @click="showMap"
-          :disabled="!isOpen"
+          :disabled="!isOpen || test"
         ></u-cell>
       </u-cell-group>
     </view>
@@ -244,6 +244,7 @@ import gcoord from 'gcoord';
 // import XLSX from 'xlsx';
 // import { jsonClone } from '@/utils/disposalData';
 import { toast, loading, location } from '@uni/apis';
+import mockdata from '@/utils/mockdata';
 import { DataStreams } from '@/api/onenet';
 import { measuredGetdata, getlastDatas } from '@/api/devdata';
 import { devSettingGetmark } from '@/api/devParamSetting';
@@ -276,6 +277,7 @@ export default {
       isOpen: false,
       dev: null,
       map: null,
+      test: false,
     };
   },
   computed: {
@@ -296,6 +298,14 @@ export default {
       const id = this.$Route.query.deviceid;
       [this.dev] = this.devices.filter((dev) => dev.deviceid === id);
       console.log(this.dev);
+      if (this.$Route.query.test === 'test') {
+        loading.showLoading();
+        this.test = true;
+        this.data = mockdata();
+        this.isOpen = true;
+        this.update(this.data);
+        return;
+      }
       this.getdata();
       this.getmakings();
       this.getMap();

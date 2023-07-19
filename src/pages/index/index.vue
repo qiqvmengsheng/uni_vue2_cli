@@ -1,128 +1,5 @@
 <template>
   <view class="content">
-    <view></view>
-    <GetPhoneNumberVue ref="getpnumber"></GetPhoneNumberVue>
-    <view class="button_view" v-if="false">
-      <view class="ubutton">
-        <u-button
-          type="primary"
-          :plain="true"
-          text="确定"
-          @click="$refs.getpnumber.showModal()"
-        >
-          弹出提示
-        </u-button>
-      </view>
-      <!-- <view class="ubutton">
-        <u-button type="primary" :plain="true" text="确定" @click="test">
-          弹出提示
-        </u-button>
-      </view> -->
-      <view class="ubutton">
-        <u-button type="primary" :plain="true" text="确定" @click="addDevice">
-          添加设备
-        </u-button>
-      </view>
-    </view>
-    <!-- <uni-tooltip :content="name">
-      <button>被包裹的组件</button>
-			@scrolltolower="scrolltolower"
-    </uni-tooltip> -->
-    <!-- <image class="logo" src="/static/logo.png"></image> -->
-
-    <view v-if="false">
-      <u-list class="u-page" height="600rpx">
-        <u-list-item
-          v-for="(item, index) in devices"
-          :key="index"
-          class="list-item"
-        >
-          <uni-card
-            title="设备"
-            :isFull="true"
-            :sub-title="item.devicename"
-            :extra="item.deviceserial"
-            class="list-card"
-          >
-            <view>
-              <u-input
-                size="mini"
-                type="text"
-                placeholder="请输入备注"
-                border="bottom"
-                v-model="item.abbreviation"
-                @blur="setabbreviation(item)"
-              >
-                <u-text
-                  text="备注"
-                  slot="prefix"
-                  margin="0 3px 0 0"
-                  type="tips"
-                ></u-text>
-              </u-input>
-              <view class="viewflex">
-                <text>普通用户设置权限:</text>
-                <!-- <u-tooltip text="普通用户设置权限:" overlay> </u-tooltip> -->
-                <view @click="handleEdit(index, item)">
-                  <u-switch
-                    size="16"
-                    :value="item.devuserpermission"
-                    :loading="loading"
-                  ></u-switch>
-                </view>
-              </view>
-              <!-- <u-icon
-                slot="icon"
-                name="arrow-right"
-                @click="test"
-                class="right-icon"
-              ></u-icon>
-              <text class="uni-body"
-                >这是一个通栏卡片 ，通栏没有外边距，左右会贴合父元素。
-              </text> -->
-            </view>
-            <template v-slot:actions>
-              <view class="card-actions">
-                <view
-                  class="card-actions-item"
-                  @click="tochartView(index, item)"
-                >
-                  <text class="iconfont icon-tubiao-zhexiantu"></text>
-                  <!-- <uni-icons type="bars" size="18" color="#999"></uni-icons> -->
-                  <text class="card-actions-item-text">图表</text>
-                </view>
-                <view
-                  class="card-actions-item"
-                  @click="tocommandView(index, item)"
-                >
-                  <uni-icons
-                    type="settings"
-                    size="18"
-                    color="#999"
-                    class="uniicons"
-                  ></uni-icons>
-                  <text>
-                    <text class="card-actions-item-text">设置</text>
-                  </text>
-                </view>
-                <view
-                  class="card-actions-item"
-                  @click="handleDelete(index, item)"
-                >
-                  <uni-icons
-                    type="trash-filled"
-                    size="18"
-                    color="#999"
-                  ></uni-icons>
-                  <text class="card-actions-item-text">删除</text>
-                </view>
-              </view>
-            </template>
-          </uni-card>
-        </u-list-item>
-      </u-list>
-    </view>
-
     <view class="bg"></view>
     <view class="head1">
       <text>选择您的设备</text>
@@ -172,11 +49,19 @@
         </template>
         <u-grid-item v-if="loginbtnshow || devices.length === 0">
           <view class="dev-view" @click="tocommandView('test')">
-            <view>
-              <text>设备昵称: 示例设备</text>
+            <view class="devname">
+              <text class="nichen"> 示例设备 </text>
             </view>
-            <view>
-              <text>序列号：无</text>
+            <view class="devname">
+              <text class="ziti">{{ 'RTM1688' }}</text>
+              <text class="ziti"> SN000 </text>
+            </view>
+            <text class="textRight ziti">
+              {{ $u.timeFormat(new Date(), 'yyyy-mm-dd hh:MM:ss') }}
+            </text>
+            <view class="devname" style="line-height: 21px">
+              <text>氡浓度: </text>
+              <text class="ziti"> 0.0 </text>
             </view>
           </view>
         </u-grid-item>
@@ -192,56 +77,6 @@
       </u-grid>
     </view>
 
-    <template v-if="false">
-      <view class="grid">
-        <u-grid :border="false" col="2">
-          <u-grid-item
-            v-for="(item, baseListIndex) in devices"
-            :key="baseListIndex"
-          >
-            <uni-card
-              title="设备"
-              :extra="item.deviceserial"
-              isFull
-              class="item-card"
-            >
-              <!-- <input
-                v-model="item.abbreviation"
-                placeholder-class="input-placeholder"
-                @blur="setabbreviation(item)"
-              /> -->
-              <view style="display: flax">
-                <u-input
-                  size="mini"
-                  type="text"
-                  placeholder="请输入备注"
-                  border="bottom"
-                  v-model="item.abbreviation"
-                  @blur="setabbreviation(item)"
-                >
-                  <u-text
-                    text="备注"
-                    slot="prefix"
-                    margin="0 3px 0 0"
-                    type="tips"
-                  ></u-text>
-                </u-input>
-              </view>
-              <text class="grid-text">{{ item.abbreviation || '无' }}</text>
-            </uni-card>
-          </u-grid-item>
-          <u-grid-item>
-            <uni-card class="item-card">
-              <u-icon name="plus" color="#2979ff" size="45"></u-icon>
-            </uni-card>
-          </u-grid-item>
-        </u-grid>
-      </view>
-    </template>
-    <!--<u-tabbar :value="value1" @change="change1">
-      <u-tabbar-item text="首页" icon="home" @click="click1"></u-tabbar-item>
-      <u-tabbar-item text="我的" icon="account" @click="click1"></u-tabbar-item>
-    </u-tabbar> -->
     <view class="login-prompt" v-if="loginbtnshow" @touchmove.stop.prevent="">
       <text>登录后查看设备</text>
       <view class="loginbtn">
@@ -261,12 +96,11 @@
 import to from 'await-to-js';
 import { mapGetters, mapActions } from 'vuex';
 import { toast, confirm } from '@uni/apis';
-import GetPhoneNumberVue from '@/components/GetPhoneNumber';
 import { getlastDatas } from '@/api/devdata';
 import { modifyabbreviation, addpermission, disassociate } from '@/api/base';
 
 export default {
-  components: { GetPhoneNumberVue },
+  components: {},
   data() {
     return {
       loginbtnshow: false,
@@ -294,7 +128,7 @@ export default {
       }
     },
     devices() {
-      if (!this.isLastdata) {
+      if (!this.isLastdata && !this.loginbtnshow) {
         console.log(this.devices);
         this.isLastdata = true;
         this.lastData();
@@ -306,7 +140,7 @@ export default {
   onLoad() {},
   // 页面周期函数--监听页面显示(not-nvue)
   onShow() {
-    this.lastData();
+    if (!this.loginbtnshow) this.lastData();
   },
   async mounted() {
     // this.$Router.push({ name: 'commandView' });
@@ -321,13 +155,15 @@ export default {
 
     lastData() {
       [...this.devices].forEach((dev) => {
+        // console.log(dev);
+        if (dev.RadonAt !== undefined) return;
         getlastDatas({
           deviceid: dev.deviceid,
           numbers: 1,
           isloading: false,
         }).then((r) => {
           const { datastreams } = r.data.data;
-          console.log(r);
+          // console.log(r);
           this.$set(dev, 'Radon', datastreams.Radon[0].value);
           this.$set(dev, 'RadonAt', datastreams.Radon[0].at);
           // this.$set()
@@ -366,7 +202,7 @@ export default {
     },
 
     /**
-     * 跳转设置页面
+     * 跳转设备页面
      */
     tocommandView(index, row) {
       if (index === 'test') {
@@ -455,21 +291,10 @@ export default {
       // )[0];
       // console.log(index);
       if (this.loginbtnshow) {
-        toast.showToast('请登录后添加设备。');
+        toast.showToast('请登录后添加设备');
         return;
       }
       this.$Router.push({ name: 'addDevice' });
-    },
-    async test() {
-      // const index = this.$Router.options.routes.filter(
-      //   (r) => r.name === 'addDevice'
-      // )[0];
-      // console.log(index);
-      // this.$Router.push(index.path);
-      console.log(this.devices);
-      toast.showToast({
-        content: `欢迎${this.name}登录`,
-      });
     },
     /**
      * 修改权限
