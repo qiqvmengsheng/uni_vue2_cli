@@ -49,14 +49,19 @@ export default {
       const index = this.$Router.options.routes.filter(
         (r) => r.name === 'changPhoneNumber2'
       )[0];
-      console.log(index);
-      this.$Router.push({
-        name: 'changPhoneNumber2',
-        params: {
-          phoneNumber: this.inputNumber,
-          passCode: data,
-        },
+      console.log(this.data);
+      wx.navigateTo({
+        url: `/pages/index/user/fuctionPage/bondOrChangeNumber/ChangeNumber2?phoneNumber=${encodeURIComponent(
+          this.inputNumber
+        )}&passCode=${encodeURIComponent(this.oldCode)}`,
       });
+      // this.$Router.push({
+      //   name: 'changPhoneNumber2',
+      //   params: {
+      //     phoneNumber: this.inputNumber,
+      //     passCode: data,
+      //   },
+      // });
     },
     async getCode() {
       if (this.inputNumber === '') {
