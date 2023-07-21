@@ -31,7 +31,7 @@
     </view>
     <view class="fuction_card">
       <view class="fuction_style" @click="editPersonInfo">
-        <view class="t-icon t-icon-bianji1"></view>
+        <view class="t-icon t-icon-bianjixinxi"></view>
         <view>编辑信息</view>
       </view>
       <view
@@ -42,15 +42,15 @@
         @click="$Router.push({ name: 'login' })"
       >
         <!-- <view class="t-icon t-icon-bangdingshouji"></view> -->
-        <button class="t-icon t-icon-bangdingshouji"></button>
+        <button class="t-icon t-icon-bangdingshouji2"></button>
         <view>手机登录</view>
       </view>
       <view class="fuction_style" @click="bondPhoneNumber()" v-else>
-        <button class="t-icon t-icon-bangdingshouji"></button>
-        <view>绑定手机</view></view
+        <button class="t-icon t-icon-bangdingshouji1"></button>
+        <view>换绑手机</view></view
       >
       <view class="fuction_style" @click="systemInfo">
-        <view class="t-icon t-icon-13-xitongxiaoxi-icon"></view>
+        <view class="t-icon t-icon-xitongxiaoxi4"></view>
         <view>系统消息</view>
       </view>
     </view>
@@ -393,7 +393,7 @@ export default {
   flex-direction: column;
   height: 150rpx;
   width: 150rpx;
-  padding: 50rpx;
+  padding: 55rpx;
   font-size: 25rpx;
 }
 .icon-text {
@@ -404,16 +404,22 @@ export default {
     width: 100rpx;
     height: 100rpx;
   }
-  &.t-icon-13-xitongxiaoxi-icon {
-    width: 100rpx;
-    height: 100rpx;
-  }
-  &.t-icon-bangdingshouji {
+  &.t-icon-xitongxiaoxi4 {
     margin-bottom: 12%;
     width: 85rpx;
     height: 85rpx;
   }
-  &.t-icon-bianji1 {
+  &.t-icon-bangdingshouji2 {
+    margin-bottom: 12%;
+    width: 85rpx;
+    height: 85rpx;
+  }
+  &.t-icon-bangdingshouji1 {
+    margin-bottom: 12%;
+    width: 85rpx;
+    height: 85rpx;
+  }
+  &.t-icon-bianjixinxi {
     margin-bottom: 12%;
     width: 85rpx;
     height: 85rpx;
@@ -447,5 +453,4 @@ export default {
     vertical-align: bottom;
   }
 }
-
 </style>

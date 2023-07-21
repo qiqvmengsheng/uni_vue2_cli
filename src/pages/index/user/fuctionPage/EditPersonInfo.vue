@@ -70,12 +70,12 @@ export default {
     };
   },
   onLoad(option) {
-    this.username = decodeURI(option.username);
-    this.workunit = decodeURI(option.workunit);
-    this.address = decodeURI(option.address);
+    this.username = decodeURIComponent(option.username);
+    this.workunit = decodeURIComponent(option.workunit);
+    this.address = decodeURIComponent(option.address);
     this.email = decodeURIComponent(option.email);
-    this.gender = decodeURI(option.sex);
-    this.attribute = decodeURI(option.attribute);
+    this.gender = decodeURIComponent(option.sex);
+    this.attribute = decodeURIComponent(option.attribute);
   },
   methods: {
     async select_gender(e) {
@@ -99,7 +99,6 @@ export default {
             });
             const pages = getCurrentPages();
             const prevPage = pages[pages.length - 2];
-            prevPage.$vm.getUserInfo();
             uni.navigateBack({
               delta: 1,
             });

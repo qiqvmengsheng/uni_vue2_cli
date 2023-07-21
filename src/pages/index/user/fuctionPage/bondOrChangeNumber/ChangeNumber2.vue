@@ -26,7 +26,6 @@
 <script>
 import { sendsms } from '@/api/user';
 import { bondPhone } from '@/api/base';
-
 export default {
   data() {
     return {
@@ -40,10 +39,11 @@ export default {
     };
   },
   onLoad(options) {
-    this.oldPhoneNumber = options.phoneNumber;
-    this.passCode = options.passCode;
+    this.oldPhoneNumber = decodeURIComponent(options.phoneNumber);
+    this.passCode = decodeURIComponent(options.passCode);
     console.log(this.oldPhoneNumber);
     console.log(this.passCode);
+    console.log(options);
   },
   methods: {
     async getCode() {
@@ -61,6 +61,15 @@ export default {
           title: '您输入的电话号码不正确',
           icon: 'none',
           duration: 2000,
+        });
+        return;
+      }
+      if (this.newPhoneNumber === this.oldPhoneNumber) {
+        console.log('手机号相同');
+        uni.showToast({
+          title: '新旧手机号相同，请重新输入',
+          icon: 'none',
+          duration: 1000,
         });
         return;
       }
@@ -97,25 +106,6 @@ export default {
         }
       );
     },
-    // async getCode() {
-    //   sendsms({
-    //     phonenumber: this.inputNumber,
-    //   }).then(
-    //     (response) => {
-    //       console.log(response);
-    //       if (response.data === true) {
-    //         console.log('获取验证码成功');
-    //       }
-    //     },
-    //     (error) => {
-    //       console.log(error);
-    //       uni.showToast({
-    //         title: '发送失败，请检查您填写的电话号码是否正确',
-    //         duration: 1000,
-    //       });
-    //     }
-    //   );
-    // },
     async bondPhone() {
       if (this.newCode === '') {
         uni.showToast({
@@ -124,6 +114,23 @@ export default {
           duration: 2000,
         });
         return;
+      }
+      console.log(this.newPhoneNumber);
+      console.log(this.oldPhoneNumber);
+      if (this.newPhoneNumber === this.oldPhoneNumber) {
+        console.log('手机号相同');
+        uni.showToast({
+          title: '新旧手机号相同，请重新输入',
+          icon: 'none',
+          duration: 1000,
+        });
+        return;
+        // const pages = getCurrentPages();
+        // const prevPage = pages[pages.length - 2];
+        // uni.navigateBack({
+        //   delta: 2,
+        // });
+        // return;
       }
       console.log(this.oldPhoneNumber);
       bondPhone({
@@ -134,14 +141,24 @@ export default {
       }).then(
         (response) => {
           if (response.data.code === 200) {
+            console.log('绑定成功');
             uni.showToast({
               title: '绑定成功',
+              duration: 1000,
             });
+            setTimeout(function () {
+              const pages = getCurrentPages();
+              const prevPage = pages[pages.length - 2];
+              uni.navigateBack({
+                delta: 2,
+              });
+            }, 1000);
           }
         },
         (error) => {
           uni.showToast({
             title: '绑定失败',
+            duration: 1000,
           });
         }
       );
