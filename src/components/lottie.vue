@@ -32,6 +32,7 @@ export default {
   props: {
     width: { type: String, default: '300' },
     height: { type: String, default: '300' },
+    // animationData: { type: String, default: '@/static/animation_lkgoy2tl' },
   },
   mounted() {
     this.init();
@@ -55,7 +56,7 @@ export default {
             loop: true,
             autoplay: true,
             // eslint-disable-next-line global-require
-            animationData: require('@/static/icons8-'),
+            animationData: require('@/static/animation_atomic'),
             rendererSettings: {
               context,
             },
