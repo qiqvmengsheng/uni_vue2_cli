@@ -43,15 +43,15 @@
       >
         <!-- <view class="t-icon t-icon-bangdingshouji"></view> -->
         <button class="t-icon t-icon-bangdingshouji2"></button>
-        <view>手机登录</view>
+        <view class="common-text">手机登录</view>
       </view>
       <view class="fuction_style" @click="bondPhoneNumber()" v-else>
         <button class="t-icon t-icon-bangdingshouji1"></button>
-        <view>换绑手机</view></view
+        <view class="common-text">换绑手机</view></view
       >
       <view class="fuction_style" @click="systemInfo">
         <view class="t-icon t-icon-xitongxiaoxi4"></view>
-        <view>系统消息</view>
+        <view class="common-text">系统消息</view>
       </view>
     </view>
   </view>
@@ -304,8 +304,9 @@ export default {
   position: absolute;
   left: 49%;
   transform: translate(-50%, -50%);
-  font-size: 25rpx;
-  top: 25%;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 40rpx;
+  top: 27%;
 }
 .fuction_card {
   background-color: rgb(255, 255, 255);
@@ -369,12 +370,12 @@ export default {
   height: 100%;
 }
 .user-name {
+  font-size: 55rpx;
   position: absolute;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 25rpx;
+  font-family: Arial, Helvetica, sans-serif;
   top: 20%;
-  font-size: 35rpx;
 }
 .left {
   position: relative;
@@ -394,10 +395,12 @@ export default {
   height: 150rpx;
   width: 150rpx;
   padding: 55rpx;
-  font-size: 25rpx;
+  font-size: 28rpx;
 }
 .icon-text {
+  font-family: Arial, Helvetica, sans-serif;
   margin-left: 10rpx;
+  font-size: 35rpx;
 }
 .t-icon {
   &.t-icon-zuixing-75 {
@@ -406,23 +409,23 @@ export default {
   }
   &.t-icon-xitongxiaoxi4 {
     margin-bottom: 12%;
-    width: 85rpx;
-    height: 85rpx;
+    width: 100rpx;
+    height: 100rpx;
   }
   &.t-icon-bangdingshouji2 {
     margin-bottom: 12%;
-    width: 85rpx;
-    height: 85rpx;
+    width: 100rpx;
+    height: 100rpx;
   }
   &.t-icon-bangdingshouji1 {
     margin-bottom: 12%;
-    width: 85rpx;
-    height: 85rpx;
+    width: 100rpx;
+    height: 100rpx;
   }
   &.t-icon-bianjixinxi {
     margin-bottom: 12%;
-    width: 85rpx;
-    height: 85rpx;
+    width: 100rpx;
+    height: 100rpx;
   }
   &.t-icon-a-ziyuan112 {
     width: 150rpx;
