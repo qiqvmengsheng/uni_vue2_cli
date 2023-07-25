@@ -132,6 +132,23 @@ export default {
         // });
         // return;
       }
+      if (this.newPhoneNumber === '') {
+        uni.showToast({
+          title: '请输入电话号码',
+          icon: 'none',
+          duration: 2000,
+        });
+        return;
+      }
+      console.log(this.newPhoneNumber.length);
+      if (this.newPhoneNumber.length !== 11) {
+        uni.showToast({
+          title: '您输入的电话号码不正确',
+          icon: 'none',
+          duration: 2000,
+        });
+        return;
+      }
       console.log(this.oldPhoneNumber);
       bondPhone({
         code: this.newCode,
@@ -153,6 +170,12 @@ export default {
                 delta: 2,
               });
             }, 1000);
+          } else {
+            uni.showToast({
+              title: '验证码输入错误',
+              duration: 1000,
+              icon: 'none',
+            });
           }
         },
         (error) => {
@@ -162,6 +185,11 @@ export default {
           });
         }
       );
+      uni.showToast({
+        title: '换绑失败',
+        icon: 'none',
+        duration: 2000,
+      });
     },
   },
 };

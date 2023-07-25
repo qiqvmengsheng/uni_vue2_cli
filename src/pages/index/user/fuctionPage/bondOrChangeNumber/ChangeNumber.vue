@@ -17,7 +17,7 @@
       </button>
       <button v-if="!codeShow" class="phone_code">{{ count }}后重试</button>
     </view>
-    <button class="save_button" @click="toPage2">确认</button>
+    <button class="save_button" @click="next">确认</button>
   </view>
 </template>
 <script>
@@ -115,6 +115,14 @@ export default {
       );
     },
     async next() {
+      if (this.inputNumber === '') {
+        uni.showToast({
+          title: '请输入电话号码',
+          icon: 'none',
+          duration: 2000,
+        });
+        return;
+      }
       console.log(this.inputNumber.length);
       const input = this.inputNumber;
       const old = this.oldPhoneNumber;
@@ -141,6 +149,7 @@ export default {
               uni.showToast({
                 title: response.data.msg,
                 duration: 1000,
+                icon: 'none',
               });
             }
           },
