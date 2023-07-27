@@ -105,6 +105,20 @@
 				"navigationBarTitleText": "设备"
 			},
 			"name": "device"
+		},
+		{
+			"path": "pages/HelpView/index",
+			"style": {
+				"navigationBarTitleText": "帮助与反馈"
+			},
+			"name": "HelpView"
+		},
+		{
+			"path": "pages/HelpView/FeedbackView/index",
+			"style": {
+				"navigationBarTitleText": "反馈"
+			},
+			"name": "FeedbackView"
 		}
 	],
 	"globalStyle": {
