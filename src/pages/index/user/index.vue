@@ -164,7 +164,14 @@ export default {
      * 跳转到个人信息编辑页面
      */
     async editPersonInfo() {
-      console.log(this.userInfo.attribute);
+      if (this.userInfo.userphone === '' || this.userInfo.userphone === null) {
+        uni.showToast({
+          icon: 'none',
+          title: '请先登录',
+          duration: 1000,
+        });
+        return;
+      }
       const index = this.$Router.options.routes.filter(
         (r) => r.name === 'userFeedBack'
       )[0];
