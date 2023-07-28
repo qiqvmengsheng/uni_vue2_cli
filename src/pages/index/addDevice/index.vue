@@ -62,6 +62,7 @@
 
 <script>
 import to from 'await-to-js';
+import { mapActions } from 'vuex';
 import { toast } from '@uni/apis';
 import { associate } from '@/api/base';
 
@@ -129,6 +130,7 @@ export default {
   },
   computed: {},
   methods: {
+    ...mapActions('user', ['getInfo']),
     test() {
       // tabBar.showTabBar();
     },
@@ -147,6 +149,7 @@ export default {
         console.log(e, r);
         return;
       }
+      this.getInfo();
       toast
         .showToast({
           content: r.data.msg,
@@ -154,6 +157,7 @@ export default {
           duration: 1000,
         })
         .then(() => {});
+      this.$Router.pushTab({ name: 'index' });
     },
     devtype(e) {
       this.dev.devicename = e.name;
