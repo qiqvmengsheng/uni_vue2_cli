@@ -53,6 +53,12 @@
         <view class="t-icon t-icon-xitongxiaoxi4"></view>
         <view class="common-text">系统消息</view>
       </view>
+      <view class="fuction_style" @click="$Router.push({ name: 'HelpView' })">
+        <view style="margin-bottom: 12%">
+          <u-icon name="question-circle" color="#134376" size="100rpx"></u-icon>
+        </view>
+        <view class="common-text">帮助反馈</view>
+      </view>
     </view>
   </view>
 </template>
@@ -317,6 +323,8 @@ export default {
   margin-top: 10%;
   box-shadow: 0px 0px 10px rgb(197, 197, 197);
   flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 .bottom {
   margin-top: 36%;
