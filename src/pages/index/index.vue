@@ -105,7 +105,6 @@ export default {
     return {
       loginbtnshow: true,
       show: true,
-      isLastdata: false,
     };
   },
   computed: { ...mapGetters(['name', 'devices', 'systemrole', 'userInfo']) },
@@ -128,9 +127,8 @@ export default {
       }
     },
     devices() {
-      if (!this.isLastdata && !this.loginbtnshow) {
+      if (!this.loginbtnshow) {
         console.log(this.devices);
-        this.isLastdata = true;
         this.lastData();
       }
     },
@@ -140,6 +138,7 @@ export default {
   onLoad() {},
   // 页面周期函数--监听页面显示(not-nvue)
   onShow() {
+    this.iflogin();
     if (!this.loginbtnshow) this.lastData();
   },
   async mounted() {
@@ -153,21 +152,37 @@ export default {
   methods: {
     ...mapActions('user', ['getInfo']),
 
+    iflogin() {
+      if (
+        this.systemrole === 'user' &&
+        !uni.$u.test.mobile(this.userInfo.userphone)
+      ) {
+        this.loginbtnshow = true;
+        // this.$refs.getpnumber.showModal();
+      } else {
+        this.loginbtnshow = false;
+      }
+    },
+
     lastData() {
       [...this.devices].forEach((dev) => {
         // console.log(dev);
-        if (dev.RadonAt !== undefined) return;
-        getlastDatas({
-          deviceid: dev.deviceid,
-          numbers: 1,
-          isloading: false,
-        }).then((r) => {
-          const { datastreams } = r.data.data;
-          // console.log(r);
-          this.$set(dev, 'Radon', datastreams.Radon[0].value);
-          this.$set(dev, 'RadonAt', datastreams.Radon[0].at);
-          // this.$set()
-        });
+        if (dev.RadonAt !== undefined || dev.promise1 !== undefined) return;
+        this.$set(
+          dev,
+          'promise1',
+          getlastDatas({
+            deviceid: dev.deviceid,
+            numbers: 1,
+            isloading: false,
+          }).then((r) => {
+            const { datastreams } = r.data.data;
+            // console.log(r);
+            this.$set(dev, 'Radon', datastreams.Radon[0].value);
+            this.$set(dev, 'RadonAt', datastreams.Radon[0].at);
+            // this.$set()
+          })
+        );
       });
     },
 
